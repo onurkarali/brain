@@ -15,6 +15,7 @@ const RUNTIMES = {
     promptFile: 'CLAUDE.md',
     promptSource: 'claude.md',
     settingsFile: 'settings.json',
+    commandStyle: 'flat',
   },
   gemini: {
     name: 'Gemini CLI',
@@ -24,6 +25,17 @@ const RUNTIMES = {
     promptFile: 'GEMINI.md',
     promptSource: 'gemini.md',
     settingsFile: null,
+    commandStyle: 'flat',
+  },
+  openai: {
+    name: 'OpenAI Codex CLI',
+    globalDir: path.join(require('os').homedir(), '.codex'),
+    localDir: '.codex',
+    commandsSubdir: 'skills',
+    promptFile: 'AGENTS.md',
+    promptSource: 'openai.md',
+    settingsFile: null,
+    commandStyle: 'skills',
   },
 };
 
@@ -52,6 +64,19 @@ function copyDir(src, dest) {
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
+  }
+}
+
+function installSkills(commandsSrc, skillsDest) {
+  const entries = fs.readdirSync(commandsSrc).filter((f) => f.endsWith('.md'));
+  for (const file of entries) {
+    const name = file.replace('.md', '');
+    const skillDir = path.join(skillsDest, `brain-${name}`);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.copyFileSync(
+      path.join(commandsSrc, file),
+      path.join(skillDir, 'SKILL.md')
+    );
   }
 }
 
@@ -84,15 +109,22 @@ function installForRuntime(runtime, scope) {
   const config = RUNTIMES[runtime];
   const targetDir = scope === 'global' ? config.globalDir : config.localDir;
   const commandsSrc = path.join(PACKAGE_ROOT, 'commands', 'brain');
-  const commandsDest = path.join(targetDir, config.commandsSubdir, 'brain');
 
   console.log(`\n  Installing for ${config.name} (${scope})...`);
 
-  // Copy command files
-  console.log(`    Copying commands to ${commandsDest}`);
-  copyDir(commandsSrc, commandsDest);
+  if (config.commandStyle === 'skills') {
+    // Codex: each command becomes a skill directory with SKILL.md
+    const skillsDest = path.join(targetDir, config.commandsSubdir);
+    console.log(`    Installing skills to ${skillsDest}`);
+    installSkills(commandsSrc, skillsDest);
+  } else {
+    // Claude / Gemini: flat copy into commands/brain/
+    const commandsDest = path.join(targetDir, config.commandsSubdir, 'brain');
+    console.log(`    Copying commands to ${commandsDest}`);
+    copyDir(commandsSrc, commandsDest);
+  }
 
-  // Inject prompt into CLAUDE.md / GEMINI.md
+  // Inject prompt into CLAUDE.md / GEMINI.md / AGENTS.md
   const promptTarget = scope === 'global' ? config.globalDir : '.';
   console.log(`    Injecting brain context into ${path.join(promptTarget, config.promptFile)}`);
   injectPrompt(promptTarget, config.promptFile, config.promptSource);
@@ -120,7 +152,8 @@ async function main() {
   // Check for non-interactive flags
   if (flags.has('claude')) runtimes.push('claude');
   if (flags.has('gemini')) runtimes.push('gemini');
-  if (flags.has('all')) runtimes = ['claude', 'gemini'];
+  if (flags.has('openai') || flags.has('codex')) runtimes.push('openai');
+  if (flags.has('all')) runtimes = ['claude', 'gemini', 'openai'];
   if (flags.has('global')) scope = 'global';
   if (flags.has('local')) scope = 'local';
 
@@ -132,10 +165,11 @@ async function main() {
       console.log('  Which runtimes would you like to install for?\n');
       console.log('    1) Claude Code');
       console.log('    2) Gemini CLI');
-      console.log('    3) Both');
+      console.log('    3) OpenAI Codex CLI');
+      console.log('    4) All');
       console.log('');
 
-      const choice = await ask(rl, '  Select (1/2/3): ');
+      const choice = await ask(rl, '  Select (1/2/3/4): ');
       switch (choice.trim()) {
         case '1':
           runtimes = ['claude'];
@@ -144,7 +178,10 @@ async function main() {
           runtimes = ['gemini'];
           break;
         case '3':
-          runtimes = ['claude', 'gemini'];
+          runtimes = ['openai'];
+          break;
+        case '4':
+          runtimes = ['claude', 'gemini', 'openai'];
           break;
         default:
           console.log('  Invalid choice. Defaulting to Claude Code.');
@@ -155,8 +192,8 @@ async function main() {
     // Interactive scope selection
     if (!scope) {
       console.log('\n  Installation scope:\n');
-      console.log('    1) Global  — Available in all projects (~/.claude/, ~/.gemini/)');
-      console.log('    2) Local   — This project only (./.claude/, ./.gemini/)');
+      console.log('    1) Global  — Available in all projects (~/.claude/, ~/.gemini/, ~/.codex/)');
+      console.log('    2) Local   — This project only (./.claude/, ./.gemini/, ./.codex/)');
       console.log('');
 
       const choice = await ask(rl, '  Select (1/2): ');
