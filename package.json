@@ -1,0 +1,34 @@
+{
+  "name": "brain-memory",
+  "version": "0.1.0",
+  "description": "A brain-inspired hierarchical memory system for AI coding agents. Deep nested file structure that mimics human memory with time-decay and strength-based recall.",
+  "keywords": [
+    "claude-code",
+    "gemini-cli",
+    "memory",
+    "ai-agent",
+    "context-engineering",
+    "hierarchical-memory"
+  ],
+  "bin": {
+    "brain-memory": "./bin/install.js"
+  },
+  "files": [
+    "bin/",
+    "commands/",
+    "prompts/",
+    "templates/",
+    "hooks/",
+    "src/",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/onurkarali/brain"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

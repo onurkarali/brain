@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "description": "Default brain category structure. Categories and subcategories are created on-demand as memories are stored.",
+  "top_categories": [
+    {
+      "name": "professional",
+      "description": "Work, career, technical skills, companies, projects",
+      "suggested_subcategories": ["companies", "skills", "projects", "decisions", "career"]
+    },
+    {
+      "name": "personal",
+      "description": "Education, health, hobbies, goals, self-improvement",
+      "suggested_subcategories": ["education", "health", "hobbies", "goals", "finance"]
+    },
+    {
+      "name": "social",
+      "description": "Communities, networks, collaborations, events",
+      "suggested_subcategories": ["communities", "networks", "events", "collaborations"]
+    },
+    {
+      "name": "family",
+      "description": "Family relationships, events, traditions, planning",
+      "suggested_subcategories": ["relationships", "events", "traditions", "planning"]
+    }
+  ],
+  "memory_types": [
+    "decision",
+    "learning",
+    "experience",
+    "insight",
+    "observation",
+    "goal",
+    "preference",
+    "relationship"
+  ],
+  "strength_presets": {
+    "decision": 0.85,
+    "learning": 0.70,
+    "experience": 0.75,
+    "insight": 0.90,
+    "observation": 0.40,
+    "goal": 0.80,
+    "preference": 0.60,
+    "relationship": 0.70
+  },
+  "decay_presets": {
+    "decision": 0.995,
+    "learning": 0.990,
+    "experience": 0.985,
+    "insight": 0.997,
+    "observation": 0.950,
+    "goal": 0.993,
+    "preference": 0.998,
+    "relationship": 0.997
+  }
+}
