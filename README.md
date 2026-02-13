@@ -2,7 +2,7 @@
 
 A hierarchical, file-system-based memory plugin for AI coding agents. Inspired by human cognition — memories are organized into deep nested life-domain categories, strengthened through recall, and naturally decay over time.
 
-Works with **Claude Code** and **Gemini CLI**.
+Works with **Claude Code**, **Gemini CLI**, and **OpenAI Codex CLI**.
 
 ```
 .brain/
@@ -40,14 +40,15 @@ Existing AI memory solutions use flat databases with tag-based retrieval. Brain 
 npx brain-memory
 ```
 
-The interactive installer asks which runtime(s) to configure (Claude Code, Gemini CLI, or both) and whether to install globally or for the current project.
+The interactive installer asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
 
 ### Non-interactive
 
 ```bash
 npx brain-memory --claude --global        # Claude Code, global
 npx brain-memory --gemini --local         # Gemini CLI, local project
-npx brain-memory --all --global           # Both runtimes, global
+npx brain-memory --codex --global         # OpenAI Codex CLI, global
+npx brain-memory --all --global           # All runtimes, global
 ```
 
 ### Manual Install
@@ -60,9 +61,19 @@ cp -r commands/brain/ ~/.claude/commands/brain/
 
 # Gemini CLI
 cp -r commands/brain/ ~/.gemini/commands/brain/
+
+# OpenAI Codex CLI (each command becomes a skill)
+for f in commands/brain/*.md; do
+  name=$(basename "$f" .md)
+  mkdir -p ~/.codex/skills/brain-"$name"
+  cp "$f" ~/.codex/skills/brain-"$name"/SKILL.md
+done
 ```
 
-Then append the contents of `prompts/claude.md` (or `prompts/gemini.md`) to your project's `CLAUDE.md` (or `GEMINI.md`).
+Then append the contents of the corresponding prompt file to your agent's instructions file:
+- `prompts/claude.md` → `CLAUDE.md`
+- `prompts/gemini.md` → `GEMINI.md`
+- `prompts/openai.md` → `AGENTS.md`
 
 ## Commands
 
@@ -269,7 +280,8 @@ brain/
 │       └── status.md
 ├── prompts/
 │   ├── claude.md               # CLAUDE.md content (injected by installer)
-│   └── gemini.md               # GEMINI.md content (injected by installer)
+│   ├── gemini.md               # GEMINI.md content (injected by installer)
+│   └── openai.md               # AGENTS.md content (injected by installer)
 ├── hooks/
 │   ├── session-start.md        # Ambient memory loading guidance
 │   └── session-end.md          # Auto-memorize suggestion guidance
