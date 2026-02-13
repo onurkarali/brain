@@ -39,6 +39,7 @@ Commands are available via `/brain:` prefix:
 - `/brain:explore [category]` — Browse the brain hierarchy
 - `/brain:consolidate [scope]` — Merge related weak memories into stronger ones
 - `/brain:forget [target]` — Decay or archive memories
+- `/brain:sleep [scope]` — Full maintenance cycle: replay, knowledge propagation, reorganize, consolidate, prune, and expertise detection
 - `/brain:status` — Dashboard with brain health overview
 
 ## Auto-Memorize Guidance

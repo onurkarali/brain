@@ -44,7 +44,8 @@ Create the following structure:
     "consolidation_threshold": 0.3,
     "decay_check_interval_days": 7,
     "strength_boost_on_recall": 0.05,
-    "auto_consolidate": true
+    "auto_consolidate": true,
+    "propagation_window_days": 7
   }
 }
 ```
