@@ -6,6 +6,17 @@ You are storing a new memory in the Brain Memory system. Memories are filed into
 
 ## Steps
 
+### 0. Resolve Brain Path
+
+Determine where the brain is located:
+
+1. Check if `~/.brain/index.json` exists (global brain)
+2. Check if `.brain/index.json` exists in the current project root (project brain)
+3. If **both** exist, use the **global** brain by default (the user chose global for cross-project experience). Optionally note that a project-local brain also exists.
+4. If **neither** exists, inform the user and suggest running `/brain:init`
+
+Set `BRAIN_PATH` to the resolved location. All subsequent references to `.brain/` in this command refer to `BRAIN_PATH`.
+
 ### 1. Determine Memory Content
 
 If the user provided specific content in $ARGUMENTS, use that as the basis for the memory.

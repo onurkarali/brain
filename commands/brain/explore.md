@@ -6,6 +6,17 @@ You are exploring the Brain Memory system's hierarchical structure. This gives t
 
 ## Steps
 
+### 0. Resolve Brain Path
+
+Determine where the brain is located:
+
+1. Check if `~/.brain/index.json` exists (global brain)
+2. Check if `.brain/index.json` exists in the current project root (project brain)
+3. If **both** exist, show both brains' structures, clearly labeled as `[GLOBAL]` and `[PROJECT]`
+4. If **neither** exists, inform the user and suggest running `/brain:init`
+
+Set `BRAIN_PATH` to the resolved location(s). All subsequent references to `.brain/` in this command refer to `BRAIN_PATH`.
+
 ### 1. Determine Scope
 
 - If $ARGUMENTS is empty, show the full top-level overview

@@ -148,6 +148,7 @@ async function main() {
 
   let runtimes = [];
   let scope = null;
+  let brainScope = null;
 
   // Check for non-interactive flags
   if (flags.has('claude')) runtimes.push('claude');
@@ -156,6 +157,8 @@ async function main() {
   if (flags.has('all')) runtimes = ['claude', 'gemini', 'openai'];
   if (flags.has('global')) scope = 'global';
   if (flags.has('local')) scope = 'local';
+  if (flags.has('brain-global')) brainScope = 'global';
+  if (flags.has('brain-local')) brainScope = 'local';
 
   const rl = createRL();
 
@@ -200,11 +203,22 @@ async function main() {
       scope = choice.trim() === '2' ? 'local' : 'global';
     }
 
-    // Initialize .brain structure?
+    // Brain memory scope selection
+    if (!brainScope) {
+      console.log('\n  Brain memory scope (where memories are stored):\n');
+      console.log('    1) Global  — ~/.brain/ — Shared across ALL projects and runtimes (recommended)');
+      console.log('    2) Project — .brain/  — Local to this project only');
+      console.log('');
+
+      const choice = await ask(rl, '  Select (1/2): ');
+      brainScope = choice.trim() === '2' ? 'local' : 'global';
+    }
+
+    // Initialize brain structure?
     console.log('');
     const initBrain = await ask(
       rl,
-      '  Initialize .brain/ directory in current project? (Y/n): '
+      `  Initialize ${brainScope === 'global' ? '~/.brain/' : '.brain/'} directory now? (Y/n): `
     );
 
     // Perform installation
@@ -213,13 +227,16 @@ async function main() {
       installForRuntime(runtime, scope);
     }
 
-    // Initialize .brain if requested
+    // Initialize brain if requested
     if (initBrain.trim().toLowerCase() !== 'n') {
-      initializeBrain();
+      initializeBrain(brainScope);
     }
 
+    const brainLocation = brainScope === 'global' ? '~/.brain/' : '.brain/';
     console.log(`
   ✓ Installation complete!
+
+  Brain memory location: ${brainLocation} (${brainScope})
 
   Available commands:
     /brain:init          Initialize brain structure
@@ -237,15 +254,18 @@ async function main() {
   }
 }
 
-function initializeBrain() {
-  const brainDir = path.join(process.cwd(), '.brain');
+function initializeBrain(brainScope) {
+  const brainDir = brainScope === 'global'
+    ? path.join(require('os').homedir(), '.brain')
+    : path.join(process.cwd(), '.brain');
+  const brainLabel = brainScope === 'global' ? '~/.brain/' : '.brain/';
 
   if (fs.existsSync(brainDir)) {
-    console.log('\n    .brain/ already exists, skipping initialization.');
+    console.log(`\n    ${brainLabel} already exists, skipping initialization.`);
     return;
   }
 
-  console.log('\n    Creating .brain/ directory structure...');
+  console.log(`\n    Creating ${brainLabel} directory structure...`);
 
   const now = new Date().toISOString();
 
@@ -258,6 +278,7 @@ function initializeBrain() {
   // Create index.json
   const index = {
     version: 1,
+    scope: brainScope,
     created: now,
     last_updated: now,
     memory_count: 0,
@@ -317,7 +338,7 @@ function initializeBrain() {
     );
   }
 
-  console.log('    .brain/ initialized successfully.');
+  console.log(`    ${brainLabel} initialized successfully.`);
 }
 
 main().catch((err) => {

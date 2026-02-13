@@ -4,9 +4,20 @@ You are displaying a comprehensive overview of the Brain Memory system's current
 
 ## Steps
 
+### 0. Resolve Brain Path
+
+Determine where the brain is located:
+
+1. Check if `~/.brain/index.json` exists (global brain)
+2. Check if `.brain/index.json` exists in the current project root (project brain)
+3. If **both** exist, show status for **both** brains, clearly labeled as `[GLOBAL]` and `[PROJECT]`
+4. If **neither** exists, inform the user and suggest running `/brain:init`
+
+Set `BRAIN_PATH` to the resolved location(s). All subsequent references to `.brain/` in this command refer to `BRAIN_PATH`.
+
 ### 1. Read Brain State
 
-Read `.brain/index.json` to get the full memory inventory. If `.brain/` doesn't exist, inform the user and suggest running `/brain:init`.
+Read `BRAIN_PATH/index.json` to get the full memory inventory. If no brain exists at any location, inform the user and suggest running `/brain:init`.
 
 ### 2. Compute Statistics
 

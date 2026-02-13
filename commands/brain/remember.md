@@ -6,6 +6,17 @@ You are recalling memories from the Brain Memory system. This command searches t
 
 ## Steps
 
+### 0. Resolve Brain Path
+
+Determine where the brain is located:
+
+1. Check if `~/.brain/index.json` exists (global brain)
+2. Check if `.brain/index.json` exists in the current project root (project brain)
+3. If **both** exist, search **both** brains and merge results. Present which brain each memory came from.
+4. If **neither** exists, inform the user and suggest running `/brain:init`
+
+Set `BRAIN_PATH` to the resolved location(s). All subsequent references to `.brain/` in this command refer to `BRAIN_PATH`.
+
 ### 1. Parse the Query
 
 Analyze $ARGUMENTS to determine:
