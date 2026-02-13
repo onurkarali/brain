@@ -64,3 +64,16 @@ Suggest next actions:
 - "Use `/brain:explore <subcategory>` to drill deeper"
 - "Use `/brain:remember <query>` to search for specific memories"
 - "Use `/brain:consolidate <category>` to merge weak memories in a category"
+- "Use `/brain:sleep` to reorganize, consolidate, and detect expertise areas"
+
+### 6. Show Expertise (if available)
+
+If any directories in the explored scope contain `_expertise.md` files, display a brief expertise summary:
+
+```
+## Expertise Areas
+  🟢 Expert — professional/skills/flutter/authentication/ (0.85)
+  🔵 Deep Knowledge — professional/skills/react/ (0.68)
+  🟡 Working Knowledge — personal/education/psychology/ (0.45)
+  ⚪ Awareness — social/communities/open-source/ (0.28)
+```

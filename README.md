@@ -74,6 +74,7 @@ Then append the contents of `prompts/claude.md` (or `prompts/gemini.md`) to your
 | `/brain:explore [category]` | Browse the brain hierarchy with visual tree view |
 | `/brain:consolidate [scope]` | Merge related weak memories into stronger combined ones |
 | `/brain:forget [target]` | Decay, archive, or remove memories |
+| `/brain:sleep [scope]` | Overnight reorganization — restructure, consolidate, prune, and detect expertise |
 | `/brain:status` | Dashboard with brain health metrics and recommendations |
 
 ## How It Works
@@ -81,7 +82,7 @@ Then append the contents of `prompts/claude.md` (or `prompts/gemini.md`) to your
 ### Memory Lifecycle
 
 ```
-Create → Store → Decay → Recall → Reinforce → Consolidate → Archive
+Create → Store → Decay → Recall → Reinforce → Sleep (Reorganize + Consolidate + Prune + Expertise) → Archive
 ```
 
 1. **Create** — When you use `/brain:memorize`, the agent analyzes the session and extracts significant decisions, learnings, insights, or experiences
@@ -90,7 +91,8 @@ Create → Store → Decay → Recall → Reinforce → Consolidate → Archive
 4. **Recall** — `/brain:remember` searches and scores memories: `0.55 * relevance + 0.30 * decayed_strength + 0.15 * recency`
 5. **Reinforce** — Every recall boosts the memory's strength by +0.05 (capped at 1.0)
 6. **Consolidate** — Multiple weak related memories can be merged into a single stronger memory
-7. **Archive** — Fully decayed memories move to `_archived/` (recoverable) or can be permanently deleted
+7. **Sleep** — `/brain:sleep` performs a full maintenance cycle: reorganizes flat clusters into deeper sub-categories, consolidates weak memories, prunes faded ones, and detects expertise areas — just like the brain during sleep
+8. **Archive** — Fully decayed memories move to `_archived/` (recoverable) or can be permanently deleted
 
 ### Memory Types
 
@@ -174,6 +176,25 @@ consolidated_decay    = min(source_decay_rates)         (slowest decay wins)
 
 Original memories are moved to `_archived/` (recoverable).
 
+### Sleep Cycle
+
+`/brain:sleep` is the brain's overnight maintenance — inspired by how human brains reorganize memories during sleep (hippocampal replay → neocortical transfer). It runs five phases:
+
+1. **Replay** — Scans all memories and computes current decayed strengths, categorizing into tiers (Strong / Moderate / Weak / Fading)
+2. **Reorganize** — Detects flat clusters (3+ related memories at the same level) and restructures them into deeper sub-categories automatically
+3. **Consolidate** — Merges weak related memories into stronger combined knowledge
+4. **Prune** — Archives memories that have faded below 0.1 strength
+5. **Expertise Detection** — Identifies dense knowledge areas and generates expertise profiles with level classification:
+
+| Level | Score | Meaning |
+|-------|:---:|---------|
+| Awareness | 0.2 - 0.4 | Surface familiarity |
+| Working Knowledge | 0.4 - 0.6 | Competent with reference |
+| Deep Knowledge | 0.6 - 0.8 | Strong command, can reason about trade-offs |
+| Expert | 0.8 - 1.0 | Mastery — dense, frequently-recalled, long-standing |
+
+Each expertise area gets an `_expertise.md` profile documenting what you know well, knowledge gaps, and contributing memories. Sleep can target a specific subtree (e.g., `/brain:sleep professional/skills`) or process the entire brain.
+
 ## File Structure
 
 ```
@@ -244,6 +265,7 @@ brain/
 │       ├── explore.md
 │       ├── consolidate.md
 │       ├── forget.md
+│       ├── sleep.md
 │       └── status.md
 ├── prompts/
 │   ├── claude.md               # CLAUDE.md content (injected by installer)
