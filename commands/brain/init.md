@@ -84,4 +84,5 @@ Print a summary of what was created, including the full tree structure. Inform t
 - `/brain:explore` — Browse the brain structure
 - `/brain:consolidate` — Merge related memories
 - `/brain:forget` — Decay or remove memories
+- `/brain:sleep` — Overnight reorganization: restructure, consolidate, prune, and detect expertise areas
 - `/brain:status` — View brain overview

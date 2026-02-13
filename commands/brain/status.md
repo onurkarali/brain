@@ -77,3 +77,4 @@ Analyze the brain's health and provide recommendations:
 - **"Imbalanced"** — One category dominates, suggest diversifying
 - **"Stale"** — No new memories in 14+ days, suggest `/brain:memorize`
 - **"Overloaded"** — More than 200 active memories, suggest pruning with `/brain:forget --prune`
+- **"Needs sleep"** — Multiple flat clusters detected (directories with 3+ memories that could be reorganized), OR many memories in moderate/weak tiers, OR no `_expertise.md` profiles exist despite having 10+ memories. Suggest `/brain:sleep` for a full maintenance cycle.
