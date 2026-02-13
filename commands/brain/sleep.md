@@ -6,13 +6,14 @@ You are performing a **sleep cycle** on the Brain Memory system. Just like the h
 
 ## Overview
 
-Sleep performs five phases, mimicking real neuroscience:
+Sleep performs six phases, mimicking real neuroscience:
 
 1. **Replay** — Scan recent activity and compute decay across all memories
 2. **Reorganize** — Detect flat clusters and restructure into deeper sub-categories
-3. **Consolidate** — Merge weak related memories into stronger combined knowledge
-4. **Prune** — Archive memories that have decayed beyond recovery
-5. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
+3. **Reconsolidate** — Integrate recent learnings into existing related memories (up and down the hierarchy)
+4. **Consolidate** — Merge weak related memories into stronger combined knowledge
+5. **Prune** — Archive memories that have decayed beyond recovery
+6. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
 
 ---
 
@@ -127,7 +128,122 @@ Proposed (restructured):
 
 ---
 
-## Phase 3: Consolidate (Memory Integration)
+## Phase 3: Reconsolidate (Memory Updating)
+
+In neuroscience, **reconsolidation** is the process where recalling an existing memory makes it temporarily malleable — allowing the brain to update it with new information before re-storing it. This is how learning compounds: new knowledge doesn't just sit in isolation, it reshapes what you already know.
+
+This phase takes **recent memories** and propagates their knowledge into related existing memories — walking up, down, and across the hierarchy.
+
+### Steps
+
+1. **Identify recent memories**: Find all memories created since the last sleep cycle (check `last_evaluated` in `_expertise.md` files or `last_updated` in `index.json` as a proxy). If this is the first sleep cycle, consider all memories created in the last 14 days as "recent."
+
+2. **For each recent memory**, find related existing memories by searching in four directions:
+
+   **a. Walk UP (parent context):**
+   - Check the parent directory and its parent for memories that represent broader knowledge in the same domain
+   - Example: New memory at `flutter/authentication/pkce-flow.md` → check `flutter/authentication/` and `flutter/` for broader auth or Flutter memories that should now reference PKCE
+
+   **b. Walk DOWN (child specifics):**
+   - Check sub-directories for more specific memories that the new knowledge contextualizes
+   - Example: New memory at `flutter/overview.md` → check `flutter/authentication/`, `flutter/state-management/` for specific memories that could benefit from this broader context
+
+   **c. Check SIBLINGS (same level):**
+   - Check other memories in the same directory that share 2+ tags or have related themes
+   - Example: New `token-refresh.md` sits alongside `oauth-flow.md` — they clearly relate
+
+   **d. Check CROSS-CATEGORY (tag-based):**
+   - Search `index.json` for memories elsewhere in the brain that share 2+ tags with the recent memory
+   - Example: A new `professional/skills/flutter/authentication/session-management.md` might relate to `professional/companies/acme/projects/mobile-app-security.md`
+
+3. **Evaluate each relationship** — For each (recent memory, existing memory) pair, determine the nature of the connection:
+
+   - **Extends**: The new memory adds depth or detail to the existing one
+     → Add to the existing memory's `Connections` section and `related` field
+   - **Refines**: The new memory corrects, updates, or provides a better understanding
+     → Update the existing memory's `Key Details` to reflect the refined understanding
+   - **Contradicts**: The new memory conflicts with the existing one
+     → Flag for user review — add a note in the existing memory's `Connections` section marking the contradiction
+   - **Reinforces**: The new memory independently confirms the existing one
+     → Boost the existing memory's strength by +0.05 (capped at 1.0) and note the reinforcement
+   - **Contextualizes**: The new memory provides broader or narrower context
+     → Add cross-reference in both memories' `related` fields
+
+4. **Present the reconsolidation plan** to the user:
+
+```
+## Phase 3: Reconsolidation Plan
+
+### Recent memory: "PKCE Flow for Mobile OAuth" (flutter/authentication/pkce-flow.md)
+
+  ↑ EXTENDS: "Flutter Auth Basics" (flutter/authentication/auth-basics.md)
+    → Add PKCE as an advanced technique in Connections section
+    → Add cross-reference in related field
+
+  ↔ REINFORCES: "OAuth2 Flow Deep Dive" (flutter/authentication/oauth-flow.md)
+    → Boost strength +0.05 (0.82 → 0.87)
+    → Note PKCE confirmation in Connections
+
+  ⤡ CONTEXTUALIZES: "Mobile App Security Review" (companies/acme/projects/security-review.md)
+    → Add mutual cross-references
+
+### Recent memory: "Child Attachment Theory" (personal/education/psychology/attachment-theory.md)
+
+  ↑ EXTENDS: "Child Development Stages" (personal/education/psychology/child-development.md)
+    → Add attachment theory as related framework in Connections
+
+  ✗ CONTRADICTS: "Strict Discipline Approach" (family/parenting/discipline-methods.md)
+    → Flag: attachment theory evidence conflicts with strict discipline rationale
+    → Recommend user review
+
+No updates proposed: 3 recent memories had no related existing memories
+```
+
+5. **Get user approval**: The user can:
+   - Approve all updates
+   - Select specific updates
+   - Modify or reject individual changes
+   - Skip this phase
+
+6. **Execute approved reconsolidations**:
+   For each approved update:
+   - Read the existing memory file
+   - Apply the changes:
+     - Append to `Connections` section (for extends/contextualizes/contradicts)
+     - Update `Key Details` bullet points (for refines)
+     - Boost `strength` in frontmatter (for reinforces)
+     - Add memory IDs to `related` field (for all relationship types)
+   - Update `last_accessed` to current timestamp (the memory was "reactivated")
+   - Update the corresponding entry in `index.json`
+
+   **Content update rules:**
+   - **Never remove** existing content from a memory — only add or annotate
+   - Keep additions concise (1-2 sentences per connection)
+   - Use a consistent format for added connections:
+     ```
+     - *(Updated during sleep <date>)* — <description of how this relates to new memory>
+     ```
+   - For contradictions, clearly mark them:
+     ```
+     - *(Contradiction flagged <date>)* — <new memory title> suggests <brief description>. Review both memories to resolve.
+     ```
+
+7. Present a reconsolidation summary:
+
+```
+## Phase 3: Reconsolidation Complete
+
+  Updated: <N> existing memories with new connections
+  Reinforced: <N> memories (strength boosted)
+  Contradictions flagged: <N> (require user review)
+  Cross-references added: <N> new links between memories
+
+  Skipped: <N> recent memories had no related existing memories
+```
+
+---
+
+## Phase 4: Consolidate (Memory Integration)
 
 During deep sleep, the brain merges related experiences into generalized knowledge. Weak memories that share themes are combined into stronger, more durable memories.
 
@@ -161,18 +277,18 @@ During deep sleep, the brain merges related experiences into generalized knowled
 
 ---
 
-## Phase 4: Prune (Synaptic Homeostasis)
+## Phase 5: Prune (Synaptic Homeostasis)
 
 During sleep, the brain prunes weak synaptic connections to maintain efficiency. Here, we archive memories that have faded beyond usefulness.
 
 ### Steps
 
-1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 3
+1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 4
 
 2. Present the prune list:
 
 ```
-## Phase 4: Pruning Faded Memories
+## Phase 5: Pruning Faded Memories
 
 The following memories have decayed below 0.1 strength and are no longer contributing meaningfully:
 
@@ -190,7 +306,7 @@ Action: Archive to _archived/ (recoverable if needed)
 
 ---
 
-## Phase 5: Expertise Detection (Knowledge Crystallization)
+## Phase 6: Expertise Detection (Knowledge Crystallization)
 
 This is the most powerful phase. When the brain repeatedly processes information in a domain, it forms **expertise** — fast, intuitive access to deep knowledge. Here, we detect when a sub-tree has become dense enough to represent genuine expertise.
 
@@ -267,7 +383,7 @@ edge cases in token refresh flows.
 6. Present expertise findings:
 
 ```
-## Phase 5: Expertise Map
+## Phase 6: Expertise Map
 
 ### Expert (0.8+)
   None yet — keep learning!
@@ -299,9 +415,11 @@ After all phases complete, present a comprehensive sleep report:
 ║  Phase 1 — Replay:          <N> memories scanned              ║
 ║  Phase 2 — Reorganized:     <N> memories moved into           ║
 ║                              <M> new sub-categories            ║
-║  Phase 3 — Consolidated:    <N> memories merged into <M>      ║
-║  Phase 4 — Pruned:          <N> faded memories archived       ║
-║  Phase 5 — Expertise:       <N> domains profiled              ║
+║  Phase 3 — Reconsolidated:  <N> memories updated,             ║
+║                              <M> new cross-references          ║
+║  Phase 4 — Consolidated:    <N> memories merged into <M>      ║
+║  Phase 5 — Pruned:          <N> faded memories archived       ║
+║  Phase 6 — Expertise:       <N> domains profiled              ║
 ║                                                               ║
 ║  Brain Health:                                                ║
 ║    Before sleep: <count> memories, avg strength <X>           ║
@@ -311,7 +429,7 @@ After all phases complete, present a comprehensive sleep report:
 ╚═══════════════════════════════════════════════════════════════╝
 
 ### Expertise Summary
-<expertise level list from Phase 5>
+<expertise level list from Phase 6>
 
 ### Recommendations
 - <actionable suggestions based on what sleep revealed>

@@ -91,7 +91,7 @@ Create → Store → Decay → Recall → Reinforce → Sleep (Reorganize + Cons
 4. **Recall** — `/brain:remember` searches and scores memories: `0.55 * relevance + 0.30 * decayed_strength + 0.15 * recency`
 5. **Reinforce** — Every recall boosts the memory's strength by +0.05 (capped at 1.0)
 6. **Consolidate** — Multiple weak related memories can be merged into a single stronger memory
-7. **Sleep** — `/brain:sleep` performs a full maintenance cycle: reorganizes flat clusters into deeper sub-categories, consolidates weak memories, prunes faded ones, and detects expertise areas — just like the brain during sleep
+7. **Sleep** — `/brain:sleep` performs a full maintenance cycle: reorganizes flat clusters, reconsolidates new learnings into existing memories, consolidates weak ones, prunes faded ones, and detects expertise areas — just like the brain during sleep
 8. **Archive** — Fully decayed memories move to `_archived/` (recoverable) or can be permanently deleted
 
 ### Memory Types
@@ -178,13 +178,14 @@ Original memories are moved to `_archived/` (recoverable).
 
 ### Sleep Cycle
 
-`/brain:sleep` is the brain's overnight maintenance — inspired by how human brains reorganize memories during sleep (hippocampal replay → neocortical transfer). It runs five phases:
+`/brain:sleep` is the brain's overnight maintenance — inspired by how human brains reorganize memories during sleep (hippocampal replay → neocortical transfer → reconsolidation). It runs six phases:
 
 1. **Replay** — Scans all memories and computes current decayed strengths, categorizing into tiers (Strong / Moderate / Weak / Fading)
 2. **Reorganize** — Detects flat clusters (3+ related memories at the same level) and restructures them into deeper sub-categories automatically
-3. **Consolidate** — Merges weak related memories into stronger combined knowledge
-4. **Prune** — Archives memories that have faded below 0.1 strength
-5. **Expertise Detection** — Identifies dense knowledge areas and generates expertise profiles with level classification:
+3. **Reconsolidate** — Takes recent memories and propagates their knowledge into related existing memories. Walks up (parent context), down (child specifics), across (siblings), and cross-category (tag-based) to find memories that should be updated. Can extend, refine, reinforce, contradict, or contextualize existing knowledge.
+4. **Consolidate** — Merges weak related memories into stronger combined knowledge
+5. **Prune** — Archives memories that have faded below 0.1 strength
+6. **Expertise Detection** — Identifies dense knowledge areas and generates expertise profiles with level classification:
 
 | Level | Score | Meaning |
 |-------|:---:|---------|
