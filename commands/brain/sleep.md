@@ -6,13 +6,14 @@ You are performing a **sleep cycle** on the Brain Memory system. Just like the h
 
 ## Overview
 
-Sleep performs five phases, mimicking real neuroscience:
+Sleep performs six phases, mimicking real neuroscience:
 
 1. **Replay** — Scan recent activity and compute decay across all memories
-2. **Reorganize** — Detect flat clusters and restructure into deeper sub-categories
-3. **Consolidate** — Merge weak related memories into stronger combined knowledge
-4. **Prune** — Archive memories that have decayed beyond recovery
-5. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
+2. **Knowledge Propagation** — Evaluate recent memories against the hierarchy and update related memories
+3. **Reorganize** — Detect flat clusters and restructure into deeper sub-categories
+4. **Consolidate** — Merge weak related memories into stronger combined knowledge
+5. **Prune** — Archive memories that have decayed beyond recovery
+6. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
 
 ---
 
@@ -54,12 +55,205 @@ Scanned <N> memories across <M> categories
   Weak (0.1-0.3):   <count> memories — urgent attention needed
   Fading (<0.1):    <count> memories — pruning candidates
 
+Proceeding to knowledge propagation...
+```
+
+---
+
+## Phase 2: Knowledge Propagation (Reconsolidation)
+
+In neuroscience, **memory reconsolidation** is the process where recalling an existing memory makes it temporarily malleable — allowing the brain to update it with new information before re-stabilizing it. During sleep, recently acquired knowledge is replayed against the existing memory network, triggering updates to related older memories. This is how a single new insight can reshape your understanding of an entire topic.
+
+This phase takes each **recent memory** and walks the brain hierarchy — checking both upper-level (parent) and lower-level (child) categories, plus sibling and tag-related memories — to determine if existing knowledge should be updated in light of what was recently learned.
+
+### Steps
+
+#### 2.1 Identify Recent Memories
+
+From the Phase 1 scan, identify **recent memories** — those meeting any of these criteria:
+- Created within the last `propagation_window_days` (default: 7 days, configurable in `index.json` config)
+- `last_accessed` within the propagation window AND `access_count` increased (recently recalled and reinforced)
+- Memories flagged with `source` matching recent session identifiers
+
+These are the "trigger memories" — the new knowledge that may require updates to existing memories.
+
+If no recent memories are found, skip this phase with a brief note:
+
+```
+## Phase 2: Knowledge Propagation — Skipped
+
+No recent memories found within the propagation window (7 days).
+Nothing to propagate.
+```
+
+#### 2.2 Find Related Memories for Each Trigger
+
+For each recent (trigger) memory, find related memories through **four traversal strategies**:
+
+**A. Hierarchical — Upper levels (ancestors)**
+Walk UP from the trigger memory's directory to the top-level category:
+- Read all memory files in each parent directory
+- These represent broader context that may need updating with the new specific knowledge
+- Example: A new memory at `professional/companies/acme/projects/alpha/scaling-fix.md` should be checked against memories at `professional/companies/acme/projects/alpha/`, `professional/companies/acme/`, and `professional/companies/`
+
+**B. Hierarchical — Lower levels (descendants)**
+Walk DOWN into any child directories from the trigger memory's directory:
+- Read all memory files in subdirectories (up to 2 levels deep to avoid excessive scanning)
+- These represent more specific knowledge that the new broader insight may affect
+- Example: A new memory at `professional/skills/flutter/` should be checked against memories in `professional/skills/flutter/authentication/`, `professional/skills/flutter/state-management/`, etc.
+
+**C. Sibling memories**
+Read all memory files at the SAME directory level as the trigger memory:
+- These are directly related knowledge in the same category
+- Most likely to need updating since they cover the same topic area
+
+**D. Tag-related memories**
+From `index.json`, find memories anywhere in the brain that share **2 or more tags** with the trigger memory:
+- These capture cross-domain connections that the hierarchy alone might miss
+- Example: A memory tagged `[oauth2, security, flutter]` should be checked against another memory tagged `[oauth2, security, api-design]` even if they're in different categories
+
+Also include any memories explicitly listed in the trigger memory's `related` field.
+
+**Deduplication**: A memory found through multiple strategies is only evaluated once, but mark it as having stronger relation (found via multiple paths).
+
+#### 2.3 Evaluate Each Related Memory
+
+For each related memory found, read it fully and evaluate it against the trigger memory. Classify the relationship as one or more of:
+
+**Enrichment** — The new knowledge adds detail, nuance, or a new perspective to the existing memory:
+- The trigger memory provides additional context, examples, or use cases
+- The trigger memory reveals a new angle on an existing topic
+- The existing memory's "Connections" section should be updated
+- *Action*: Propose appending new information to the existing memory's Key Details or Connections section
+
+**Contradiction** — The new knowledge conflicts with or supersedes existing knowledge:
+- The trigger memory documents a different decision than a previous decision memory
+- New learning invalidates an older learning
+- An old approach/pattern has been replaced
+- *Action*: Flag for user review — propose updating the existing memory with the corrected information and noting what changed and why
+
+**Validation** — The new knowledge confirms or strengthens existing knowledge:
+- The trigger memory provides additional evidence for an existing insight
+- A repeated experience reinforces a pattern already captured
+- *Action*: Boost the existing memory's `strength` by +0.05 (capped at 1.0), update `last_accessed`
+
+**Obsolescence** — The new knowledge makes the existing memory outdated or irrelevant:
+- A technology decision was reversed
+- A project was cancelled, making project-specific memories less relevant
+- A goal was achieved or abandoned
+- *Action*: Propose marking the existing memory for accelerated decay (`decay_rate` → 0.90) or archival
+
+**Cross-reference** — The memories should reference each other but don't yet:
+- The memories are clearly related but neither has the other in its `related` field
+- *Action*: Add bidirectional cross-references (update `related` arrays in both memories)
+
+#### 2.4 Present Propagation Plan
+
+Group all proposed updates by action type and present to the user:
+
+```
+## Phase 2: Knowledge Propagation
+
+Analyzed <N> recent memories against <M> related memories.
+
+### Enrichments (<count>)
+
+📝 **scaling-fix.md** (recent) → enriches **acme-architecture-overview.md**
+   Path: professional/companies/acme/acme-architecture-overview.md
+   Reason: New scaling fix adds detail about horizontal scaling approach
+   Proposed update: Add scaling strategy details to Key Details section
+
+📝 **flutter-riverpod-v3.md** (recent) → enriches **flutter-state-riverpod.md**
+   Path: professional/skills/flutter/state-management/flutter-state-riverpod.md
+   Reason: New Riverpod v3 patterns add to existing Riverpod knowledge
+   Proposed update: Append v3 migration notes and new provider patterns
+
+### Contradictions (<count>)
+
+⚠️  **microservices-decision.md** (recent) → contradicts **monolith-preference.md**
+   Path: professional/companies/acme/decisions/monolith-preference.md
+   Reason: New decision to adopt microservices reverses earlier monolith preference
+   Proposed update: Add note that this decision was superseded, with reference to new memory
+
+### Validations (<count>)
+
+✓  **auth-incident-postmortem.md** (recent) → validates **token-refresh-patterns.md**
+   Path: professional/skills/flutter/authentication/token-refresh-patterns.md
+   Reason: Incident confirmed the importance of the token refresh approach documented here
+   Action: Boost strength 0.78 → 0.83
+
+### Obsolescence (<count>)
+
+⚡ **project-alpha-complete.md** (recent) → obsoletes **alpha-sprint-plan.md**
+   Path: professional/companies/acme/projects/alpha/alpha-sprint-plan.md
+   Reason: Project completed, sprint planning memories no longer relevant
+   Action: Accelerate decay (0.995 → 0.90)
+
+### Cross-references (<count>)
+
+🔗 **scaling-fix.md** ↔ **k8s-deployment-lessons.md**
+   Neither memory references the other, but they share tags [kubernetes, scaling, infrastructure]
+   Action: Add bidirectional related links
+```
+
+#### 2.5 Get User Approval
+
+The user can:
+- **Approve all** proposed updates
+- **Select specific** updates to apply (by number or group)
+- **Modify** proposed changes before applying
+- **Skip** this phase entirely
+
+#### 2.6 Execute Approved Updates
+
+For each approved update:
+
+**For enrichments:**
+1. Read the target memory file
+2. Append the new information to the appropriate section (Key Details or Connections)
+3. Add a propagation note: `<!-- Updated via knowledge propagation from <trigger_id> on <date> -->`
+4. Update the memory's `last_accessed` timestamp in both the file and `index.json`
+5. Add bidirectional cross-references if not already present
+
+**For contradictions:**
+1. Read the target memory file
+2. Add an "Update" or "Superseded" section noting the contradiction and referencing the trigger memory
+3. Optionally reduce the old memory's `strength` by -0.10 (floored at 0.1)
+4. Update `index.json` accordingly
+5. Add bidirectional cross-references
+
+**For validations:**
+1. Update the target memory's `strength` by +0.05 (capped at 1.0) in both the file and `index.json`
+2. Update `last_accessed` to current timestamp
+3. Optionally add the trigger memory to the `related` field
+
+**For obsolescence:**
+1. Set the target memory's `decay_rate` to 0.90 (fast fade) in both the file and `index.json`
+2. Add a note in the memory file: `<!-- Marked for accelerated decay due to <reason> via <trigger_id> -->`
+3. These memories will naturally get picked up by Phase 5 (Prune) in subsequent sleep cycles
+
+**For cross-references:**
+1. Update both memories' `related` arrays to include each other's ID
+2. Update both files and their `index.json` entries
+
+Present a brief summary before proceeding:
+
+```
+## Phase 2: Knowledge Propagation Complete
+
+Processed <N> recent memories
+  Enrichments applied:     <count>
+  Contradictions flagged:  <count>
+  Validations (boosted):   <count>
+  Obsolescence marked:     <count>
+  Cross-references added:  <count>
+
 Proceeding to reorganization...
 ```
 
 ---
 
-## Phase 2: Reorganize (Neocortical Restructuring)
+## Phase 3: Reorganize (Neocortical Restructuring)
 
 During sleep, the brain transfers memories from the hippocampus to the neocortex, organizing them into structured long-term storage. This phase detects **flat clusters** — directories with many memories that should be organized into deeper sub-categories.
 
@@ -85,7 +279,7 @@ During sleep, the brain transfers memories from the hippocampus to the neocortex
 4. **Present the reorganization plan** to the user:
 
 ```
-## Phase 2: Reorganization Plan
+## Phase 3: Reorganization Plan
 
 ### professional/skills/ (7 memories → 3 sub-categories)
 
@@ -127,13 +321,13 @@ Proposed (restructured):
 
 ---
 
-## Phase 3: Consolidate (Memory Integration)
+## Phase 4: Consolidate (Memory Integration)
 
 During deep sleep, the brain merges related experiences into generalized knowledge. Weak memories that share themes are combined into stronger, more durable memories.
 
 ### Steps
 
-1. From the Phase 1 scan, take all **Moderate** and **Weak** tier memories (decayed_strength < 0.6)
+1. From the Phase 1 scan, take all **Moderate** and **Weak** tier memories (decayed_strength < 0.6) that were NOT already updated in Phase 2 (Knowledge Propagation)
 
 2. Group consolidation candidates by:
    - **Path proximity** — memories in the same or nearby directories (highest priority after reorganization)
@@ -152,7 +346,7 @@ During deep sleep, the brain merges related experiences into generalized knowled
    - Use the slowest decay rate from the sources
    - Merge all tags (union)
 
-4. Present consolidation plan to user for approval (same format as `/brain:consolidate`)
+4. Exclude memories that had their strength boosted or content updated in Phase 2 — they've already been processed. Present consolidation plan to user for approval (same format as `/brain:consolidate`)
 
 5. For approved consolidations:
    - Write consolidated memory files using the standard format with `type: consolidated`
@@ -161,18 +355,18 @@ During deep sleep, the brain merges related experiences into generalized knowled
 
 ---
 
-## Phase 4: Prune (Synaptic Homeostasis)
+## Phase 5: Prune (Synaptic Homeostasis)
 
 During sleep, the brain prunes weak synaptic connections to maintain efficiency. Here, we archive memories that have faded beyond usefulness.
 
 ### Steps
 
-1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 3
+1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 4
 
 2. Present the prune list:
 
 ```
-## Phase 4: Pruning Faded Memories
+## Phase 5: Pruning Faded Memories
 
 The following memories have decayed below 0.1 strength and are no longer contributing meaningfully:
 
@@ -190,7 +384,7 @@ Action: Archive to _archived/ (recoverable if needed)
 
 ---
 
-## Phase 5: Expertise Detection (Knowledge Crystallization)
+## Phase 6: Expertise Detection (Knowledge Crystallization)
 
 This is the most powerful phase. When the brain repeatedly processes information in a domain, it forms **expertise** — fast, intuitive access to deep knowledge. Here, we detect when a sub-tree has become dense enough to represent genuine expertise.
 
@@ -267,7 +461,7 @@ edge cases in token refresh flows.
 6. Present expertise findings:
 
 ```
-## Phase 5: Expertise Map
+## Phase 6: Expertise Map
 
 ### Expert (0.8+)
   None yet — keep learning!
@@ -297,11 +491,13 @@ After all phases complete, present a comprehensive sleep report:
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
 ║  Phase 1 — Replay:          <N> memories scanned              ║
-║  Phase 2 — Reorganized:     <N> memories moved into           ║
+║  Phase 2 — Propagated:      <N> updates from <M> recent       ║
+║                              memories across the hierarchy     ║
+║  Phase 3 — Reorganized:     <N> memories moved into           ║
 ║                              <M> new sub-categories            ║
-║  Phase 3 — Consolidated:    <N> memories merged into <M>      ║
-║  Phase 4 — Pruned:          <N> faded memories archived       ║
-║  Phase 5 — Expertise:       <N> domains profiled              ║
+║  Phase 4 — Consolidated:    <N> memories merged into <M>      ║
+║  Phase 5 — Pruned:          <N> faded memories archived       ║
+║  Phase 6 — Expertise:       <N> domains profiled              ║
 ║                                                               ║
 ║  Brain Health:                                                ║
 ║    Before sleep: <count> memories, avg strength <X>           ║
