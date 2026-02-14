@@ -93,7 +93,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 ### Memory Lifecycle
 
 ```
-Create → Store → Decay → Recall → Reinforce → Sleep (Reorganize + Consolidate + Prune + Expertise) → Archive
+Create → Store → Decay → Recall → Reinforce → Sleep (Propagate + Reorganize + Consolidate + Prune + Expertise) → Archive
 ```
 
 1. **Create** — When you use `/brain:memorize`, the agent analyzes the session and extracts significant decisions, learnings, insights, or experiences
@@ -102,7 +102,7 @@ Create → Store → Decay → Recall → Reinforce → Sleep (Reorganize + Cons
 4. **Recall** — `/brain:remember` searches and scores memories: `0.55 * relevance + 0.30 * decayed_strength + 0.15 * recency`
 5. **Reinforce** — Every recall boosts the memory's strength by +0.05 (capped at 1.0)
 6. **Consolidate** — Multiple weak related memories can be merged into a single stronger memory
-7. **Sleep** — `/brain:sleep` performs a full maintenance cycle: reorganizes flat clusters into deeper sub-categories, consolidates weak memories, prunes faded ones, and detects expertise areas — just like the brain during sleep
+7. **Sleep** — `/brain:sleep` performs a full maintenance cycle: propagates recent knowledge across related memories, reorganizes flat clusters into deeper sub-categories, consolidates weak memories, prunes faded ones, and detects expertise areas — just like the brain during sleep
 8. **Archive** — Fully decayed memories move to `_archived/` (recoverable) or can be permanently deleted
 
 ### Memory Types
@@ -189,13 +189,14 @@ Original memories are moved to `_archived/` (recoverable).
 
 ### Sleep Cycle
 
-`/brain:sleep` is the brain's overnight maintenance — inspired by how human brains reorganize memories during sleep (hippocampal replay → neocortical transfer). It runs five phases:
+`/brain:sleep` is the brain's overnight maintenance — inspired by how human brains reorganize memories during sleep (hippocampal replay → neocortical transfer). It runs six phases:
 
 1. **Replay** — Scans all memories and computes current decayed strengths, categorizing into tiers (Strong / Moderate / Weak / Fading)
-2. **Reorganize** — Detects flat clusters (3+ related memories at the same level) and restructures them into deeper sub-categories automatically
-3. **Consolidate** — Merges weak related memories into stronger combined knowledge
-4. **Prune** — Archives memories that have faded below 0.1 strength
-5. **Expertise Detection** — Identifies dense knowledge areas and generates expertise profiles with level classification:
+2. **Knowledge Propagation** — Evaluates recent memories against the hierarchy (ancestors, descendants, siblings, tag-related) and updates existing memories through enrichment, contradiction detection, validation, obsolescence marking, and cross-referencing
+3. **Reorganize** — Detects flat clusters (3+ related memories at the same level) and restructures them into deeper sub-categories automatically
+4. **Consolidate** — Merges weak related memories into stronger combined knowledge
+5. **Prune** — Archives memories that have faded below 0.1 strength
+6. **Expertise Detection** — Identifies dense knowledge areas and generates expertise profiles with level classification:
 
 | Level | Score | Meaning |
 |-------|:---:|---------|
@@ -205,6 +206,8 @@ Original memories are moved to `_archived/` (recoverable).
 | Expert | 0.8 - 1.0 | Mastery — dense, frequently-recalled, long-standing |
 
 Each expertise area gets an `_expertise.md` profile documenting what you know well, knowledge gaps, and contributing memories. Sleep can target a specific subtree (e.g., `/brain:sleep professional/skills`) or process the entire brain.
+
+Knowledge Propagation is inspired by **memory reconsolidation** — the neuroscience process where recalling a memory makes it temporarily malleable, allowing the brain to update it with new information. During the sleep cycle, recent memories are replayed against the existing memory network, triggering updates to related older memories.
 
 ## File Structure
 
@@ -249,7 +252,8 @@ Brain configuration lives in `.brain/index.json` under the `config` key:
     "consolidation_threshold": 0.3,
     "decay_check_interval_days": 7,
     "strength_boost_on_recall": 0.05,
-    "auto_consolidate": true
+    "auto_consolidate": true,
+    "propagation_window_days": 7
   }
 }
 ```
@@ -261,6 +265,7 @@ Brain configuration lives in `.brain/index.json` under the `config` key:
 | `decay_check_interval_days` | 7 | How often to suggest decay maintenance |
 | `strength_boost_on_recall` | 0.05 | Strength increase per recall event |
 | `auto_consolidate` | true | Suggest consolidation when candidates are found |
+| `propagation_window_days` | 7 | How far back to look for recent memories during knowledge propagation |
 
 ## Project Structure
 
