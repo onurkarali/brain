@@ -8,6 +8,11 @@ You are displaying a comprehensive overview of the Brain Memory system's current
 
 Read `.brain/index.json` to get the full memory inventory. If `.brain/` doesn't exist, inform the user and suggest running `/brain:init`.
 
+Also read (if they exist):
+- `.brain/associations.json` — for association network stats
+- `.brain/review-queue.json` — for review schedule info
+- `.brain/_archived/index.json` — for archive stats
+
 ### 2. Compute Statistics
 
 For each memory in the index, compute:
@@ -22,7 +27,10 @@ Calculate aggregate stats:
 - Memories per top-level category
 - Average effective (decayed) strength
 - Memories by type distribution
+- Memories by cognitive type (episodic / semantic / procedural)
 - Total tags (unique count)
+- Confidence distribution
+- Salience distribution
 
 ### 3. Display Dashboard
 
@@ -31,9 +39,12 @@ Calculate aggregate stats:
 ║          🧠 BRAIN STATUS                ║
 ╠══════════════════════════════════════════╣
 ║ Total Memories:     <count>             ║
+║ Archived:           <count>             ║
 ║ Last Updated:       <date>              ║
 ║ Average Strength:   <avg> / 1.00        ║
+║ Average Confidence: <avg> / 1.00        ║
 ║ Brain Age:          <days since init>   ║
+║ Brain Version:      <version>           ║
 ╚══════════════════════════════════════════╝
 
 ## Categories
@@ -48,6 +59,23 @@ Calculate aggregate stats:
   observation:  <N>  |  goal:        <N>
   preference:   <N>  |  relationship:<N>
 
+## Cognitive Types
+  episodic:     <N>  (event-specific, faster decay)
+  semantic:     <N>  (abstracted knowledge, stable)
+  procedural:   <N>  (skills/workflows, very stable)
+
+## Confidence Distribution
+  High (0.8-1.0):    <count> memories — verified/reliable
+  Medium (0.5-0.7):  <count> memories — plausible
+  Low (< 0.5):       <count> memories — uncertain ⚠️
+
+## Associative Network
+  Total links:       <count> edges
+  Avg link weight:   <avg>
+  Strongest links:
+    1. <mem_a title> ↔ <mem_b title> (weight: <w>)
+    2. <mem_a title> ↔ <mem_b title> (weight: <w>)
+
 ## Strongest Memories (Top 5)
   1. ⚡0.92 — <title> (<path>)
   2. ⚡0.88 — <title> (<path>)
@@ -58,9 +86,19 @@ Calculate aggregate stats:
   2. 🔄 <count>x — <title> (<path>)
   ...
 
+## High-Salience Memories (protected from auto-pruning)
+  🛡️ <title> (salience: <s>, strength: <str>)
+  🛡️ <title> (salience: <s>, strength: <str>)
+
 ## Fading Memories (decayed strength < 0.3)
   ⚠ <count> memories below consolidation threshold
   Run /brain:consolidate to preserve them
+
+## Review Queue
+  📋 Due now: <count> memories
+  📋 Due this week: <count> memories
+  📋 Total in queue: <count> memories
+  Run /brain:review to start a review session
 
 ## Recent Memories (Last 7 days)
   + <title> (<path>) — <date>
@@ -77,5 +115,8 @@ Analyze the brain's health and provide recommendations:
 - **"Imbalanced"** — One category dominates, suggest diversifying
 - **"Stale"** — No new memories in 14+ days, suggest `/brain:memorize`
 - **"Overloaded"** — More than 200 active memories, suggest pruning with `/brain:forget --prune`
-- **"Needs propagation"** — Recent memories (created within the last `propagation_window_days`) exist alongside older related memories in the same category branches that haven't been updated. New knowledge may need to ripple through the hierarchy. Suggest `/brain:sleep` to propagate recent insights to related memories.
-- **"Needs sleep"** — Multiple flat clusters detected (directories with 3+ memories that could be reorganized), OR many memories in moderate/weak tiers, OR no `_expertise.md` profiles exist despite having 10+ memories. Suggest `/brain:sleep` for a full maintenance cycle.
+- **"Needs propagation"** — Recent memories exist alongside older related memories that haven't been updated. Suggest `/brain:sleep`
+- **"Needs sleep"** — Multiple flat clusters detected, OR many memories in moderate/weak tiers, OR no `_expertise.md` profiles exist despite having 10+ memories. Suggest `/brain:sleep`
+- **"Low confidence"** — More than 30% of memories have confidence < 0.5. Suggest reviewing and validating uncertain memories.
+- **"Review overdue"** — More than 10 memories are past their review date. Suggest `/brain:review`
+- **"Needs migration"** — Brain is v1 and needs upgrade. Suggest `/brain:sleep` to trigger migration.

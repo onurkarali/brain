@@ -31,6 +31,22 @@ For each memory to store, determine:
 - Is this likely to be needed again?
 - Does it represent a turning point or just routine?
 
+**Cognitive type** (one of):
+- `episodic` — Tied to a specific event/time. Add +0.10 to strength (vivid at first, fades faster). Multiply decay rate by 0.995. E.g., "The deployment failed Tuesday because X"
+- `semantic` — Abstracted knowledge, context-free. Use default strength/decay. E.g., "React hooks must follow rules of hooks"
+- `procedural` — How-to workflows, skills. Subtract -0.10 from strength but multiply decay rate by 1.003 (extremely slow decay once established). E.g., "Steps to debug memory leaks"
+
+**Salience** (0.0-1.0) — How emotionally or motivationally significant this memory is:
+- 0.0-0.3: Low — routine information
+- 0.4-0.6: Moderate — professionally relevant
+- 0.7-1.0: High — critical decisions, hard-won lessons, emotionally significant events. High-salience memories are NEVER auto-pruned.
+
+**Confidence** (0.0-1.0) — Epistemic certainty about the memory's accuracy:
+- 0.9-1.0: Verified/tested firsthand
+- 0.7-0.8: Reliable source, consistent with experience
+- 0.5-0.6: Plausible but unverified
+- 0.1-0.4: Uncertain, speculative, or hearsay
+
 ### 3. Determine File Path (Categorization)
 
 Choose the most appropriate path in the `.brain/` hierarchy. This is the most critical step.
@@ -65,14 +81,22 @@ Create the memory file at the determined path with this format:
 ---
 id: <memory_id>
 type: <memory_type>
+cognitive_type: <episodic|semantic|procedural>
 created: <ISO timestamp>
 last_accessed: <ISO timestamp>
 access_count: 0
+recall_history: []
 strength: <calculated strength 0.0-1.0>
 decay_rate: <decay rate per day>
+salience: <0.0-1.0>
+confidence: <0.0-1.0>
 tags: [<relevant tags>]
 related: [<related memory IDs if any>]
 source: <brief session identifier or context>
+encoding_context:
+  project: <current project name>
+  topics: [<2-5 key topics from session>]
+  task_type: <debugging|implementing|designing|reviewing|discussing|learning>
 ---
 
 # <Short Descriptive Title>
@@ -102,29 +126,51 @@ Read `.brain/index.json` and add an entry:
     "path": "<relative path from .brain/>",
     "title": "<short title>",
     "type": "<memory_type>",
+    "cognitive_type": "<episodic|semantic|procedural>",
     "strength": <strength>,
     "decay_rate": <decay_rate>,
+    "salience": <salience>,
+    "confidence": <confidence>,
     "created": "<ISO timestamp>",
     "last_accessed": "<ISO timestamp>",
     "access_count": 0,
-    "tags": ["<tags>"]
+    "tags": ["<tags>"],
+    "encoding_context": {
+      "project": "<project>",
+      "topics": ["<topics>"],
+      "task_type": "<task_type>"
+    }
   }
 }
 ```
 
 Increment `memory_count`. Update `last_updated`.
 
-### 7. Update _meta.json
+### 7. Update Associations
+
+Read `.brain/associations.json` and create edges for this memory:
+
+**A. Explicit `related` links:** For each ID in the `related` field, create an edge with weight 0.20 and origin `manual`.
+
+**B. Auto-discovered links:** Scan `index.json` for other memories sharing **2 or more tags** with this memory. For each match, create an edge with weight 0.10 and origin `tag_overlap`.
+
+Use the `reinforceEdge()` function — if an edge already exists (e.g., the related memory already links back), it will be strengthened via Hebbian reinforcement instead of creating a duplicate.
+
+Write the updated `associations.json`.
+
+### 8. Update _meta.json
 
 Update the `_meta.json` in each directory along the path:
 - Increment `memory_count`
 - Add new subcategories to the `subcategories` array if any were created
 
-### 8. Confirm
+### 9. Confirm
 
 Print what was stored:
 - Memory title and ID
 - Full path in the brain
-- Assigned type and strength
+- Assigned type, cognitive type, and strength
+- Salience and confidence levels
 - Tags
+- Association edges created (count and targets)
 - Any new directories that were created

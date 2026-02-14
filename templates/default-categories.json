@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "description": "Default brain category structure. Categories and subcategories are created on-demand as memories are stored.",
   "top_categories": [
     {
@@ -52,5 +52,31 @@
     "goal": 0.993,
     "preference": 0.998,
     "relationship": 0.997
+  },
+  "cognitive_decay_profiles": {
+    "episodic": {
+      "strength_modifier": 0.10,
+      "decay_modifier": 0.995,
+      "description": "Tied to a specific event/time. Higher initial strength but faster decay."
+    },
+    "semantic": {
+      "strength_modifier": 0.0,
+      "decay_modifier": 1.0,
+      "description": "Abstracted knowledge, context-free. Uses default decay rate."
+    },
+    "procedural": {
+      "strength_modifier": -0.10,
+      "decay_modifier": 1.003,
+      "description": "How-to workflows and skills. Lower initial strength but extremely slow decay once established."
+    }
+  },
+  "association_config": {
+    "co_retrieval_boost": 0.10,
+    "link_decay_rate": 0.998,
+    "link_prune_threshold": 0.05,
+    "spreading_activation_depth": 2,
+    "spreading_activation_decay": 0.5,
+    "auto_link_initial_weight": 0.10,
+    "manual_link_initial_weight": 0.20
   }
 }

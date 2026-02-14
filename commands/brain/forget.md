@@ -32,6 +32,8 @@ For Mode A: Match query against titles, tags, and paths.
 For Mode B: Filter by decayed strength < threshold.
 For Mode C: Filter by path prefix.
 
+**Salience protection**: Flag any memories with `salience >= 0.7` — these require explicit `/brain:forget` with direct confirmation (never included in bulk prune operations).
+
 ### 3. Present Candidates
 
 Show the user what would be affected:
@@ -39,13 +41,16 @@ Show the user what would be affected:
 ```
 ## Memories to Forget
 
-| # | Title | Path | Strength | Decayed | Age |
-|---|-------|------|----------|---------|-----|
-| 1 | K8s Config Issue | professional/companies/acme/k8s-config.md | 0.40 | 0.12 | 94d |
-| 2 | Old Deploy Notes | professional/companies/acme/deploy-v1.md | 0.35 | 0.08 | 120d |
+| # | Title | Path | Strength | Decayed | Salience | Age |
+|---|-------|------|----------|---------|----------|-----|
+| 1 | K8s Config Issue | professional/companies/acme/k8s-config.md | 0.40 | 0.12 | 0.3 | 94d |
+| 2 | Old Deploy Notes | professional/companies/acme/deploy-v1.md | 0.35 | 0.08 | 0.2 | 120d |
+
+⚡ Salience-protected (requires explicit confirmation):
+| 3 | Critical Auth Fix | professional/security/auth-fix.md | 0.30 | 0.05 | 0.9 | 200d |
 
 **Action options:**
-- **Archive**: Move to `_archived/` (recoverable)
+- **Archive**: Move to `_archived/` (recoverable, searchable via /brain:remember)
 - **Accelerate decay**: Set decay_rate to 0.90 (fast fade)
 - **Delete permanently**: Remove files entirely (not recoverable)
 ```
@@ -60,18 +65,40 @@ The user must explicitly choose an action. Default to **archive** (safest).
 
 **Archive:**
 - Move memory files to `.brain/_archived/<original-path>/`
+- Add entry to `.brain/_archived/index.json` with all original metadata:
+  ```json
+  {
+    "<memory_id>": {
+      "path": "<original path>",
+      "archived_path": "<path in _archived/>",
+      "title": "<title>",
+      "type": "<type>",
+      "cognitive_type": "<cognitive_type>",
+      "strength": <strength at archival>,
+      "salience": <salience>,
+      "confidence": <confidence>,
+      "tags": ["<tags>"],
+      "archived_date": "<ISO timestamp>",
+      "archived_reason": "<user-specified or auto>"
+    }
+  }
+  ```
 - Remove entries from `index.json` `memories`
+- Remove from `review-queue.json` if present
+- Remove association edges involving this memory from `associations.json`
 - Decrement `memory_count` in index and relevant `_meta.json` files
 - Update `last_updated`
 
 **Accelerate decay:**
 - Set `decay_rate` to 0.90 in the memory file's frontmatter
 - Update `index.json` entry
-- Memory will naturally fade in subsequent sessions
+- Memory will naturally fade in subsequent sleep cycles
 
 **Delete permanently:**
 - Remove memory files
 - Remove entries from `index.json`
+- Remove from `review-queue.json` if present
+- Remove association edges from `associations.json`
 - Update `_meta.json` files
 - Clean up empty directories
 
@@ -85,3 +112,4 @@ Print summary:
 - Number of memories affected
 - Action taken (archived/accelerated/deleted)
 - Current brain stats (total memories, average strength)
+- Archive searchability note: "Archived memories are searchable via /brain:remember if needed in the future"

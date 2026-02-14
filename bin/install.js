@@ -225,9 +225,11 @@ async function main() {
     /brain:init          Initialize brain structure
     /brain:memorize      Store a new memory
     /brain:remember      Recall relevant memories
+    /brain:review        Spaced repetition review session
     /brain:explore       Browse the brain hierarchy
     /brain:consolidate   Merge related memories
     /brain:forget        Decay or remove memories
+    /brain:sleep         Full maintenance cycle
     /brain:status        Brain overview dashboard
 
   Get started by running /brain:init in your agent session.
@@ -257,7 +259,7 @@ function initializeBrain() {
 
   // Create index.json
   const index = {
-    version: 1,
+    version: 2,
     created: now,
     last_updated: now,
     memory_count: 0,
@@ -268,11 +270,43 @@ function initializeBrain() {
       decay_check_interval_days: 7,
       strength_boost_on_recall: 0.05,
       auto_consolidate: true,
+      propagation_window_days: 7,
+      association_config: {
+        co_retrieval_boost: 0.10,
+        link_decay_rate: 0.998,
+        link_prune_threshold: 0.05,
+        spreading_activation_depth: 2,
+        spreading_activation_decay: 0.5,
+      },
     },
   };
   fs.writeFileSync(
     path.join(brainDir, 'index.json'),
     JSON.stringify(index, null, 2) + '\n'
+  );
+
+  // Create associations.json
+  fs.writeFileSync(
+    path.join(brainDir, 'associations.json'),
+    JSON.stringify({ version: 1, edges: {} }, null, 2) + '\n'
+  );
+
+  // Create contexts.json
+  fs.writeFileSync(
+    path.join(brainDir, 'contexts.json'),
+    JSON.stringify({ version: 1, sessions: [] }, null, 2) + '\n'
+  );
+
+  // Create review-queue.json
+  fs.writeFileSync(
+    path.join(brainDir, 'review-queue.json'),
+    JSON.stringify({ version: 1, items: [] }, null, 2) + '\n'
+  );
+
+  // Create _archived/index.json
+  fs.writeFileSync(
+    path.join(brainDir, '_archived', 'index.json'),
+    JSON.stringify({ version: 1, archived_count: 0, memories: {} }, null, 2) + '\n'
   );
 
   // Load category descriptions from template

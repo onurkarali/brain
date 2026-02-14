@@ -74,6 +74,9 @@ For each approved group:
 4. **Set new decay rate**: Use the slowest decay rate from the sources
 5. **Merge tags**: Union of all source memory tags
 6. **Set related**: Include all source memory IDs in the `related` field
+7. **Salience anchoring**: The highest-salience memory in the group is the "anchor" — its framing and key details take priority in the synthesis. Inherit max salience.
+8. **Confidence**: Inherit the maximum confidence from the group
+9. **Cognitive type**: Set to `semantic` (consolidation abstracts knowledge)
 
 ### 6. Write Consolidated Memory
 
@@ -85,15 +88,23 @@ Use the standard memory format with an additional section:
 ---
 id: mem_<date>_<hex>
 type: consolidated
+cognitive_type: semantic
 created: <now>
 last_accessed: <now>
 access_count: 0
+recall_history: []
 strength: <calculated>
 decay_rate: <calculated>
+salience: <max from sources>
+confidence: <max from sources>
 tags: [<merged tags>]
 related: [<all source IDs>]
 consolidated_from: [<source IDs>]
 source: consolidation
+encoding_context:
+  project: <project if shared, otherwise omit>
+  topics: [<merged key topics>]
+  task_type: <most common from sources>
 ---
 
 # <Descriptive Title>
@@ -115,13 +126,24 @@ source: consolidation
 
 ### 7. Archive Source Memories
 
-Move the original source memory files to a `.brain/_archived/` directory (create if needed), preserving their paths as subdirectories. This keeps them recoverable but out of active search.
+Move the original source memory files to a `.brain/_archived/` directory (create if needed), preserving their paths as subdirectories. This keeps them recoverable and searchable via `/brain:remember`.
 
 Update `index.json`:
 - Remove archived memory entries from `memories`
 - Add the new consolidated memory
 - Update `memory_count`
 - Update `last_updated`
+
+Update `_archived/index.json`:
+- Add entries for each archived memory with original metadata and `archived_reason: "consolidation"`
+
+Update `associations.json`:
+- Transfer association edges from source memories to the new consolidated memory
+- Remove edges pointing to archived source memories
+
+Update `review-queue.json`:
+- Remove entries for archived source memories
+- Add entry for the new consolidated memory if applicable
 
 ### 8. Confirm
 

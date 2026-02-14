@@ -1,6 +1,6 @@
 # Brain Memory — Session Start Hook
 
-This hook is triggered at the start of a coding session. Its purpose is to load relevant context from the brain memory system.
+This hook is triggered at the start of a coding session. Its purpose is to load relevant context from the brain memory system and capture session context for context-dependent recall.
 
 ## Behavior
 
@@ -11,14 +11,38 @@ At session start, if `.brain/index.json` exists:
 3. **Silently load context** — internalize these memories so you can reference them naturally during the session
 4. **Do NOT dump memories** — do not print memory contents at session start unless the user asks
 
-**The goal is ambient awareness** — you should know about important past decisions, learnings, and preferences without explicitly reciting them. If a situation arises where a past memory is relevant, naturally reference it.
+### Context Capture
 
-## Quick Stats (Optional)
+Capture the current session context for context-dependent recall:
+- **Project name**: from the current working directory or project config
+- **Topics**: inferred from recent files, open issues, or conversation
+- **Task type**: will be determined as the session progresses
 
-If the brain has memories, you may briefly mention:
+This context is used by `/brain:remember` to boost memories that were encoded in a similar context.
+
+### Review Queue Check
+
+Read `.brain/review-queue.json` if it exists. If there are memories due for review:
+
+```
+🧠 Brain active — <N> memories loaded (<M> in current project context)
+📋 <X> memories due for review — run /brain:review
+```
+
+Otherwise:
 
 ```
 🧠 Brain active — <N> memories loaded (<M> in current project context)
 ```
 
-Keep it to one line. The user can run `/brain:status` for details.
+### Low-Confidence Alert
+
+If any frequently-used memories (access_count >= 3) have confidence < 0.5, briefly note:
+
+```
+⚠️ <N> frequently-used memories have low confidence — consider verifying
+```
+
+**The goal is ambient awareness** — you should know about important past decisions, learnings, and preferences without explicitly reciting them. If a situation arises where a past memory is relevant, naturally reference it.
+
+Keep the status output to 1-3 lines. The user can run `/brain:status` for details.

@@ -6,14 +6,33 @@ You are performing a **sleep cycle** on the Brain Memory system. Just like the h
 
 ## Overview
 
-Sleep performs six phases, mimicking real neuroscience:
+Sleep performs nine phases, mimicking real neuroscience:
 
 1. **Replay** — Scan recent activity and compute decay across all memories
-2. **Knowledge Propagation** — Evaluate recent memories against the hierarchy and update related memories
-3. **Reorganize** — Detect flat clusters and restructure into deeper sub-categories
-4. **Consolidate** — Merge weak related memories into stronger combined knowledge
-5. **Prune** — Archive memories that have decayed beyond recovery
-6. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
+2. **Synaptic Homeostasis** — Proportionally scale down all strengths to prevent inflation (Tononi & Cirelli SHY)
+3. **Knowledge Propagation** — Evaluate recent memories against the hierarchy and update related memories
+4. **Semantic Crystallization** — Extract generalizable knowledge from frequently-recalled episodic memories
+5. **Reorganize** — Detect flat clusters and restructure into deeper sub-categories
+6. **Consolidate** — Merge weak related memories into stronger combined knowledge
+7. **Prune** — Archive memories that have decayed beyond recovery
+8. **REM Dreaming** — Discover creative cross-domain associations via analogical reasoning
+9. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
+
+### Migration Phase (Phase 0)
+
+If the brain's `index.json` has `version: 1` (pre-v2), run migration first:
+
+1. Create `associations.json` from existing `related` fields — for each memory with `related` entries, create edges with weight 0.20 and origin `manual`
+2. Auto-discover associations: for any two memories sharing 2+ tags, create edges with weight 0.10 and origin `tag_overlap`
+3. Create `contexts.json` with `{"version": 1, "sessions": []}`
+4. Create `review-queue.json` with `{"version": 1, "items": []}`
+5. Create `_archived/index.json` if not present with `{"version": 1, "archived_count": 0, "memories": {}}`
+6. For each memory: backfill `recall_history` from `access_count` (if `access_count > 0`, set `recall_history: [last_accessed]`; otherwise `recall_history: []`)
+7. Set defaults for missing fields: `cognitive_type: "semantic"`, `salience: 0.5`, `confidence: 0.8`
+8. Update both memory files (frontmatter) and `index.json` entries
+9. Set `index.json` version to 2
+
+Present migration summary, then proceed to Phase 1.
 
 ---
 
@@ -42,6 +61,7 @@ decayed_strength = strength * (decay_rate ^ days_elapsed)
    - Memories per tier
    - Memories per directory (for cluster detection)
    - Tag frequency analysis (for sub-category extraction)
+   - Mean effective strength across all memories (for Synaptic Homeostasis)
 
 Present a brief replay summary before continuing:
 
@@ -55,12 +75,68 @@ Scanned <N> memories across <M> categories
   Weak (0.1-0.3):   <count> memories — urgent attention needed
   Fading (<0.1):    <count> memories — pruning candidates
 
-Proceeding to knowledge propagation...
+  Mean effective strength: <value>
+
+Proceeding to synaptic homeostasis...
 ```
 
 ---
 
-## Phase 2: Knowledge Propagation (Reconsolidation)
+## Phase 2: Synaptic Homeostasis (Global Downscaling)
+
+Based on Tononi & Cirelli's **Synaptic Homeostasis Hypothesis (SHY)** — during sleep the brain proportionally scales down ALL synaptic strengths, then selectively re-boosts important ones. This prevents "strength inflation" where frequent recall pushes everything toward 1.0, making the scoring system less discriminating.
+
+### Steps
+
+1. Compute `mean_effective_strength` from Phase 1 across all memories
+
+2. If `mean_effective_strength > 0.5`, apply downscaling:
+
+```
+scaling_factor = max(0.85, 0.5 / mean_effective_strength)
+```
+
+3. For every memory: `strength = strength * scaling_factor`
+
+4. Selectively re-boost important memories:
+   - **High salience** (salience >= 0.7): +0.05
+   - **Recently accessed** (within 7 days): +0.03
+   - **Frequently recalled** (access_count >= 5): +0.02
+
+5. Also downscale association weights in `associations.json`:
+   - Apply `weight = weight * scaling_factor` to all edges
+   - Prune edges that fall below the `link_prune_threshold` (default 0.05)
+
+6. Update all memory files (frontmatter) and `index.json` entries
+
+If `mean_effective_strength <= 0.5`, skip this phase:
+
+```
+## Phase 2: Synaptic Homeostasis — Skipped
+
+Mean effective strength (0.42) is within healthy range. No downscaling needed.
+```
+
+Otherwise present:
+
+```
+## Phase 2: Synaptic Homeostasis Complete
+
+Mean strength before: <before>
+Scaling factor applied: <factor>
+Mean strength after: <after>
+
+Re-boosted:
+  High salience: <count> memories (+0.05 each)
+  Recently accessed: <count> memories (+0.03 each)
+  Frequently recalled: <count> memories (+0.02 each)
+
+Association links downscaled: <count>, pruned: <count>
+```
+
+---
+
+## Phase 3: Knowledge Propagation (Reconsolidation)
 
 In neuroscience, **memory reconsolidation** is the process where recalling an existing memory makes it temporarily malleable — allowing the brain to update it with new information before re-stabilizing it. During sleep, recently acquired knowledge is replayed against the existing memory network, triggering updates to related older memories. This is how a single new insight can reshape your understanding of an entire topic.
 
@@ -68,7 +144,7 @@ This phase takes each **recent memory** and walks the brain hierarchy — checki
 
 ### Steps
 
-#### 2.1 Identify Recent Memories
+#### 3.1 Identify Recent Memories
 
 From the Phase 1 scan, identify **recent memories** — those meeting any of these criteria:
 - Created within the last `propagation_window_days` (default: 7 days, configurable in `index.json` config)
@@ -80,27 +156,25 @@ These are the "trigger memories" — the new knowledge that may require updates 
 If no recent memories are found, skip this phase with a brief note:
 
 ```
-## Phase 2: Knowledge Propagation — Skipped
+## Phase 3: Knowledge Propagation — Skipped
 
 No recent memories found within the propagation window (7 days).
 Nothing to propagate.
 ```
 
-#### 2.2 Find Related Memories for Each Trigger
+#### 3.2 Find Related Memories for Each Trigger
 
-For each recent (trigger) memory, find related memories through **four traversal strategies**:
+For each recent (trigger) memory, find related memories through **five traversal strategies**:
 
 **A. Hierarchical — Upper levels (ancestors)**
 Walk UP from the trigger memory's directory to the top-level category:
 - Read all memory files in each parent directory
 - These represent broader context that may need updating with the new specific knowledge
-- Example: A new memory at `professional/companies/acme/projects/alpha/scaling-fix.md` should be checked against memories at `professional/companies/acme/projects/alpha/`, `professional/companies/acme/`, and `professional/companies/`
 
 **B. Hierarchical — Lower levels (descendants)**
 Walk DOWN into any child directories from the trigger memory's directory:
 - Read all memory files in subdirectories (up to 2 levels deep to avoid excessive scanning)
 - These represent more specific knowledge that the new broader insight may affect
-- Example: A new memory at `professional/skills/flutter/` should be checked against memories in `professional/skills/flutter/authentication/`, `professional/skills/flutter/state-management/`, etc.
 
 **C. Sibling memories**
 Read all memory files at the SAME directory level as the trigger memory:
@@ -110,150 +184,105 @@ Read all memory files at the SAME directory level as the trigger memory:
 **D. Tag-related memories**
 From `index.json`, find memories anywhere in the brain that share **2 or more tags** with the trigger memory:
 - These capture cross-domain connections that the hierarchy alone might miss
-- Example: A memory tagged `[oauth2, security, flutter]` should be checked against another memory tagged `[oauth2, security, api-design]` even if they're in different categories
+
+**E. Association-linked memories** (NEW)
+From `associations.json`, find all neighbors of the trigger memory with edge weight >= 0.15:
+- These capture learned associations from previous co-retrievals and manual links
+- Includes memories that might not share tags or hierarchy but have been used together
 
 Also include any memories explicitly listed in the trigger memory's `related` field.
 
 **Deduplication**: A memory found through multiple strategies is only evaluated once, but mark it as having stronger relation (found via multiple paths).
 
-#### 2.3 Evaluate Each Related Memory
+#### 3.3 Evaluate Each Related Memory
 
 For each related memory found, read it fully and evaluate it against the trigger memory. Classify the relationship as one or more of:
 
 **Enrichment** — The new knowledge adds detail, nuance, or a new perspective to the existing memory:
-- The trigger memory provides additional context, examples, or use cases
-- The trigger memory reveals a new angle on an existing topic
-- The existing memory's "Connections" section should be updated
 - *Action*: Propose appending new information to the existing memory's Key Details or Connections section
 
 **Contradiction** — The new knowledge conflicts with or supersedes existing knowledge:
-- The trigger memory documents a different decision than a previous decision memory
-- New learning invalidates an older learning
-- An old approach/pattern has been replaced
 - *Action*: Flag for user review — propose updating the existing memory with the corrected information and noting what changed and why
+- Also reduce the contradicted memory's `confidence` by -0.20 (floored at 0.1)
 
 **Validation** — The new knowledge confirms or strengthens existing knowledge:
-- The trigger memory provides additional evidence for an existing insight
-- A repeated experience reinforces a pattern already captured
 - *Action*: Boost the existing memory's `strength` by +0.05 (capped at 1.0), update `last_accessed`
+- Also boost the validated memory's `confidence` by +0.10 (capped at 1.0)
 
 **Obsolescence** — The new knowledge makes the existing memory outdated or irrelevant:
-- A technology decision was reversed
-- A project was cancelled, making project-specific memories less relevant
-- A goal was achieved or abandoned
 - *Action*: Propose marking the existing memory for accelerated decay (`decay_rate` → 0.90) or archival
 
 **Cross-reference** — The memories should reference each other but don't yet:
-- The memories are clearly related but neither has the other in its `related` field
 - *Action*: Add bidirectional cross-references (update `related` arrays in both memories)
+- Also create/strengthen association edges in `associations.json` with origin `propagation`
 
-#### 2.4 Present Propagation Plan
+#### 3.4 Present Propagation Plan
 
-Group all proposed updates by action type and present to the user:
+Group all proposed updates by action type and present to the user (same format as before).
 
-```
-## Phase 2: Knowledge Propagation
+#### 3.5 Get User Approval
 
-Analyzed <N> recent memories against <M> related memories.
+The user can approve all, select specific updates, modify, or skip.
 
-### Enrichments (<count>)
+#### 3.6 Execute Approved Updates
 
-📝 **scaling-fix.md** (recent) → enriches **acme-architecture-overview.md**
-   Path: professional/companies/acme/acme-architecture-overview.md
-   Reason: New scaling fix adds detail about horizontal scaling approach
-   Proposed update: Add scaling strategy details to Key Details section
+Execute as before, plus:
+- For contradictions: also reduce `confidence` by -0.20
+- For validations: also boost `confidence` by +0.10
+- For cross-references: also create/strengthen edges in `associations.json`
 
-📝 **flutter-riverpod-v3.md** (recent) → enriches **flutter-state-riverpod.md**
-   Path: professional/skills/flutter/state-management/flutter-state-riverpod.md
-   Reason: New Riverpod v3 patterns add to existing Riverpod knowledge
-   Proposed update: Append v3 migration notes and new provider patterns
+---
 
-### Contradictions (<count>)
+## Phase 4: Semantic Crystallization (Episodic → Semantic)
 
-⚠️  **microservices-decision.md** (recent) → contradicts **monolith-preference.md**
-   Path: professional/companies/acme/decisions/monolith-preference.md
-   Reason: New decision to adopt microservices reverses earlier monolith preference
-   Proposed update: Add note that this decision was superseded, with reference to new memory
+In the brain, specific episodic memories (tied to events) gradually transform into abstracted semantic knowledge (general principles) through repeated recall. The event details fade, but the lesson persists.
 
-### Validations (<count>)
+### Steps
 
-✓  **auth-incident-postmortem.md** (recent) → validates **token-refresh-patterns.md**
-   Path: professional/skills/flutter/authentication/token-refresh-patterns.md
-   Reason: Incident confirmed the importance of the token refresh approach documented here
-   Action: Boost strength 0.78 → 0.83
+1. Find episodic memories (cognitive_type: episodic) with:
+   - `access_count >= 3` (recalled multiple times — the pattern has been reinforced)
+   - `decayed_strength >= 0.4` (still meaningfully strong)
 
-### Obsolescence (<count>)
+2. For each candidate, evaluate: **Is there a generalizable lesson or principle that can be extracted from this specific event?**
 
-⚡ **project-alpha-complete.md** (recent) → obsoletes **alpha-sprint-plan.md**
-   Path: professional/companies/acme/projects/alpha/alpha-sprint-plan.md
-   Reason: Project completed, sprint planning memories no longer relevant
-   Action: Accelerate decay (0.995 → 0.90)
+3. If yes, create a new **semantic** memory:
+   - `cognitive_type: semantic`
+   - `type`: usually `insight` or `learning`
+   - Content: the generalized principle/pattern, not the specific event
+   - `related`: link to the source episodic memory
+   - `strength`: inherit from source, but with semantic default decay (slower)
+   - `salience`: inherit from source
+   - `confidence`: source confidence - 0.10 (abstraction introduces some uncertainty)
 
-### Cross-references (<count>)
+4. For the source episodic memory:
+   - Accelerate its decay: multiply `decay_rate` by 0.990 (the event details fade faster)
+   - Add reference to the new semantic memory in `related`
+   - Add note: `<!-- Crystallized into <semantic_id> on <date> -->`
 
-🔗 **scaling-fix.md** ↔ **k8s-deployment-lessons.md**
-   Neither memory references the other, but they share tags [kubernetes, scaling, infrastructure]
-   Action: Add bidirectional related links
-```
+5. Create/strengthen association edge between the episodic source and semantic output with origin `propagation`
 
-#### 2.5 Get User Approval
+**Example:**
+- Episodic: "OAuth token expired mid-session on Tuesday causing 30min outage"
+- → Semantic: "Always refresh tokens proactively before API calls, not reactively after failures"
 
-The user can:
-- **Approve all** proposed updates
-- **Select specific** updates to apply (by number or group)
-- **Modify** proposed changes before applying
-- **Skip** this phase entirely
-
-#### 2.6 Execute Approved Updates
-
-For each approved update:
-
-**For enrichments:**
-1. Read the target memory file
-2. Append the new information to the appropriate section (Key Details or Connections)
-3. Add a propagation note: `<!-- Updated via knowledge propagation from <trigger_id> on <date> -->`
-4. Update the memory's `last_accessed` timestamp in both the file and `index.json`
-5. Add bidirectional cross-references if not already present
-
-**For contradictions:**
-1. Read the target memory file
-2. Add an "Update" or "Superseded" section noting the contradiction and referencing the trigger memory
-3. Optionally reduce the old memory's `strength` by -0.10 (floored at 0.1)
-4. Update `index.json` accordingly
-5. Add bidirectional cross-references
-
-**For validations:**
-1. Update the target memory's `strength` by +0.05 (capped at 1.0) in both the file and `index.json`
-2. Update `last_accessed` to current timestamp
-3. Optionally add the trigger memory to the `related` field
-
-**For obsolescence:**
-1. Set the target memory's `decay_rate` to 0.90 (fast fade) in both the file and `index.json`
-2. Add a note in the memory file: `<!-- Marked for accelerated decay due to <reason> via <trigger_id> -->`
-3. These memories will naturally get picked up by Phase 5 (Prune) in subsequent sleep cycles
-
-**For cross-references:**
-1. Update both memories' `related` arrays to include each other's ID
-2. Update both files and their `index.json` entries
-
-Present a brief summary before proceeding:
+Present crystallization proposals for user approval:
 
 ```
-## Phase 2: Knowledge Propagation Complete
+## Phase 4: Semantic Crystallization
 
-Processed <N> recent memories
-  Enrichments applied:     <count>
-  Contradictions flagged:  <count>
-  Validations (boosted):   <count>
-  Obsolescence marked:     <count>
-  Cross-references added:  <count>
+Found <N> episodic memories ready for crystallization:
 
-Proceeding to reorganization...
+🔬 **oauth-token-incident.md** (episodic, recalled 4x, strength 0.65)
+   → Proposed semantic memory: "Proactive Token Refresh Strategy"
+   Generalized principle: Always refresh tokens proactively before API calls
+   Source event details will begin fading (decay accelerated)
+
+Approve crystallizations? [all / select / skip]
 ```
 
 ---
 
-## Phase 3: Reorganize (Neocortical Restructuring)
+## Phase 5: Reorganize (Neocortical Restructuring)
 
 During sleep, the brain transfers memories from the hippocampus to the neocortex, organizing them into structured long-term storage. This phase detects **flat clusters** — directories with many memories that should be organized into deeper sub-categories.
 
@@ -276,41 +305,9 @@ During sleep, the brain transfers memories from the hippocampus to the neocortex
    - Memories that don't fit any group stay at the current level (don't force-categorize)
    - Never exceed `max_depth` from config
 
-4. **Present the reorganization plan** to the user:
+4. **Present the reorganization plan** to the user
 
-```
-## Phase 3: Reorganization Plan
-
-### professional/skills/ (7 memories → 3 sub-categories)
-
-Current (flat):
-  ├── flutter-auth-basics.md
-  ├── flutter-oauth-flow.md
-  ├── flutter-token-refresh.md
-  ├── flutter-state-riverpod.md
-  ├── flutter-bloc-pattern.md
-  ├── react-hooks-patterns.md
-  └── react-server-components.md
-
-Proposed (restructured):
-  ├── flutter/
-  │   ├── authentication/          ← NEW sub-category
-  │   │   ├── flutter-auth-basics.md
-  │   │   ├── flutter-oauth-flow.md
-  │   │   └── flutter-token-refresh.md
-  │   └── state-management/        ← NEW sub-category
-  │       ├── flutter-state-riverpod.md
-  │       └── flutter-bloc-pattern.md
-  └── react/                       ← NEW sub-category
-      ├── react-hooks-patterns.md
-      └── react-server-components.md
-```
-
-5. **Get user approval**: The user can:
-   - Approve all reorganizations
-   - Select specific reorganizations
-   - Modify proposed groupings
-   - Skip this phase entirely
+5. **Get user approval**
 
 6. **Execute approved reorganizations**:
    - Create new sub-category directories with `_meta.json`
@@ -321,13 +318,13 @@ Proposed (restructured):
 
 ---
 
-## Phase 4: Consolidate (Memory Integration)
+## Phase 6: Consolidate (Memory Integration)
 
 During deep sleep, the brain merges related experiences into generalized knowledge. Weak memories that share themes are combined into stronger, more durable memories.
 
 ### Steps
 
-1. From the Phase 1 scan, take all **Moderate** and **Weak** tier memories (decayed_strength < 0.6) that were NOT already updated in Phase 2 (Knowledge Propagation)
+1. From the Phase 1 scan, take all **Moderate** and **Weak** tier memories (decayed_strength < 0.6) that were NOT already updated in Phase 3 (Knowledge Propagation) or Phase 4 (Semantic Crystallization)
 
 2. Group consolidation candidates by:
    - **Path proximity** — memories in the same or nearby directories (highest priority after reorganization)
@@ -337,54 +334,95 @@ During deep sleep, the brain merges related experiences into generalized knowled
 
 3. For each viable group (2+ memories):
    - Read all source memories fully
-   - Synthesize a consolidated memory that:
-     - Preserves all key details and insights
-     - Identifies patterns and evolution across the memories
-     - Creates a coherent narrative
-     - Is more concise than the sum of its parts
+   - Synthesize a consolidated memory that preserves all key details and insights
    - Calculate: `new_strength = max(source_strengths) + 0.15` (capped at 1.0)
    - Use the slowest decay rate from the sources
    - Merge all tags (union)
+   - **Salience anchoring**: The highest-salience memory in the group becomes the "anchor" — its key details and framing take priority in the synthesis. The consolidated memory inherits the maximum salience from the group.
+   - Inherit the maximum confidence from the group
 
-4. Exclude memories that had their strength boosted or content updated in Phase 2 — they've already been processed. Present consolidation plan to user for approval (same format as `/brain:consolidate`)
+4. Present consolidation plan to user for approval
 
 5. For approved consolidations:
    - Write consolidated memory files using the standard format with `type: consolidated`
-   - Archive source memories to `.brain/_archived/`
+   - Archive source memories to `.brain/_archived/` and add them to `_archived/index.json`
+   - Transfer association edges from source memories to the consolidated memory in `associations.json`
    - Update `index.json` and `_meta.json` files
 
 ---
 
-## Phase 5: Prune (Synaptic Homeostasis)
+## Phase 7: Prune (Synaptic Pruning)
 
 During sleep, the brain prunes weak synaptic connections to maintain efficiency. Here, we archive memories that have faded beyond usefulness.
 
 ### Steps
 
-1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 4
+1. Take all **Fading** tier memories (decayed_strength < 0.1) that were NOT already consolidated in Phase 6
 
-2. Present the prune list:
+2. **Salience protection**: Memories with `salience >= 0.7` are NEVER auto-pruned, regardless of strength. Skip them with a note:
+   ```
+   ⚡ Skipping <title> — high salience (0.8) protects from auto-pruning
+   ```
 
-```
-## Phase 5: Pruning Faded Memories
+3. Present the prune list (excluding salience-protected memories)
 
-The following memories have decayed below 0.1 strength and are no longer contributing meaningfully:
+4. Get user approval (default: archive all)
 
-| # | Title | Path | Original | Decayed | Days Since Access |
-|---|-------|------|----------|---------|-------------------|
-| 1 | Old Deploy Notes | professional/... | 0.35 | 0.04 | 182d |
-| 2 | Temp Fix Idea | personal/... | 0.25 | 0.02 | 210d |
-
-Action: Archive to _archived/ (recoverable if needed)
-```
-
-3. Get user approval (default: archive all)
-
-4. Execute: Move to `.brain/_archived/`, preserving directory structure. Update `index.json` and `_meta.json` files.
+5. Execute:
+   - Move to `.brain/_archived/`, preserving directory structure
+   - Add to `_archived/index.json` with original metadata
+   - Remove from `index.json` and update `_meta.json` files
+   - Remove association edges involving pruned memories from `associations.json`
 
 ---
 
-## Phase 6: Expertise Detection (Knowledge Crystallization)
+## Phase 8: REM Dreaming (Creative Association Discovery)
+
+During REM sleep, the brain creates novel connections between seemingly unrelated memories — this is why we often have creative breakthroughs after sleeping on a problem. This phase implements that creative association mechanism.
+
+### Steps
+
+1. Select 5-10 random memories from **different top-level categories** that have decayed_strength >= 0.3
+
+2. For each pair of memories from different categories, evaluate potential cross-domain connections using **analogical reasoning**:
+   - Are there structural similarities? (both involve X pattern)
+   - Are there shared underlying principles? (both deal with expiration/renewal)
+   - Could techniques from one domain apply to the other?
+   - Are there complementary perspectives?
+
+3. Score each potential connection:
+   ```
+   dream_score = 0.5 * novelty + 0.3 * utility + 0.2 * surprise
+   ```
+   - **novelty**: How unexpected is this connection? (0-1)
+   - **utility**: How useful could this insight be? (0-1)
+   - **surprise**: How non-obvious is this? (0-1)
+
+4. For connections scoring >= 0.5:
+   - Create association edges in `associations.json` with origin `creative` and initial weight 0.15
+   - Present as "dream insights"
+
+5. Present discoveries:
+
+```
+## Phase 8: REM Dreaming — Creative Insights
+
+💭 **Dream Insight 1** (score: 0.72)
+   "Token refresh patterns" ↔ "Subscription renewal flows"
+   Both involve: expiration handling, silent renewal, fallback strategies
+   Potential application: Apply token refresh retry logic to subscription renewals
+
+💭 **Dream Insight 2** (score: 0.58)
+   "Database migration strategies" ↔ "Moving to a new apartment"
+   Both involve: careful planning, rollback capability, staged execution
+   Potential application: Use the migration checklist pattern for personal life transitions
+
+<N> creative associations discovered and linked
+```
+
+---
+
+## Phase 9: Expertise Detection (Knowledge Crystallization)
 
 This is the most powerful phase. When the brain repeatedly processes information in a domain, it forms **expertise** — fast, intuitive access to deep knowledge. Here, we detect when a sub-tree has become dense enough to represent genuine expertise.
 
@@ -415,69 +453,29 @@ expertise_score  = (0.25 * density_score) + (0.25 * strength_score) + (0.20 * re
    - **Deep Knowledge** (0.6 - 0.8) — Strong command. Can reason about trade-offs and edge cases.
    - **Expert** (0.8 - 1.0) — Mastery. Dense, frequently-recalled, long-standing knowledge.
 
-4. **Generate or update expertise profiles**: For each directory scoring >= 0.2, create or update an `_expertise.md` file:
-
-```markdown
----
-expertise_level: deep-knowledge
-expertise_score: 0.72
-memory_count: 6
-average_strength: 0.78
-total_recalls: 14
-time_span_days: 45
-last_evaluated: <ISO timestamp>
-key_topics: [oauth2, token-refresh, biometric-auth, session-management]
----
-
-# Expertise: Flutter Authentication
-
-**Level:** Deep Knowledge (0.72)
-
-You have strong command of Flutter authentication patterns. Your knowledge spans
-OAuth2 flows, token management, biometric authentication, and session handling.
-You can reason about trade-offs between different auth strategies and handle
-edge cases in token refresh flows.
-
-## What You Know Well
-- OAuth2 authorization code flow with PKCE for mobile
-- Token refresh strategies and silent re-authentication
-- Biometric auth integration on iOS and Android
-- Session persistence and secure storage patterns
-
-## Knowledge Gaps
-- SAML/enterprise SSO integration (no memories found)
-- Multi-factor authentication flows (limited coverage)
-- Auth testing strategies (no memories found)
-
-## Contributing Memories
-1. **Flutter Auth Basics** (authentication/flutter-auth-basics.md) — strength: 0.82
-2. **OAuth2 Flow Deep Dive** (authentication/flutter-oauth-flow.md) — strength: 0.88
-3. **Token Refresh Patterns** (authentication/flutter-token-refresh.md) — strength: 0.75
-...
-```
+4. **Generate or update expertise profiles**: For each directory scoring >= 0.2, create or update an `_expertise.md` file.
 
 5. **Knowledge gap detection**: By analyzing what sub-topics exist vs. what commonly appears alongside them (using tag relationships across the whole brain), identify areas where expertise could be deepened. List these as "Knowledge Gaps" in the expertise profile.
 
-6. Present expertise findings:
+6. **Generate review queue**: After expertise detection, populate `review-queue.json` using simplified SM-2 scheduling. For each memory with `access_count > 0`:
+   ```
+   interval = base_interval * (2.5 ^ (successful_reviews - 1))
+   next_review = last_accessed + interval
+   ```
+   Where `base_interval = 1 day` and `successful_reviews = min(access_count, 10)`.
 
-```
-## Phase 6: Expertise Map
+   Add or update entries in `review-queue.json`:
+   ```json
+   {
+     "memory_id": "<id>",
+     "next_review": "<ISO timestamp>",
+     "interval_days": <interval>,
+     "ease_factor": 2.5,
+     "review_count": <count>
+   }
+   ```
 
-### Expert (0.8+)
-  None yet — keep learning!
-
-### Deep Knowledge (0.6-0.8)
-  ⬆ professional/skills/flutter/authentication/ — 0.72 (6 memories, 14 recalls)
-    "Strong command of OAuth2, token management, biometric auth"
-
-### Working Knowledge (0.4-0.6)
-  → professional/skills/react/ — 0.51 (3 memories, 5 recalls)
-    "Can work with hooks and server components competently"
-
-### Awareness (0.2-0.4)
-  ○ personal/education/psychology/child-development/ — 0.32 (2 memories, 1 recall)
-    "Surface familiarity with developmental stages"
-```
+7. Present expertise findings.
 
 ---
 
@@ -490,24 +488,32 @@ After all phases complete, present a comprehensive sleep report:
 ║                    🌙 SLEEP CYCLE COMPLETE                   ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
-║  Phase 1 — Replay:          <N> memories scanned              ║
-║  Phase 2 — Propagated:      <N> updates from <M> recent       ║
-║                              memories across the hierarchy     ║
-║  Phase 3 — Reorganized:     <N> memories moved into           ║
-║                              <M> new sub-categories            ║
-║  Phase 4 — Consolidated:    <N> memories merged into <M>      ║
-║  Phase 5 — Pruned:          <N> faded memories archived       ║
-║  Phase 6 — Expertise:       <N> domains profiled              ║
+║  Phase 1 — Replay:            <N> memories scanned            ║
+║  Phase 2 — Homeostasis:       Scaling factor: <X>             ║
+║  Phase 3 — Propagated:        <N> updates from <M> recent     ║
+║  Phase 4 — Crystallized:      <N> episodic → semantic         ║
+║  Phase 5 — Reorganized:       <N> memories, <M> new dirs      ║
+║  Phase 6 — Consolidated:      <N> memories merged into <M>    ║
+║  Phase 7 — Pruned:            <N> faded memories archived     ║
+║  Phase 8 — REM Dreams:        <N> creative insights           ║
+║  Phase 9 — Expertise:         <N> domains profiled            ║
 ║                                                               ║
 ║  Brain Health:                                                ║
 ║    Before sleep: <count> memories, avg strength <X>           ║
 ║    After sleep:  <count> memories, avg strength <Y>           ║
 ║    Expertise areas: <count> domains mapped                    ║
+║    Review queue: <count> memories scheduled                   ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 
 ### Expertise Summary
-<expertise level list from Phase 5>
+<expertise level list from Phase 9>
+
+### Dream Insights
+<creative associations from Phase 8>
+
+### Memories Due for Review
+<count> memories due within the next 7 days — run /brain:review
 
 ### Recommendations
 - <actionable suggestions based on what sleep revealed>
@@ -517,11 +523,13 @@ After all phases complete, present a comprehensive sleep report:
 
 ## Important Rules
 
-1. **Always ask for approval** before executing reorganization, consolidation, or pruning. Present the plan first.
+1. **Always ask for approval** before executing reorganization, consolidation, crystallization, or pruning. Present the plan first.
 2. **Never delete permanently** — pruned memories go to `_archived/` (recoverable).
 3. **Preserve all content** — reorganization only changes paths, never memory content.
-4. **Update all references** — when moving files, update `index.json`, all `_meta.json` files, and `related` fields in other memories that reference moved memories.
+4. **Update all references** — when moving files, update `index.json`, all `_meta.json` files, `associations.json`, and `related` fields in other memories that reference moved memories.
 5. **Respect max_depth** — never create directories beyond the configured `max_depth`.
 6. **Scope control** — if $ARGUMENTS specifies a path (e.g., "professional/skills"), only sleep-process that subtree.
 7. **Idempotent expertise** — if `_expertise.md` already exists, update it rather than creating a duplicate.
 8. **Skip empty phases** — if there's nothing to do in a phase (e.g., no flat clusters to reorganize), briefly note it and move on.
+9. **Salience protection** — never auto-prune memories with salience >= 0.7.
+10. **Run migration** — if `index.json` version is 1, run Phase 0 migration before proceeding.

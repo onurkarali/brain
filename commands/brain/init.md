@@ -18,6 +18,9 @@ Create the following structure:
 ```
 .brain/
 ├── index.json
+├── associations.json
+├── contexts.json
+├── review-queue.json
 ├── professional/
 │   └── _meta.json
 ├── personal/
@@ -26,15 +29,17 @@ Create the following structure:
 │   └── _meta.json
 ├── family/
 │   └── _meta.json
-└── _consolidated/
-    └── _meta.json
+├── _consolidated/
+│   └── _meta.json
+└── _archived/
+    └── index.json
 ```
 
 ### 3. Create index.json
 
 ```json
 {
-  "version": 1,
+  "version": 2,
   "created": "<current ISO timestamp>",
   "last_updated": "<current ISO timestamp>",
   "memory_count": 0,
@@ -45,12 +50,64 @@ Create the following structure:
     "decay_check_interval_days": 7,
     "strength_boost_on_recall": 0.05,
     "auto_consolidate": true,
-    "propagation_window_days": 7
+    "propagation_window_days": 7,
+    "association_config": {
+      "co_retrieval_boost": 0.10,
+      "link_decay_rate": 0.998,
+      "link_prune_threshold": 0.05,
+      "spreading_activation_depth": 2,
+      "spreading_activation_decay": 0.5
+    }
   }
 }
 ```
 
-### 4. Create _meta.json for Each Top Category
+### 4. Create associations.json
+
+The associative network stores weighted connections between memories — implementing spreading activation (like neurons activating linked memories) and Hebbian learning (memories that fire together wire together).
+
+```json
+{
+  "version": 1,
+  "edges": {}
+}
+```
+
+### 5. Create contexts.json
+
+Stores session-level context snapshots used for context-dependent recall — memories encoded in a similar context to the current one are scored higher.
+
+```json
+{
+  "version": 1,
+  "sessions": []
+}
+```
+
+### 6. Create review-queue.json
+
+Implements spaced repetition scheduling — surfaces memories for review at optimal intervals to maximize long-term retention.
+
+```json
+{
+  "version": 1,
+  "items": []
+}
+```
+
+### 7. Create _archived/index.json
+
+A searchable index of archived memories so they can be found and restored if needed.
+
+```json
+{
+  "version": 1,
+  "archived_count": 0,
+  "memories": {}
+}
+```
+
+### 8. Create _meta.json for Each Top Category
 
 For each top-level category (professional, personal, social, family, _consolidated), create a `_meta.json`:
 
@@ -64,7 +121,7 @@ For each top-level category (professional, personal, social, family, _consolidat
 }
 ```
 
-### 5. Ask User for Customization (Optional)
+### 9. Ask User for Customization (Optional)
 
 Ask the user:
 - "Would you like to add any custom top-level categories beyond the defaults (professional, personal, social, family)?"
@@ -72,11 +129,11 @@ Ask the user:
 
 If the user provides custom categories or subcategories, create them with appropriate `_meta.json` files.
 
-### 6. Add .brain to .gitignore (Optional)
+### 10. Add .brain to .gitignore (Optional)
 
 Ask the user if they want `.brain/` added to `.gitignore` (some users may want to track their memory in git, others may not).
 
-### 7. Confirm
+### 11. Confirm
 
 Print a summary of what was created, including the full tree structure. Inform the user of available commands:
 
@@ -87,3 +144,13 @@ Print a summary of what was created, including the full tree structure. Inform t
 - `/brain:forget` — Decay or remove memories
 - `/brain:sleep` — Overnight reorganization: restructure, consolidate, prune, and detect expertise areas
 - `/brain:status` — View brain overview
+- `/brain:review` — Spaced repetition review of memories due for reinforcement
+
+### Migration Note
+
+If upgrading an existing v1 brain, the first `/brain:sleep` after upgrade will run a **Migration phase** (Phase 0) that:
+- Creates `associations.json` from existing `related` fields
+- Creates `contexts.json`, `review-queue.json`, and `_archived/index.json`
+- Backfills `recall_history` from `access_count` (using `last_accessed` as sole entry)
+- Sets default values for new frontmatter fields (`cognitive_type: semantic`, `salience: 0.5`, `confidence: 0.8`)
+- Bumps `index.json` version to 2
