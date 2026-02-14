@@ -28,6 +28,9 @@
     "type": "git",
     "url": "https://github.com/onurkarali/brain"
   },
+  "scripts": {
+    "test": "node --test 'test/*.test.js'"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
