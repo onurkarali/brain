@@ -327,6 +327,49 @@ function writeArchiveIndex(archiveIndex, projectRoot) {
   fs.writeFileSync(filePath, JSON.stringify(archiveIndex, null, 2) + '\n');
 }
 
+/**
+ * Remove ALL association edges involving a memory (both directions).
+ *
+ * Deletes the memory's own neighbor map and removes it from every other
+ * memory's neighbor map. Cleans up empty neighbor maps afterward.
+ *
+ * @param {Object} associations - The associations object
+ * @param {string} memoryId - Memory ID to remove
+ * @returns {Object} Updated associations
+ */
+function removeEdgesForMemory(associations, memoryId) {
+  if (!associations || !associations.edges) return associations;
+
+  // Remove the memory's own outgoing edges
+  delete associations.edges[memoryId];
+
+  // Remove all incoming edges from other memories
+  for (const srcId of Object.keys(associations.edges)) {
+    delete associations.edges[srcId][memoryId];
+    // Clean up empty neighbor maps
+    if (Object.keys(associations.edges[srcId]).length === 0) {
+      delete associations.edges[srcId];
+    }
+  }
+
+  return associations;
+}
+
+/**
+ * Remove a memory from the review queue.
+ *
+ * Filters out any items matching the given memory ID.
+ *
+ * @param {Object} queue - The review queue object (with items array)
+ * @param {string} memoryId - Memory ID to remove
+ * @returns {Object} Updated queue
+ */
+function removeFromReviewQueue(queue, memoryId) {
+  if (!queue || !Array.isArray(queue.items)) return queue;
+  queue.items = queue.items.filter((item) => item.memory_id !== memoryId);
+  return queue;
+}
+
 module.exports = {
   getBrainDir,
   readIndex,
@@ -352,4 +395,7 @@ module.exports = {
   writeReviewQueue,
   readArchiveIndex,
   writeArchiveIndex,
+  // Deep erasure utilities
+  removeEdgesForMemory,
+  removeFromReviewQueue,
 };

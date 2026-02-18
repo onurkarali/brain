@@ -229,6 +229,7 @@ async function main() {
     /brain:explore       Browse the brain hierarchy
     /brain:consolidate   Merge related memories
     /brain:forget        Decay or remove memories
+    /brain:sunshine      Deep forensic memory erasure
     /brain:sleep         Full maintenance cycle
     /brain:status        Brain overview dashboard
 

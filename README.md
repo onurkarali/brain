@@ -1,5 +1,7 @@
 # Brain Memory
 
+[![CI](https://github.com/onurkarali/brain/actions/workflows/ci.yml/badge.svg)](https://github.com/onurkarali/brain/actions/workflows/ci.yml)
+
 A hierarchical, file-system-based memory plugin for AI coding agents. Inspired by human neuroscience — memories are organized into deep nested life-domain categories, connected via associative networks, strengthened through spaced recall, and naturally decay over time.
 
 Works with **Claude Code**, **Gemini CLI**, and **OpenAI Codex CLI**.
@@ -90,6 +92,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 | `/brain:explore [category]` | Browse the brain hierarchy with visual tree view |
 | `/brain:consolidate [scope]` | Merge related weak memories into stronger combined ones |
 | `/brain:forget [target]` | Decay, archive, or remove memories |
+| `/brain:sunshine [target]` | Deep forensic erasure — trace and remove all references |
 | `/brain:sleep [scope]` | Full maintenance cycle — 9 neuroscience-inspired phases |
 | `/brain:status` | Dashboard with brain health metrics and recommendations |
 
@@ -128,6 +131,7 @@ Brain Memory v2 is grounded in peer-reviewed neuroscience research. Here's how e
 | **REM dreaming** | Creative cross-domain association discovery via analogical reasoning |
 | **Memory reconsolidation** | Recent knowledge updates and reshapes older related memories during sleep |
 | **Cue-dependent forgetting** | Archival preserves availability — memories aren't deleted, just moved to `_archived/` |
+| **Targeted forgetting** | Deep erasure that traces and removes all references, like how the brain can selectively erase specific memory traces |
 
 ### Memory Types
 
@@ -424,6 +428,7 @@ brain/
 │       ├── explore.md
 │       ├── consolidate.md
 │       ├── forget.md
+│       ├── sunshine.md
 │       ├── sleep.md
 │       └── status.md
 ├── prompts/

@@ -55,6 +55,7 @@ Memories store their encoding context (project, topics, task type). During recal
 - `/brain:explore [category]` — Browse the brain hierarchy
 - `/brain:consolidate [scope]` — Merge related weak memories into stronger ones
 - `/brain:forget [target]` — Decay or archive memories
+- `/brain:sunshine [target]` — Deep forensic erasure — trace and remove all references to a memory
 - `/brain:sleep [scope]` — Full maintenance cycle: replay, synaptic homeostasis, knowledge propagation, semantic crystallization, reorganize, consolidate, prune, REM dreaming, and expertise detection
 - `/brain:status` — Dashboard with brain health overview
 
