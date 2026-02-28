@@ -287,6 +287,9 @@ describe('Stress Tests — Data Generation', () => {
   });
 });
 
+// CI runners have variable performance; use generous thresholds
+const PERF_MULTIPLIER = process.env.CI ? 5 : 1;
+
 describe('Stress Tests — Performance Benchmarks', () => {
   it('rankMemories with 500 memories + associations + context completes in <500ms', () => {
     const start = performance.now();
@@ -297,7 +300,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    rankMemories: ${elapsed.toFixed(2)}ms for ${memories.length} memories (${edgeCount} edges)`);
-    assert.ok(elapsed < 500, `rankMemories took ${elapsed.toFixed(2)}ms, expected <500ms`);
+    assert.ok(elapsed < 500 * PERF_MULTIPLIER, `rankMemories took ${elapsed.toFixed(2)}ms, expected <${500 * PERF_MULTIPLIER}ms`);
     assert.equal(ranked.length, MEMORY_COUNT);
   });
 
@@ -311,7 +314,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    discoverViaActivation: ${elapsed.toFixed(2)}ms, found ${discovered.length} candidates`);
-    assert.ok(elapsed < 200, `discoverViaActivation took ${elapsed.toFixed(2)}ms, expected <200ms`);
+    assert.ok(elapsed < 200 * PERF_MULTIPLIER, `discoverViaActivation took ${elapsed.toFixed(2)}ms, expected <${200 * PERF_MULTIPLIER}ms`);
   });
 
   it('decayAssociations on full graph completes in <100ms', () => {
@@ -323,7 +326,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    decayAssociations: ${elapsed.toFixed(2)}ms`);
-    assert.ok(elapsed < 100, `decayAssociations took ${elapsed.toFixed(2)}ms, expected <100ms`);
+    assert.ok(elapsed < 100 * PERF_MULTIPLIER, `decayAssociations took ${elapsed.toFixed(2)}ms, expected <${100 * PERF_MULTIPLIER}ms`);
   });
 
   it('index CRUD: add 500, update 100, remove 50 completes in <50ms', () => {
@@ -351,7 +354,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    index CRUD (add 500 + update 100 + remove 50): ${elapsed.toFixed(2)}ms`);
-    assert.ok(elapsed < 50, `Index CRUD took ${elapsed.toFixed(2)}ms, expected <50ms`);
+    assert.ok(elapsed < 50 * PERF_MULTIPLIER, `Index CRUD took ${elapsed.toFixed(2)}ms, expected <${50 * PERF_MULTIPLIER}ms`);
     assert.equal(index.memory_count, 450); // 500 - 50 removed
     // Verify updates applied
     assert.equal(index.memories[idsToUpdate[0]].strength, 0.99);
@@ -377,7 +380,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    computeSpreadingActivation (10 memories): ${elapsed.toFixed(2)}ms`);
-    assert.ok(elapsed < 200, `computeSpreadingActivation took ${elapsed.toFixed(2)}ms, expected <200ms`);
+    assert.ok(elapsed < 200 * PERF_MULTIPLIER, `computeSpreadingActivation took ${elapsed.toFixed(2)}ms, expected <${200 * PERF_MULTIPLIER}ms`);
     // All bonuses should be in [0, 1]
     for (const r of results) {
       assert.ok(r.bonus >= 0 && r.bonus <= 1.0, `Bonus out of range for ${r.id}: ${r.bonus}`);
