@@ -11,6 +11,14 @@
     "context-engineering",
     "hierarchical-memory"
   ],
+  "author": {
+    "name": "Onur Karali",
+    "email": "onur@onelas.tech"
+  },
+  "homepage": "https://github.com/onurkarali/brain#readme",
+  "bugs": {
+    "url": "https://github.com/onurkarali/brain/issues"
+  },
   "bin": {
     "brain-memory": "./bin/install.js"
   },

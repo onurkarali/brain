@@ -295,6 +295,61 @@ function computeConsolidatedStrength(sourceStrengths) {
 }
 
 /**
+ * Batch-compute spreading activation bonuses for all memories in a single pass.
+ *
+ * Instead of calling computeSpreadingActivation per-memory (O(N*M*E)),
+ * this does one BFS per high-scoring source and collects bonuses for all
+ * reachable targets at once (O(M*E)).
+ *
+ * @param {Object[]} scoredMemories - Array of {id, score}
+ * @param {Object} associations - The associations graph
+ * @param {number} [maxDepth=2] - Maximum hop depth
+ * @returns {Object} Map of memoryId -> spreading activation bonus
+ */
+function computeSpreadingActivationBatch(scoredMemories, associations, maxDepth = 2) {
+  if (!associations || !associations.edges) return {};
+
+  const edges = associations.edges;
+  const bonuses = {};
+
+  for (const source of scoredMemories) {
+    if (source.score <= 0.3) continue;
+
+    const visited = new Set([source.id]);
+    let frontier = [{ id: source.id, accumulator: source.score }];
+
+    for (let hop = 1; hop <= maxDepth; hop++) {
+      const nextFrontier = [];
+      const dampening = Math.pow(0.5, hop);
+      for (const node of frontier) {
+        const neighbors = edges[node.id];
+        if (!neighbors) continue;
+
+        for (const neighborId in neighbors) {
+          if (visited.has(neighborId)) continue;
+          visited.add(neighborId);
+
+          const bonus = node.accumulator * neighbors[neighborId].weight * dampening;
+          if (bonus > (bonuses[neighborId] || 0)) {
+            bonuses[neighborId] = bonus;
+          }
+
+          nextFrontier.push({ id: neighborId, accumulator: bonus });
+        }
+      }
+      frontier = nextFrontier;
+    }
+  }
+
+  // Cap at 1.0
+  for (const id in bonuses) {
+    if (bonuses[id] > 1.0) bonuses[id] = 1.0;
+  }
+
+  return bonuses;
+}
+
+/**
  * Score and rank a list of memory entries for a given query.
  *
  * @param {Object[]} memories - Array of memory index entries
@@ -320,25 +375,25 @@ function rankMemories(memories, relevanceFn, options = {}) {
       decayed_strength: decayedStrength,
       recency_bonus: recencyBonus,
       relevance: relevance,
-      // These will be filled in second pass
       spreading_bonus: 0,
       context_match: 0,
     };
   });
 
-  // Second pass: spreading activation (needs all scored memories)
+  // Second pass: spreading activation (batch — single traversal for all memories)
   if (options.associations) {
     const scoredSummary = scored.map((m) => ({
       id: m.id,
       score: 0.55 * m.relevance + 0.30 * m.decayed_strength + 0.15 * m.recency_bonus,
     }));
 
+    const bonuses = computeSpreadingActivationBatch(
+      scoredSummary,
+      options.associations
+    );
+
     for (const mem of scored) {
-      mem.spreading_bonus = computeSpreadingActivation(
-        mem.id,
-        scoredSummary,
-        options.associations
-      );
+      mem.spreading_bonus = bonuses[mem.id] || 0;
     }
   }
 
@@ -388,6 +443,7 @@ module.exports = {
   rankMemories,
   // Phase 1: Spreading Activation
   computeSpreadingActivation,
+  computeSpreadingActivationBatch,
   discoverViaActivation,
   // Phase 2: Context & Spaced Reinforcement
   computeContextMatch,

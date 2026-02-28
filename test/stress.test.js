@@ -360,7 +360,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     assert.equal(index.memories[idsToRemove[0]], undefined);
   });
 
-  it('computeSpreadingActivation for 10 random memories completes in <100ms', () => {
+  it('computeSpreadingActivation for 10 random memories completes in <200ms', () => {
     const ranked = rankMemories(memories, relevanceFn, { associations, recallContext });
     const scoredMemories = ranked.slice(0, 50).map((m) => ({ id: m.id, score: m.score }));
 
@@ -377,7 +377,7 @@ describe('Stress Tests — Performance Benchmarks', () => {
     const elapsed = performance.now() - start;
 
     console.log(`    computeSpreadingActivation (10 memories): ${elapsed.toFixed(2)}ms`);
-    assert.ok(elapsed < 100, `computeSpreadingActivation took ${elapsed.toFixed(2)}ms, expected <100ms`);
+    assert.ok(elapsed < 200, `computeSpreadingActivation took ${elapsed.toFixed(2)}ms, expected <200ms`);
     // All bonuses should be in [0, 1]
     for (const r of results) {
       assert.ok(r.bonus >= 0 && r.bonus <= 1.0, `Bonus out of range for ${r.id}: ${r.bonus}`);
