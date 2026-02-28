@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Brain Memory — One Pager</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: #ffffff;
+    color: #1a1a2e;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 28mm 22mm 20mm 22mm;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    padding-bottom: 14px;
+    border-bottom: 3px solid #6c5ce7;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .logo {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    color: white;
+    flex-shrink: 0;
+  }
+
+  .header-text h1 {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #1a1a2e;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+  }
+
+  .header-text .tagline {
+    font-size: 10pt;
+    color: #6c5ce7;
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .header-right {
+    text-align: right;
+    font-size: 8pt;
+    color: #636e72;
+    line-height: 1.6;
+  }
+
+  .header-right a {
+    color: #6c5ce7;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  /* Problem / Solution */
+  .hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .problem, .solution {
+    padding: 14px 16px;
+    border-radius: 10px;
+    font-size: 9pt;
+  }
+
+  .problem {
+    background: #fff5f5;
+    border-left: 4px solid #e74c3c;
+  }
+
+  .solution {
+    background: #f0fff4;
+    border-left: 4px solid #00b894;
+  }
+
+  .problem h3, .solution h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .problem h3 { color: #c0392b; }
+  .solution h3 { color: #00a381; }
+
+  .problem p, .solution p {
+    color: #2d3436;
+    line-height: 1.5;
+  }
+
+  /* How it works */
+  .section-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 10px;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #dfe6e9;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .how-it-works {
+    margin-bottom: 16px;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .step {
+    background: #f8f9ff;
+    border-radius: 10px;
+    padding: 12px 14px;
+    border: 1px solid #e8e8f8;
+    text-align: center;
+  }
+
+  .step-number {
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12pt;
+    margin-bottom: 6px;
+  }
+
+  .step h4 {
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 4px;
+  }
+
+  .step p {
+    font-size: 8pt;
+    color: #636e72;
+    line-height: 1.4;
+  }
+
+  /* Features */
+  .features-section {
+    margin-bottom: 16px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .feature {
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #e8e8f8;
+    background: #fafbff;
+  }
+
+  .feature h4 {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #6c5ce7;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .feature p {
+    font-size: 7.8pt;
+    color: #636e72;
+    line-height: 1.4;
+  }
+
+  /* Neuroscience + Differentiators */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .neuro-box {
+    background: linear-gradient(135deg, #f8f9ff, #f0f0ff);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #d5d5f0;
+  }
+
+  .neuro-box h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #6c5ce7;
+    margin-bottom: 8px;
+  }
+
+  .neuro-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .neuro-list li {
+    font-size: 8pt;
+    color: #2d3436;
+    padding: 2px 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    line-height: 1.4;
+  }
+
+  .neuro-list li::before {
+    content: "  ";
+    flex-shrink: 0;
+  }
+
+  .neuro-list li .icon {
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+  }
+
+  .diff-box {
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid #e8e8f8;
+  }
+
+  .diff-box h3 {
+    font-size: 10pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 8px;
+  }
+
+  .diff-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .diff-item .check {
+    color: #00b894;
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: 10pt;
+    line-height: 1.2;
+  }
+
+  .diff-item div {
+    font-size: 8pt;
+    line-height: 1.4;
+  }
+
+  .diff-item strong {
+    color: #1a1a2e;
+    font-size: 8.5pt;
+  }
+
+  .diff-item p {
+    color: #636e72;
+    margin-top: 1px;
+  }
+
+  /* Commands */
+  .commands-section {
+    margin-bottom: 16px;
+  }
+
+  .commands-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .cmd {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f0f0f8;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 7.8pt;
+    border: 1px solid #ddd;
+  }
+
+  .cmd code {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 600;
+    color: #6c5ce7;
+    font-size: 8pt;
+  }
+
+  .cmd span {
+    color: #636e72;
+  }
+
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+    border-radius: 12px;
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+  }
+
+  .cta-left h3 {
+    font-size: 12pt;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+
+  .cta-left p {
+    font-size: 8.5pt;
+    opacity: 0.9;
+  }
+
+  .cta-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .cta-install {
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 11pt;
+    font-weight: 600;
+    color: white;
+    letter-spacing: -0.3px;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  .cta-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 7.5pt;
+    opacity: 0.85;
+  }
+
+  /* Comparison table */
+  .comparison {
+    margin-bottom: 16px;
+  }
+
+  .comparison table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+  }
+
+  .comparison th {
+    background: #f8f9ff;
+    padding: 6px 10px;
+    text-align: left;
+    font-weight: 700;
+    color: #1a1a2e;
+    border-bottom: 2px solid #6c5ce7;
+    font-size: 8.5pt;
+  }
+
+  .comparison td {
+    padding: 5px 10px;
+    border-bottom: 1px solid #eee;
+    color: #2d3436;
+  }
+
+  .comparison tr:last-child td {
+    border-bottom: none;
+  }
+
+  .comparison .highlight {
+    background: #f0fff4;
+    font-weight: 600;
+  }
+
+  .comparison .dim {
+    color: #b2bec3;
+  }
+
+  .yes { color: #00b894; font-weight: 700; }
+  .no { color: #d63031; }
+  .partial { color: #fdcb6e; font-weight: 600; }
+</style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">🧠</div>
+      <div class="header-text">
+        <h1>Brain Memory</h1>
+        <div class="tagline">Persistent Memory for AI Coding Agents</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <strong>npm:</strong> brain-memory<br>
+      <strong>License:</strong> MIT<br>
+      <a href="https://github.com/okarali/brain-memory">github.com</a> &middot; <a href="https://npmjs.com/package/brain-memory">npmjs.com</a>
+    </div>
+  </div>
+
+  <!-- PROBLEM / SOLUTION -->
+  <div class="hero">
+    <div class="problem">
+      <h3>&#x26A0; The Problem</h3>
+      <p>AI coding agents start every session from scratch. Past decisions, project context, lessons learned, and user preferences are lost. Users re-explain the same things over and over. Existing solutions rely on opaque databases, cloud services, or flat key-value stores with no semantic structure.</p>
+    </div>
+    <div class="solution">
+      <h3>&#x2728; The Solution</h3>
+      <p>Brain Memory gives your AI agent a <strong>biologically-inspired memory system</strong> that lives entirely on your file system. Memories are stored as readable Markdown files in a semantic directory hierarchy. The agent remembers, forgets, strengthens, and reorganizes knowledge &mdash; just like a real brain.</p>
+    </div>
+  </div>
+
+  <!-- HOW IT WORKS -->
+  <div class="how-it-works">
+    <div class="section-title">&#9881; How It Works</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h4>Install in Seconds</h4>
+        <p><code style="background:#eee;padding:2px 6px;border-radius:4px;font-size:8.5pt;">npx brain-memory</code><br>Interactive setup for Claude Code, Gemini CLI, or Codex CLI. No config files needed.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h4>Memories Form Naturally</h4>
+        <p>Use <code>/brain:memorize</code> to capture decisions, insights, and context. The agent classifies and stores them in a semantic hierarchy automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h4>Recall &amp; Evolve</h4>
+        <p>Memories surface contextually via <code>/brain:remember</code>. Strength, associations, and structure evolve through use, sleep cycles, and spaced repetition.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- KEY FEATURES -->
+  <div class="features-section">
+    <div class="section-title">&#x1F31F; Key Features</div>
+    <div class="features-grid">
+      <div class="feature">
+        <h4>&#128193; File System = Database</h4>
+        <p>Directory paths encode semantic meaning. No vector DB, no servers, no infrastructure. Pure file I/O.</p>
+      </div>
+      <div class="feature">
+        <h4>&#129504; Neuroscience-Grounded</h4>
+        <p>11 peer-reviewed cognitive science concepts implemented as working algorithms, not metaphors.</p>
+      </div>
+      <div class="feature">
+        <h4>&#128274; Private &amp; Local</h4>
+        <p>Runs 100% locally. No cloud, no API calls. Human-readable YAML+Markdown, git-versioned.</p>
+      </div>
+      <div class="feature">
+        <h4>&#128260; Spreading Activation</h4>
+        <p>Recalling one memory activates related ones via a weighted association graph &mdash; surfacing hidden connections.</p>
+      </div>
+      <div class="feature">
+        <h4>&#127769; Sleep Cycle</h4>
+        <p>9-phase maintenance: replay, homeostasis, knowledge propagation, crystallization, reorganization, pruning, and creative dreaming.</p>
+      </div>
+      <div class="feature">
+        <h4>&#9203; Spaced Repetition</h4>
+        <p>SM-2 algorithm schedules memory review. Each recall improves decay resistance &mdash; important memories become permanent.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEUROSCIENCE + DIFFERENTIATORS -->
+  <div class="two-col">
+    <div class="neuro-box">
+      <h3>&#129504; Neuroscience Foundations</h3>
+      <ul class="neuro-list">
+        <li><span class="icon">&#9679;</span> <strong>Ebbinghaus Decay</strong> &mdash; Exponential forgetting with per-memory rates</li>
+        <li><span class="icon">&#9679;</span> <strong>Spreading Activation</strong> &mdash; Collins &amp; Loftus associative recall</li>
+        <li><span class="icon">&#9679;</span> <strong>Hebbian Learning</strong> &mdash; "Neurons that fire together wire together"</li>
+        <li><span class="icon">&#9679;</span> <strong>Synaptic Homeostasis</strong> &mdash; Tononi &amp; Cirelli global scaling</li>
+        <li><span class="icon">&#9679;</span> <strong>Context-Dependent Recall</strong> &mdash; Encoding specificity principle</li>
+        <li><span class="icon">&#9679;</span> <strong>Spacing Effect</strong> &mdash; Distributed practice with diminishing returns</li>
+        <li><span class="icon">&#9679;</span> <strong>Episodic &rarr; Semantic</strong> &mdash; Crystallization of events into knowledge</li>
+        <li><span class="icon">&#9679;</span> <strong>Memory Reconsolidation</strong> &mdash; Active updating during sleep</li>
+        <li><span class="icon">&#9679;</span> <strong>Targeted Forgetting</strong> &mdash; Forensic erasure with audit trail</li>
+      </ul>
+    </div>
+    <div class="diff-box">
+      <h3>&#x1F3AF; Why Brain Memory?</h3>
+      <div class="diff-item">
+        <span class="check">&#10003;</span>
+        <div><strong>Zero Dependencies</strong><p>No databases, servers, embeddings, or API calls. Just Node.js + your file system.</p></div>
+      </div>
+      <div class="diff-item">
+        <span class="check">&#10003;</span>
+        <div><strong>Human-Readable &amp; Git-Friendly</strong><p>Every memory is a Markdown file. Browse with any editor. Track changes with git.</p></div>
+      </div>
+      <div class="diff-item">
+        <span class="check">&#10003;</span>
+        <div><strong>Bidirectional Lifecycle</strong><p>Not just storage &mdash; active maintenance, strengthening, reorganization, and pruning.</p></div>
+      </div>
+      <div class="diff-item">
+        <span class="check">&#10003;</span>
+        <div><strong>Multi-Agent Support</strong><p>Works with Claude Code, Gemini CLI, and OpenAI Codex CLI out of the box.</p></div>
+      </div>
+      <div class="diff-item">
+        <span class="check">&#10003;</span>
+        <div><strong>Surgical Erasure</strong><p>The <code>/brain:sunshine</code> command traces and removes all references across your entire brain.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMAND PALETTE -->
+  <div class="commands-section">
+    <div class="section-title">&#128187; 10 Slash Commands</div>
+    <div class="commands-grid">
+      <div class="cmd"><code>/brain:init</code> <span>Create brain structure</span></div>
+      <div class="cmd"><code>/brain:memorize</code> <span>Store new memories</span></div>
+      <div class="cmd"><code>/brain:remember</code> <span>Contextual recall</span></div>
+      <div class="cmd"><code>/brain:review</code> <span>Spaced repetition</span></div>
+      <div class="cmd"><code>/brain:explore</code> <span>Visual tree browsing</span></div>
+      <div class="cmd"><code>/brain:consolidate</code> <span>Merge weak memories</span></div>
+      <div class="cmd"><code>/brain:forget</code> <span>Decay &amp; archive</span></div>
+      <div class="cmd"><code>/brain:sunshine</code> <span>Deep forensic erasure</span></div>
+      <div class="cmd"><code>/brain:sleep</code> <span>9-phase maintenance</span></div>
+      <div class="cmd"><code>/brain:status</code> <span>Health dashboard</span></div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Get Started in 30 Seconds</h3>
+      <p>One command. No configuration. Your AI agent never forgets again.</p>
+    </div>
+    <div class="cta-right">
+      <div class="cta-install">npx brain-memory</div>
+      <div class="cta-badges">
+        <span>Node.js &ge; 18</span>
+        <span>MIT License</span>
+        <span>v0.1.0</span>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
