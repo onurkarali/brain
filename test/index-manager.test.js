@@ -57,7 +57,8 @@ function makeIndex(memories = {}) {
 // ===========================================================================
 describe('getBrainDir', () => {
   it('returns <projectRoot>/.brain', () => {
-    assert.equal(getBrainDir('/some/project'), '/some/project/.brain');
+    const input = path.join(path.sep, 'some', 'project');
+    assert.equal(getBrainDir(input), path.join(input, '.brain'));
   });
 
   it('defaults to cwd when no arg', () => {
