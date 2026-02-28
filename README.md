@@ -43,7 +43,7 @@ Existing AI memory solutions use flat databases with tag-based retrieval. Brain 
 ## Install
 
 ```bash
-npx brain-memory
+npx brain-memory@beta
 ```
 
 The interactive installer asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
