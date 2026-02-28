@@ -37,7 +37,7 @@
     "url": "git+https://github.com/onurkarali/brain.git"
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/index-manager.test.js test/scorer.test.js test/functional.test.js test/sunshine.test.js test/stress.test.js"
   },
   "license": "MIT",
   "engines": {
