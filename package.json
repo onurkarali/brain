@@ -1,6 +1,6 @@
 {
   "name": "brain-memory",
-  "version": "0.1.0-beta.1",
+  "version": "0.1.0-beta.2",
   "description": "A brain-inspired hierarchical memory system for AI coding agents. Deep nested file structure that mimics human memory with time-decay and strength-based recall.",
   "keywords": [
     "claude-code",
@@ -37,7 +37,7 @@
     "url": "git+https://github.com/onurkarali/brain.git"
   },
   "scripts": {
-    "test": "node --test 'test/*.test.js'"
+    "test": "node --test test/*.test.js"
   },
   "license": "MIT",
   "engines": {
