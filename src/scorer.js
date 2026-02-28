@@ -32,7 +32,7 @@ function computeRecencyBonus(lastAccessed) {
   const lastDate = new Date(lastAccessed);
   const now = new Date();
   const daysElapsed = (now - lastDate) / (1000 * 60 * 60 * 24);
-  return Math.max(0, 1 - daysElapsed / 365);
+  return Math.min(1.0, Math.max(0, 1 - daysElapsed / 365));
 }
 
 /**
@@ -107,6 +107,7 @@ function computeRecallScore(relevance, decayedStrength, recencyBonus, extras = {
 function computeSpreadingActivation(memoryId, scoredMemories, associations, maxDepth = 2) {
   if (!associations || !associations.edges) return 0;
 
+  const edges = associations.edges;
   let maxBonus = 0;
 
   for (const source of scoredMemories) {
@@ -119,15 +120,16 @@ function computeSpreadingActivation(memoryId, scoredMemories, associations, maxD
 
     for (let hop = 1; hop <= maxDepth; hop++) {
       const nextFrontier = [];
+      const dampening = Math.pow(0.5, hop);
       for (const node of frontier) {
-        const neighbors = associations.edges[node.id];
+        const neighbors = edges[node.id];
         if (!neighbors) continue;
 
-        for (const [neighborId, edge] of Object.entries(neighbors)) {
+        for (const neighborId in neighbors) {
           if (visited.has(neighborId)) continue;
           visited.add(neighborId);
 
-          const bonus = node.accumulator * edge.weight * Math.pow(0.5, hop);
+          const bonus = node.accumulator * neighbors[neighborId].weight * dampening;
 
           if (neighborId === memoryId) {
             maxBonus = Math.max(maxBonus, bonus);
