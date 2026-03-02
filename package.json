@@ -37,7 +37,12 @@
     "url": "git+https://github.com/onurkarali/brain.git"
   },
   "scripts": {
-    "test": "node --test test/index-manager.test.js test/scorer.test.js test/functional.test.js test/sunshine.test.js test/stress.test.js"
+    "test": "node --test test/index-manager.test.js test/scorer.test.js test/functional.test.js test/sunshine.test.js test/stress.test.js",
+    "prerelease": "npm test",
+    "release:beta": "npm version prerelease --preid beta && npm publish --tag beta",
+    "release:patch": "npm version patch && npm publish",
+    "release:minor": "npm version minor && npm publish",
+    "release:major": "npm version major && npm publish"
   },
   "license": "MIT",
   "engines": {

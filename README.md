@@ -448,6 +448,32 @@ brain/
 └── README.md
 ```
 
+## Releasing
+
+Tests run automatically before every release via the `prerelease` script.
+
+```bash
+# Beta release (bumps 0.1.0-beta.3 → 0.1.0-beta.4)
+npm run release:beta
+
+# Stable releases
+npm run release:patch   # 0.1.0 → 0.1.1
+npm run release:minor   # 0.1.1 → 0.2.0
+npm run release:major   # 0.2.0 → 1.0.0
+```
+
+Each release command:
+1. Runs the full test suite
+2. Bumps the version in `package.json`
+3. Creates a git commit and tag
+4. Publishes to npm
+
+After publishing, push the commit and tag:
+
+```bash
+git push && git push --tags
+```
+
 ## Inspired By
 
 - [get-shit-done](https://github.com/gsd-build/get-shit-done) — Structured file-based workflow orchestration for AI agents
