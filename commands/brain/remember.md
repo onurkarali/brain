@@ -67,7 +67,7 @@ effective_score = 0.38 * relevance
                + 0.08 * salience_bonus
 ```
 
-**Note:** If a memory lacks newer fields (spreading_bonus, context_match, salience), the formula renormalizes weights across the available terms. This ensures backward compatibility with v1 memories.
+**Note:** If a memory lacks some fields (spreading_bonus, context_match, salience), the formula renormalizes weights across the available terms.
 
 ### 5. Decide Response Strategy
 
@@ -110,7 +110,7 @@ diminishingFactor = 1.0 / (1.0 + 0.1 * recallCount)
 boost = 0.05 * spacingMultiplier * diminishingFactor
 ```
 
-Examples: 1 day gap = +0.05 (same as v1), 7 days = +0.08, 30 days = +0.10, cramming same day 20th recall = +0.02.
+Examples: 1 day gap = +0.05, 7 days = +0.08, 30 days = +0.10, cramming same day 20th recall = +0.02.
 
 **Update in both the memory file AND index.json:**
 - `last_accessed` → current timestamp

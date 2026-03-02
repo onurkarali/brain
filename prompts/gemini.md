@@ -59,6 +59,7 @@ Commands are available via `/brain:` prefix:
 - `/brain:sunshine [target]` — Deep forensic erasure — trace and remove all references to a memory
 - `/brain:sleep [scope]` — Full maintenance cycle: replay, synaptic homeostasis, knowledge propagation, semantic crystallization, reorganize, consolidate, prune, REM dreaming, and expertise detection
 - `/brain:status` — Dashboard with brain health overview
+- `/brain:sync [subcommand]` — Cloud sync: push/pull memories to Dropbox, Google Drive, or OneDrive
 
 ## Auto-Memorize Guidance
 
@@ -74,3 +75,7 @@ When the user asks you to "remember" something, or when context from past sessio
 5. Apply spaced reinforcement (spacing-aware boost) and improve decay rate
 6. Strengthen Hebbian links between co-retrieved memories
 7. If no active matches, search the archive (`.brain/_archived/`)
+
+## Cloud Sync
+
+Brain memories can be synced across devices via `/brain:sync`. Supports Dropbox, Google Drive, and OneDrive with optional AES-256-GCM encryption. Sync is always manual (push/pull) — never automatic. Run `/brain:sync login` to set up, then use `/brain:sync push` and `/brain:sync pull` to keep memories in sync.

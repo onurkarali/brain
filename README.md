@@ -95,6 +95,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 | `/brain:sunshine [target]` | Deep forensic erasure — trace and remove all references |
 | `/brain:sleep [scope]` | Full maintenance cycle — 9 neuroscience-inspired phases |
 | `/brain:status` | Dashboard with brain health metrics and recommendations |
+| `/brain:sync [subcommand]` | Cloud sync — push/pull memories to Dropbox, Google Drive, or OneDrive |
 
 ## How It Works
 
@@ -117,7 +118,7 @@ Create → Store → Decay → Recall → Reinforce → Review → Sleep → Arc
 
 ### Neuroscience Foundations
 
-Brain Memory v2 is grounded in peer-reviewed neuroscience research. Here's how each mechanism maps to the brain:
+Brain Memory is grounded in peer-reviewed neuroscience research. Here's how each mechanism maps to the brain:
 
 | Brain Mechanism | Implementation |
 |-----------------|---------------|
@@ -226,8 +227,6 @@ score = 0.38 * relevance
 - **context_match** (0.14) — How similar the encoding context is to the current session
 - **salience** (0.08) — Emotional/motivational significance
 
-The formula gracefully degrades for v1 memories missing newer fields — weights are renormalized across available terms.
-
 The agent then decides the response strategy:
 - **Single strong match** (top score > 0.7) → Return the full memory
 - **Multiple related** (2-5 candidates > 0.4) → Synthesize a consolidated response
@@ -261,7 +260,7 @@ Memories are connected via weighted edges in `.brain/associations.json`:
 
 ### Spaced Reinforcement
 
-Unlike the flat +0.05 boost per recall in v1, spaced reinforcement rewards optimal recall timing:
+Spaced reinforcement rewards optimal recall timing:
 
 ```
 spacingMultiplier = min(3.0, 1.0 + log2(1 + daysSinceLastAccess))
@@ -328,15 +327,24 @@ Each expertise area gets an `_expertise.md` profile documenting what you know we
 
 Failed recalls reset the interval to 1 day. Successful recalls extend the interval by the ease factor. This ensures you spend time on memories that need reinforcement, not ones you already know well.
 
-### Migration from v1
+### Cloud Sync
 
-Existing v1 brains upgrade automatically. The first `/brain:sleep` after upgrade runs a migration phase that:
-- Creates `associations.json` from existing `related` fields
-- Backfills `recall_history` from `access_count`
-- Sets sensible defaults for new fields (`cognitive_type: semantic`, `salience: 0.5`, `confidence: 0.8`)
-- Bumps `index.json` version to 2
+`/brain:sync` lets you push and pull your `.brain/` memories to a cloud provider for cross-device access. Supports **Dropbox**, **Google Drive**, and **OneDrive** with zero npm dependencies (uses Node.js 18+ built-in `fetch`).
 
-No data is lost. All new scoring gracefully falls back when newer fields are absent.
+**Key features:**
+- **Manual push/pull** — No background watchers, no auto-sync. You control when data moves.
+- **Three-way diff** — Compares local state, remote state, and last-known sync state to detect changes and conflicts.
+- **Conflict resolution** — When the same file is modified locally and remotely, sync detects the conflict and lets you choose: keep local, keep remote, or keep both.
+- **Optional encryption** — AES-256-GCM encryption with a user-provided passphrase. When enabled, all files are encrypted before upload and decrypted after download. The cloud provider only ever sees opaque bytes.
+- **OAuth2 authentication** — PKCE authorization code flow with a Device Code Flow fallback for headless/SSH environments. Users register their own OAuth app with the provider and supply their client ID.
+
+**Setup:**
+1. Register an OAuth app with your chosen provider (Dropbox / Google Drive / OneDrive)
+2. Run `/brain:sync login <provider>` and provide your client ID
+3. Authorize in the browser (or enter the device code for headless environments)
+4. Use `/brain:sync push` and `/brain:sync pull` to keep memories in sync
+
+Sync state is stored locally in `.brain/.sync/` and is never uploaded to the cloud.
 
 ## File Structure
 
@@ -368,9 +376,13 @@ No data is lost. All new scoring gracefully falls back when newer fields are abs
 │   └── events/
 ├── _consolidated/          # Merged memories from consolidation
 │   └── _meta.json
-└── _archived/              # Decayed memories (recoverable + searchable)
-    ├── _meta.json
-    └── index.json          # Searchable archive index
+├── _archived/              # Decayed memories (recoverable + searchable)
+│   ├── _meta.json
+│   └── index.json          # Searchable archive index
+└── .sync/                  # Cloud sync state (never synced, local only)
+    ├── config.json          # Provider, client ID, encryption flag
+    ├── credentials.enc      # AES-256-GCM encrypted OAuth tokens
+    └── sync-state.json      # Per-file revisions, cursor, conflicts
 ```
 
 Subdirectories are created **on demand** — the agent decides placement depth based on how specific the memory is. A generic career thought lands in `professional/`, but a specific deployment incident goes to `professional/companies/acme/projects/alpha/`.
@@ -430,7 +442,8 @@ brain/
 │       ├── forget.md
 │       ├── sunshine.md
 │       ├── sleep.md
-│       └── status.md
+│       ├── status.md
+│       └── sync.md
 ├── prompts/
 │   ├── claude.md               # CLAUDE.md content (injected by installer)
 │   ├── gemini.md               # GEMINI.md content (injected by installer)
@@ -442,7 +455,16 @@ brain/
 │   └── default-categories.json # Default brain category definitions
 ├── src/
 │   ├── scorer.js               # Decay, spreading activation, context matching, spaced reinforcement
-│   └── index-manager.js        # Index, associations, contexts, review queue, archive CRUD
+│   ├── index-manager.js        # Index, associations, contexts, review queue, archive CRUD
+│   └── sync/                   # Cloud sync module
+│       ├── crypto-utils.js     # AES-256-GCM encryption + credential storage
+│       ├── oauth.js            # OAuth2 PKCE + Device Code Flow
+│       ├── provider.js         # SyncProvider base class + factory
+│       ├── sync-engine.js      # Local-first sync with 3-way diff
+│       └── providers/
+│           ├── dropbox.js      # Dropbox API v2
+│           ├── google-drive.js # Google Drive API v3
+│           └── onedrive.js     # Microsoft Graph API
 ├── CLAUDE.md                   # Development guide for this repo
 ├── package.json
 └── README.md

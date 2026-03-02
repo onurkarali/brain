@@ -232,6 +232,7 @@ async function main() {
     /brain:sunshine      Deep forensic memory erasure
     /brain:sleep         Full maintenance cycle
     /brain:status        Brain overview dashboard
+    /brain:sync          Cloud sync (Dropbox/Google Drive/OneDrive)
 
   Get started by running /brain:init in your agent session.
     `);
@@ -353,6 +354,9 @@ function initializeBrain() {
   }
 
   console.log('    .brain/ initialized successfully.');
+  console.log('');
+  console.log('    ☁️  Cloud sync is available! Use /brain:sync login to connect');
+  console.log('       Dropbox, Google Drive, or OneDrive for cross-device access.');
 }
 
 main().catch((err) => {

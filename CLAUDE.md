@@ -9,7 +9,7 @@ This repository is the **brain-memory** plugin — a hierarchical, file-system-b
 - `templates/` — Default brain structure definitions
 - `hooks/` — Session lifecycle hook definitions
 - `bin/install.js` — Interactive installer
-- `src/` — Shared utilities
+- `src/` — Shared utilities (scorer, index manager, sync engine)
 
 ## Key Design Principles
 

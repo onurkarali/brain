@@ -18,24 +18,6 @@ Sleep performs nine phases, mimicking real neuroscience:
 8. **REM Dreaming** — Discover creative cross-domain associations via analogical reasoning
 9. **Expertise Detection** — Identify dense knowledge areas and generate expertise profiles
 
-### Migration Phase (Phase 0)
-
-If the brain's `index.json` has `version: 1` (pre-v2), run migration first:
-
-1. Create `associations.json` from existing `related` fields — for each memory with `related` entries, create edges with weight 0.20 and origin `manual`
-2. Auto-discover associations: for any two memories sharing 2+ tags, create edges with weight 0.10 and origin `tag_overlap`
-3. Create `contexts.json` with `{"version": 1, "sessions": []}`
-4. Create `review-queue.json` with `{"version": 1, "items": []}`
-5. Create `_archived/index.json` if not present with `{"version": 1, "archived_count": 0, "memories": {}}`
-6. For each memory: backfill `recall_history` from `access_count` (if `access_count > 0`, set `recall_history: [last_accessed]`; otherwise `recall_history: []`)
-7. Set defaults for missing fields: `cognitive_type: "semantic"`, `salience: 0.5`, `confidence: 0.8`
-8. Update both memory files (frontmatter) and `index.json` entries
-9. Set `index.json` version to 2
-
-Present migration summary, then proceed to Phase 1.
-
----
-
 ## Phase 1: Replay (Hippocampal Scan)
 
 During sleep, the hippocampus replays the day's events. Here, we scan and assess the full brain state.
@@ -532,4 +514,3 @@ After all phases complete, present a comprehensive sleep report:
 7. **Idempotent expertise** — if `_expertise.md` already exists, update it rather than creating a duplicate.
 8. **Skip empty phases** — if there's nothing to do in a phase (e.g., no flat clusters to reorganize), briefly note it and move on.
 9. **Salience protection** — never auto-prune memories with salience >= 0.7.
-10. **Run migration** — if `index.json` version is 1, run Phase 0 migration before proceeding.

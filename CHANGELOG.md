@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- `/brain:sync` command — cloud sync for pushing/pulling memories to Dropbox, Google Drive, or OneDrive
+- Cloud sync module (`src/sync/`) with OAuth2 PKCE + Device Code Flow, AES-256-GCM encryption, three-way diff algorithm, and provider-specific implementations (Dropbox API v2, Google Drive API v3, Microsoft Graph API)
+- Zero new dependencies — uses Node.js 18+ built-in `fetch`, `crypto`, `http`
 - `/brain:sunshine` command — deep forensic memory erasure that traces and removes all references across the `.brain/` tree (related arrays, content mentions, association edges, context sessions, review queue, archive index, crystallization comments)
 - `removeEdgesForMemory()` utility in index-manager for removing all association edges involving a memory
 - `removeFromReviewQueue()` utility in index-manager for removing a memory from the review queue
@@ -21,7 +24,7 @@ Initial beta release.
 ### Added
 
 - 9 slash commands: `init`, `memorize`, `remember`, `review`, `explore`, `consolidate`, `forget`, `sleep`, `status`
-- Neuroscience-inspired v2 scoring with Ebbinghaus exponential decay
+- Neuroscience-inspired scoring with Ebbinghaus exponential decay
 - Associative memory network with spreading activation (BFS, 2-hop, 50% decay per hop)
 - Hebbian learning for co-retrieved memories
 - Context-dependent recall scoring (project, topic Jaccard, task type matching)
@@ -33,7 +36,7 @@ Initial beta release.
 - SM-2 spaced repetition review scheduler
 - Memory consolidation with salience anchoring
 - Archive system with recoverable memories
-- v4 recall scoring formula with graceful v1 degradation
+- Multi-factor recall scoring formula (relevance, strength, recency, spreading, context, salience)
 - Multi-runtime installer: Claude Code, Gemini CLI, OpenAI Codex CLI
 - Interactive and non-interactive installation modes
 - Session lifecycle hooks (session-start, session-end)

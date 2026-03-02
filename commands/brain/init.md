@@ -147,11 +147,3 @@ Print a summary of what was created, including the full tree structure. Inform t
 - `/brain:status` — View brain overview
 - `/brain:review` — Spaced repetition review of memories due for reinforcement
 
-### Migration Note
-
-If upgrading an existing v1 brain, the first `/brain:sleep` after upgrade will run a **Migration phase** (Phase 0) that:
-- Creates `associations.json` from existing `related` fields
-- Creates `contexts.json`, `review-queue.json`, and `_archived/index.json`
-- Backfills `recall_history` from `access_count` (using `last_accessed` as sole entry)
-- Sets default values for new frontmatter fields (`cognitive_type: semantic`, `salience: 0.5`, `confidence: 0.8`)
-- Bumps `index.json` version to 2

@@ -12,6 +12,8 @@ Also read (if they exist):
 - `.brain/associations.json` — for association network stats
 - `.brain/review-queue.json` — for review schedule info
 - `.brain/_archived/index.json` — for archive stats
+- `.brain/.sync/config.json` — for cloud sync configuration
+- `.brain/.sync/sync-state.json` — for sync state and pending changes
 
 ### 2. Compute Statistics
 
@@ -104,6 +106,13 @@ Calculate aggregate stats:
   + <title> (<path>) — <date>
   + <title> (<path>) — <date>
   ...
+
+## Cloud Sync
+  Provider:        <provider or "not configured">
+  Encryption:      <enabled/disabled>
+  Last Sync:       <timestamp or "never">
+  Pending Changes: <count> files modified since last sync
+  Conflicts:       <count>
 ```
 
 ### 4. Health Check
@@ -119,4 +128,6 @@ Analyze the brain's health and provide recommendations:
 - **"Needs sleep"** — Multiple flat clusters detected, OR many memories in moderate/weak tiers, OR no `_expertise.md` profiles exist despite having 10+ memories. Suggest `/brain:sleep`
 - **"Low confidence"** — More than 30% of memories have confidence < 0.5. Suggest reviewing and validating uncertain memories.
 - **"Review overdue"** — More than 10 memories are past their review date. Suggest `/brain:review`
-- **"Needs migration"** — Brain is v1 and needs upgrade. Suggest `/brain:sleep` to trigger migration.
+- **"Sync available"** — Cloud sync is not configured. Suggest `/brain:sync login` for cross-device access.
+- **"Sync stale"** — Last sync was more than 7 days ago. Suggest `/brain:sync push` or `/brain:sync pull`.
+- **"Sync conflicts"** — Unresolved sync conflicts exist. Suggest `/brain:sync resolve`.
