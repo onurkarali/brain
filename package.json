@@ -39,7 +39,7 @@
   "scripts": {
     "test": "node --test test/index-manager.test.js test/scorer.test.js test/functional.test.js test/sunshine.test.js test/stress.test.js test/oauth.test.js test/sync-provider.test.js test/sync-engine.test.js",
     "prerelease": "npm test",
-    "release:beta": "npm version prerelease --preid beta && npm publish --tag beta",
+    "release:beta": "npm version prerelease --preid beta && npm publish --tag beta && npm dist-tag add brain-memory@$(node -p \"require('./package.json').version\") latest",
     "release:patch": "npm version patch && npm publish",
     "release:minor": "npm version minor && npm publish",
     "release:major": "npm version major && npm publish"
