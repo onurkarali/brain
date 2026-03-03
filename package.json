@@ -9,7 +9,11 @@
     "memory",
     "ai-agent",
     "context-engineering",
-    "hierarchical-memory"
+    "hierarchical-memory",
+    "neuroscience",
+    "spaced-repetition",
+    "file-based",
+    "slash-commands"
   ],
   "author": {
     "name": "Onur Karali",
