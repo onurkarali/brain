@@ -43,10 +43,20 @@ function checkGitAvailable() {
  * @returns {string} stdout (trimmed)
  */
 function git(repoDir, args, opts = {}) {
+  // Explicitly set GIT_DIR and GIT_WORK_TREE to prevent git from walking up
+  // the directory tree and finding the parent project's .git directory.
+  // Without this, if .brain/.sync/repo/.git doesn't exist yet (first push or
+  // failed init), git operations would silently affect the parent project repo.
+  const env = {
+    ...process.env,
+    GIT_DIR: path.join(repoDir, '.git'),
+    GIT_WORK_TREE: repoDir,
+  };
   return execFileSync('git', args, {
     cwd: repoDir,
     stdio: 'pipe',
     encoding: 'utf8',
+    env,
     ...opts,
   }).trim();
 }

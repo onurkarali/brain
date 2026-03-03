@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- `update` subcommand — auto-detects existing installations and refreshes commands + prompt sections (`npx brain-memory@beta update`)
+- `uninstall` subcommand — removes commands and prompt sections, preserves `.brain/` by default (`npx brain-memory@beta uninstall`)
+- `detectInstallations()`, `removePromptSection()`, `removeCommands()`, `uninstallForRuntime()` in `src/installer.js`
+- Subcommand routing in `bin/install.js` with `parseArgs()`, `runUpdate()`, `runUninstall()`
+- 20 new tests covering detection, removal, and round-trip install/uninstall
 - Git-based sync — push/pull `.brain/` to any private Git remote (GitHub, GitLab, Codeberg, self-hosted) via `/brain:sync setup/push/pull`
 - Export/Import — single-file encrypted backup for portable transfers via `/brain:sync export` and `/brain:sync import`
 - `src/crypto.js` — standalone AES-256-GCM crypto module extracted from the old sync code
@@ -31,6 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Fixed
 
+- Git sync repo isolation — the `git()` helper in `src/git-sync.js` only used `cwd` to scope commands; if `.brain/.sync/repo/.git` didn't exist yet (first push or failed init), git would walk up the directory tree and commit brain files to the parent project repo. Now uses `GIT_DIR` + `GIT_WORK_TREE` env vars to fully isolate the sync repo.
 - Session lifecycle was dead code — session-start/end hook instructions were defined in `hooks/` but never installed or referenced anywhere. The prompt injected into CLAUDE.md/GEMINI.md/AGENTS.md only had a weak one-liner about memorization. Now all three prompt files contain full "Session Start Behavior" and "Session End Behavior" sections with automatic brain context loading, review queue alerts, and end-of-session memorization suggestions.
 - `release:beta` npm script now automatically updates the `latest` dist-tag after publishing
 

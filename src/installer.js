@@ -89,6 +89,110 @@ function injectPrompt(targetDir, promptFile, promptSource) {
   }
 }
 
+function detectInstallations() {
+  const results = [];
+  for (const [runtime, config] of Object.entries(RUNTIMES)) {
+    for (const scope of ['global', 'local']) {
+      const targetDir = scope === 'global' ? config.globalDir : config.localDir;
+      const promptTarget = scope === 'global' ? config.globalDir : '.';
+      const promptPath = path.join(promptTarget, config.promptFile);
+
+      // Check for command files/dirs
+      let commandsFound = false;
+      if (config.commandStyle === 'skills') {
+        const skillsDir = path.join(targetDir, config.commandsSubdir);
+        commandsFound = fs.existsSync(path.join(skillsDir, 'brain-init', 'SKILL.md'));
+      } else {
+        const commandsDir = path.join(targetDir, config.commandsSubdir, 'brain');
+        commandsFound = fs.existsSync(commandsDir) &&
+          fs.readdirSync(commandsDir).some((f) => f.endsWith('.md'));
+      }
+
+      // Check for prompt markers
+      let promptFound = false;
+      if (fs.existsSync(promptPath)) {
+        const content = fs.readFileSync(promptPath, 'utf-8');
+        promptFound = content.includes(BRAIN_MARKER_START) && content.includes(BRAIN_MARKER_END);
+      }
+
+      if (commandsFound || promptFound) {
+        results.push({
+          runtime,
+          scope,
+          runtimeName: config.name,
+          commandsFound,
+          promptFound,
+          targetDir,
+          promptPath,
+        });
+      }
+    }
+  }
+  return results;
+}
+
+function removePromptSection(promptPath) {
+  if (!fs.existsSync(promptPath)) {
+    return { removed: false, reason: 'file-not-found' };
+  }
+
+  const content = fs.readFileSync(promptPath, 'utf-8');
+  const startIdx = content.indexOf(BRAIN_MARKER_START);
+  const endIdx = content.indexOf(BRAIN_MARKER_END);
+
+  if (startIdx === -1 || endIdx === -1) {
+    return { removed: false, reason: 'no-markers' };
+  }
+
+  const before = content.substring(0, startIdx);
+  const after = content.substring(endIdx + BRAIN_MARKER_END.length);
+  const remaining = (before + after).trim();
+
+  if (remaining.length === 0) {
+    fs.unlinkSync(promptPath);
+    return { removed: true, fileDeleted: true };
+  }
+
+  fs.writeFileSync(promptPath, remaining + '\n');
+  return { removed: true, fileDeleted: false };
+}
+
+function removeCommands(targetDir, config) {
+  const removed = [];
+
+  if (config.commandStyle === 'skills') {
+    const skillsDir = path.join(targetDir, config.commandsSubdir);
+    if (fs.existsSync(skillsDir)) {
+      const entries = fs.readdirSync(skillsDir).filter((d) => d.startsWith('brain-'));
+      for (const entry of entries) {
+        const fullPath = path.join(skillsDir, entry);
+        fs.rmSync(fullPath, { recursive: true, force: true });
+        removed.push(fullPath);
+      }
+    }
+  } else {
+    const commandsDir = path.join(targetDir, config.commandsSubdir, 'brain');
+    if (fs.existsSync(commandsDir)) {
+      removed.push(commandsDir);
+      fs.rmSync(commandsDir, { recursive: true, force: true });
+    }
+  }
+
+  return removed;
+}
+
+function uninstallForRuntime(runtime, scope) {
+  const config = RUNTIMES[runtime];
+  const targetDir = scope === 'global' ? config.globalDir : config.localDir;
+  const promptTarget = scope === 'global' ? config.globalDir : '.';
+  const promptPath = path.join(promptTarget, config.promptFile);
+
+  const removedCommands = removeCommands(targetDir, config);
+  const promptResult = removePromptSection(promptPath);
+
+  return { removedCommands, promptResult };
+}
+
 function installForRuntime(runtime, scope) {
   const config = RUNTIMES[runtime];
   const targetDir = scope === 'global' ? config.globalDir : config.localDir;
@@ -228,4 +332,8 @@ module.exports = {
   injectPrompt,
   installForRuntime,
   initializeBrain,
+  detectInstallations,
+  removePromptSection,
+  removeCommands,
+  uninstallForRuntime,
 };

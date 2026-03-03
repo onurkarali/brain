@@ -57,6 +57,22 @@ npx brain-memory --codex --global         # OpenAI Codex CLI, global
 npx brain-memory --all --global           # All runtimes, global
 ```
 
+### Update
+
+```bash
+npx brain-memory@beta update
+```
+
+Auto-detects installed runtimes and refreshes commands + prompt sections. Target specific runtimes with `--claude`, `--gemini`, `--openai`, or `--all`.
+
+### Uninstall
+
+```bash
+npx brain-memory@beta uninstall
+```
+
+Removes commands and prompt sections. Your `.brain/` directory (memories) is preserved by default. Add `--delete-data` to remove it too. Use `--yes` to skip confirmation prompts.
+
 ### Manual Install
 
 Copy the `commands/brain/` directory to your agent's commands folder:

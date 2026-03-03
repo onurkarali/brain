@@ -13,6 +13,10 @@ const {
   injectPrompt,
   installForRuntime,
   initializeBrain,
+  detectInstallations,
+  removePromptSection,
+  removeCommands,
+  uninstallForRuntime,
 } = require('../src/installer');
 
 // ---------------------------------------------------------------------------
@@ -371,5 +375,294 @@ describe('initializeBrain', () => {
     assert.ok(fs.existsSync(path.join(brainDir, 'custom.txt')));
     // Should NOT have created index.json since brain already existed
     assert.ok(!fs.existsSync(path.join(brainDir, 'index.json')));
+  });
+});
+
+// ===========================================================================
+// detectInstallations
+// ===========================================================================
+describe('detectInstallations', () => {
+  let savedDirs;
+
+  beforeEach(() => {
+    setup();
+    savedDirs = {
+      claude: { local: RUNTIMES.claude.localDir, global: RUNTIMES.claude.globalDir },
+      gemini: { local: RUNTIMES.gemini.localDir, global: RUNTIMES.gemini.globalDir },
+      openai: { local: RUNTIMES.openai.localDir, global: RUNTIMES.openai.globalDir },
+    };
+    // Redirect both local and global to tmpDir subdirs for isolation
+    RUNTIMES.claude.localDir = path.join(tmpDir, '.claude');
+    RUNTIMES.gemini.localDir = path.join(tmpDir, '.gemini');
+    RUNTIMES.openai.localDir = path.join(tmpDir, '.codex');
+    RUNTIMES.claude.globalDir = path.join(tmpDir, 'global', '.claude');
+    RUNTIMES.gemini.globalDir = path.join(tmpDir, 'global', '.gemini');
+    RUNTIMES.openai.globalDir = path.join(tmpDir, 'global', '.codex');
+  });
+  afterEach(() => {
+    RUNTIMES.claude.localDir = savedDirs.claude.local;
+    RUNTIMES.gemini.localDir = savedDirs.gemini.local;
+    RUNTIMES.openai.localDir = savedDirs.openai.local;
+    RUNTIMES.claude.globalDir = savedDirs.claude.global;
+    RUNTIMES.gemini.globalDir = savedDirs.gemini.global;
+    RUNTIMES.openai.globalDir = savedDirs.openai.global;
+    teardown();
+  });
+
+  it('detects claude local installation', () => {
+    installForRuntime('claude', 'local');
+    const results = detectInstallations();
+    const claude = results.find((r) => r.runtime === 'claude' && r.scope === 'local');
+    assert.ok(claude, 'Should detect claude local installation');
+    assert.ok(claude.commandsFound);
+  });
+
+  it('detects openai local installation (skills style)', () => {
+    installForRuntime('openai', 'local');
+    const results = detectInstallations();
+    const openai = results.find((r) => r.runtime === 'openai' && r.scope === 'local');
+    assert.ok(openai, 'Should detect openai local installation');
+    assert.ok(openai.commandsFound);
+  });
+
+  it('detects partial installation (commands only, no prompt in global)', () => {
+    // Create commands in global dir but no prompt file
+    const commandsDir = path.join(tmpDir, 'global', '.claude', 'commands', 'brain');
+    fs.mkdirSync(commandsDir, { recursive: true });
+    fs.writeFileSync(path.join(commandsDir, 'init.md'), '# Init');
+
+    const results = detectInstallations();
+    const claude = results.find((r) => r.runtime === 'claude' && r.scope === 'global');
+    assert.ok(claude);
+    assert.ok(claude.commandsFound);
+    assert.equal(claude.promptFound, false);
+  });
+
+  it('detects multiple runtimes', () => {
+    installForRuntime('claude', 'local');
+    installForRuntime('gemini', 'local');
+    const results = detectInstallations();
+    const runtimes = results.filter((r) => r.scope === 'local').map((r) => r.runtime);
+    assert.ok(runtimes.includes('claude'));
+    assert.ok(runtimes.includes('gemini'));
+  });
+
+  it('returns empty array when nothing installed (ignoring cwd prompt files)', () => {
+    const results = detectInstallations();
+    // Only check for commandsFound — local prompt detection may pick up cwd files
+    const withCommands = results.filter((r) => r.commandsFound);
+    assert.equal(withCommands.length, 0);
+  });
+});
+
+// ===========================================================================
+// removePromptSection
+// ===========================================================================
+describe('removePromptSection', () => {
+  beforeEach(() => setup());
+  afterEach(() => teardown());
+
+  it('removes brain markers and content between them', () => {
+    const filePath = path.join(tmpDir, 'CLAUDE.md');
+    const content = '# My Project\n\n' +
+      BRAIN_MARKER_START + '\nBrain content here\n' + BRAIN_MARKER_END + '\n\n# Footer\n';
+    fs.writeFileSync(filePath, content);
+
+    const result = removePromptSection(filePath);
+
+    assert.ok(result.removed);
+    assert.equal(result.fileDeleted, false);
+    const remaining = fs.readFileSync(filePath, 'utf-8');
+    assert.ok(!remaining.includes(BRAIN_MARKER_START));
+    assert.ok(!remaining.includes('Brain content here'));
+    assert.ok(remaining.includes('# My Project'));
+    assert.ok(remaining.includes('# Footer'));
+  });
+
+  it('deletes file if only brain section existed', () => {
+    const filePath = path.join(tmpDir, 'CLAUDE.md');
+    fs.writeFileSync(filePath,
+      BRAIN_MARKER_START + '\nBrain content\n' + BRAIN_MARKER_END + '\n');
+
+    const result = removePromptSection(filePath);
+
+    assert.ok(result.removed);
+    assert.ok(result.fileDeleted);
+    assert.ok(!fs.existsSync(filePath));
+  });
+
+  it('returns no-markers when file has no brain section', () => {
+    const filePath = path.join(tmpDir, 'CLAUDE.md');
+    fs.writeFileSync(filePath, '# My Project\nSome content\n');
+
+    const result = removePromptSection(filePath);
+
+    assert.equal(result.removed, false);
+    assert.equal(result.reason, 'no-markers');
+  });
+
+  it('returns file-not-found when file does not exist', () => {
+    const result = removePromptSection(path.join(tmpDir, 'NONEXISTENT.md'));
+
+    assert.equal(result.removed, false);
+    assert.equal(result.reason, 'file-not-found');
+  });
+
+  it('preserves surrounding content correctly', () => {
+    const filePath = path.join(tmpDir, 'CLAUDE.md');
+    fs.writeFileSync(filePath,
+      'Before content\n\n' +
+      BRAIN_MARKER_START + '\nBrain\n' + BRAIN_MARKER_END + '\n\n' +
+      'After content\n');
+
+    removePromptSection(filePath);
+
+    const remaining = fs.readFileSync(filePath, 'utf-8');
+    assert.ok(remaining.includes('Before content'));
+    assert.ok(remaining.includes('After content'));
+  });
+});
+
+// ===========================================================================
+// removeCommands
+// ===========================================================================
+describe('removeCommands', () => {
+  beforeEach(() => setup());
+  afterEach(() => teardown());
+
+  it('removes flat-style commands/brain/ directory', () => {
+    const targetDir = path.join(tmpDir, '.claude');
+    const commandsDir = path.join(targetDir, 'commands', 'brain');
+    fs.mkdirSync(commandsDir, { recursive: true });
+    fs.writeFileSync(path.join(commandsDir, 'init.md'), '# Init');
+    fs.writeFileSync(path.join(commandsDir, 'memorize.md'), '# Memorize');
+
+    const removed = removeCommands(targetDir, RUNTIMES.claude);
+
+    assert.equal(removed.length, 1);
+    assert.ok(!fs.existsSync(commandsDir));
+    // Parent commands/ dir should still exist
+    assert.ok(fs.existsSync(path.join(targetDir, 'commands')));
+  });
+
+  it('removes skills-style brain-* directories', () => {
+    const targetDir = path.join(tmpDir, '.codex');
+    const skillsDir = path.join(targetDir, 'skills');
+    fs.mkdirSync(path.join(skillsDir, 'brain-init'), { recursive: true });
+    fs.mkdirSync(path.join(skillsDir, 'brain-memorize'), { recursive: true });
+    fs.writeFileSync(path.join(skillsDir, 'brain-init', 'SKILL.md'), '# Init');
+    fs.writeFileSync(path.join(skillsDir, 'brain-memorize', 'SKILL.md'), '# Memorize');
+    // Add a non-brain skill that should be preserved
+    fs.mkdirSync(path.join(skillsDir, 'other-skill'), { recursive: true });
+    fs.writeFileSync(path.join(skillsDir, 'other-skill', 'SKILL.md'), '# Other');
+
+    const removed = removeCommands(targetDir, RUNTIMES.openai);
+
+    assert.equal(removed.length, 2);
+    assert.ok(!fs.existsSync(path.join(skillsDir, 'brain-init')));
+    assert.ok(!fs.existsSync(path.join(skillsDir, 'brain-memorize')));
+    // Non-brain skill should be preserved
+    assert.ok(fs.existsSync(path.join(skillsDir, 'other-skill', 'SKILL.md')));
+  });
+
+  it('returns empty array when no commands exist', () => {
+    const targetDir = path.join(tmpDir, '.claude');
+    fs.mkdirSync(targetDir, { recursive: true });
+
+    const removed = removeCommands(targetDir, RUNTIMES.claude);
+
+    assert.deepEqual(removed, []);
+  });
+});
+
+// ===========================================================================
+// uninstallForRuntime — round-trip test
+// ===========================================================================
+describe('uninstallForRuntime', () => {
+  let savedDirs;
+
+  beforeEach(() => {
+    setup();
+    savedDirs = {
+      claude: { local: RUNTIMES.claude.localDir, global: RUNTIMES.claude.globalDir },
+      gemini: { local: RUNTIMES.gemini.localDir, global: RUNTIMES.gemini.globalDir },
+      openai: { local: RUNTIMES.openai.localDir, global: RUNTIMES.openai.globalDir },
+    };
+    RUNTIMES.claude.localDir = path.join(tmpDir, '.claude');
+    RUNTIMES.gemini.localDir = path.join(tmpDir, '.gemini');
+    RUNTIMES.openai.localDir = path.join(tmpDir, '.codex');
+    RUNTIMES.claude.globalDir = path.join(tmpDir, 'global', '.claude');
+    RUNTIMES.gemini.globalDir = path.join(tmpDir, 'global', '.gemini');
+    RUNTIMES.openai.globalDir = path.join(tmpDir, 'global', '.codex');
+  });
+  afterEach(() => {
+    RUNTIMES.claude.localDir = savedDirs.claude.local;
+    RUNTIMES.gemini.localDir = savedDirs.gemini.local;
+    RUNTIMES.openai.localDir = savedDirs.openai.local;
+    RUNTIMES.claude.globalDir = savedDirs.claude.global;
+    RUNTIMES.gemini.globalDir = savedDirs.gemini.global;
+    RUNTIMES.openai.globalDir = savedDirs.openai.global;
+    teardown();
+  });
+
+  // NOTE: All uninstallForRuntime tests use GLOBAL scope because local scope
+  // writes prompts to './CLAUDE.md' (cwd), which would modify the real project
+  // file during testing. Global scope paths are fully overridden to tmpDir.
+
+  it('install then uninstall leaves no brain commands (claude flat, global)', () => {
+    installForRuntime('claude', 'global');
+    const commandsDir = path.join(tmpDir, 'global', '.claude', 'commands', 'brain');
+    assert.ok(fs.existsSync(commandsDir), 'Commands should exist after install');
+
+    uninstallForRuntime('claude', 'global');
+
+    assert.ok(!fs.existsSync(commandsDir), 'Commands should be gone after uninstall');
+  });
+
+  it('install then uninstall leaves no brain commands (openai skills, global)', () => {
+    installForRuntime('openai', 'global');
+    const skillsDir = path.join(tmpDir, 'global', '.codex', 'skills');
+    assert.ok(fs.existsSync(path.join(skillsDir, 'brain-init', 'SKILL.md')));
+
+    uninstallForRuntime('openai', 'global');
+
+    const remaining = fs.existsSync(skillsDir)
+      ? fs.readdirSync(skillsDir).filter((d) => d.startsWith('brain-'))
+      : [];
+    assert.equal(remaining.length, 0);
+  });
+
+  it('install then uninstall removes prompt markers (global)', () => {
+    installForRuntime('claude', 'global');
+    const promptPath = path.join(tmpDir, 'global', '.claude', 'CLAUDE.md');
+    assert.ok(fs.readFileSync(promptPath, 'utf-8').includes(BRAIN_MARKER_START));
+
+    uninstallForRuntime('claude', 'global');
+
+    // File was only the brain section — removePromptSection deletes empty files
+    assert.ok(!fs.existsSync(promptPath), 'Prompt file should be deleted when only brain section existed');
+  });
+
+  it('full round-trip: install → detect → uninstall → verify clean (global)', () => {
+    installForRuntime('claude', 'global');
+
+    // Detect should find it
+    let detections = detectInstallations();
+    let claude = detections.find((r) => r.runtime === 'claude' && r.scope === 'global');
+    assert.ok(claude);
+    assert.ok(claude.commandsFound);
+
+    // Uninstall
+    const result = uninstallForRuntime('claude', 'global');
+    assert.ok(result.removedCommands.length > 0);
+
+    // Commands should be gone
+    const commandsDir = path.join(tmpDir, 'global', '.claude', 'commands', 'brain');
+    assert.ok(!fs.existsSync(commandsDir));
+
+    // Prompt file should be gone (it was only the brain section)
+    const promptPath = path.join(tmpDir, 'global', '.claude', 'CLAUDE.md');
+    assert.ok(!fs.existsSync(promptPath) ||
+      !fs.readFileSync(promptPath, 'utf-8').includes(BRAIN_MARKER_START));
   });
 });
