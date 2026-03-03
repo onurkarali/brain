@@ -97,6 +97,37 @@ Then append the contents of the corresponding prompt file to your agent's instru
 | `/brain:status` | Dashboard with brain health metrics and recommendations |
 | `/brain:sync [subcommand]` | Cloud sync — push/pull memories to Dropbox, Google Drive, or OneDrive |
 
+## Session Lifecycle
+
+Brain Memory works automatically in the background — no commands needed for basic context awareness.
+
+### Session Start
+
+When a session begins and `.brain/` exists, the agent automatically:
+
+1. Reads the brain index and loads the top 3-5 memories relevant to the current project
+2. Checks the review queue for memories due for spaced repetition
+3. Outputs a brief status line:
+
+```
+🧠 Brain active — 42 memories loaded (8 in current project context)
+📋 3 memories due for review — run /brain:review
+```
+
+The agent silently internalizes relevant memories and references them naturally during the session — no information dump.
+
+### Session End
+
+When a session ends, the agent evaluates whether significant decisions, learnings, insights, or experiences occurred. If so, it suggests:
+
+```
+💡 This session contained notable decisions and learnings.
+   Would you like to store them as brain memories?
+   Run /brain:memorize to capture them before this context is lost.
+```
+
+The agent never auto-memorizes without user consent. Session context is always saved to `.brain/contexts.json` for context-dependent recall.
+
 ## How It Works
 
 ### Memory Lifecycle

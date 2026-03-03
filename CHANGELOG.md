@@ -8,7 +8,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Fixed
 
+- Session lifecycle was dead code — session-start/end hook instructions were defined in `hooks/` but never installed or referenced anywhere. The prompt injected into CLAUDE.md/GEMINI.md/AGENTS.md only had a weak one-liner about memorization. Now all three prompt files contain full "Session Start Behavior" and "Session End Behavior" sections with automatic brain context loading, review queue alerts, and end-of-session memorization suggestions.
 - `release:beta` npm script now automatically updates the `latest` dist-tag after publishing
+
+### Changed
+
+- Extracted installer logic from `bin/install.js` into `src/installer.js` for testability — `bin/install.js` is now a thin CLI wrapper
+- Hook files (`hooks/session-start.md`, `hooks/session-end.md`) now have reference notes clarifying that behavior is delivered through prompt injection, not native hook events
+- Removed dead `settingsFile` config from runtime definitions — it was never used
+- Removed `hooks/` from npm package since they are internal reference docs, not user-facing files
+
+### Added
+
+- 74 new tests: installer unit tests (`test/install.test.js`) and prompt content validation + integration tests (`test/prompts.test.js`)
 
 ## [0.1.0-beta.4] - 2026-03-03
 
@@ -72,6 +84,6 @@ Initial beta release.
 - Multi-factor recall scoring formula (relevance, strength, recency, spreading, context, salience)
 - Multi-runtime installer: Claude Code, Gemini CLI, OpenAI Codex CLI
 - Interactive and non-interactive installation modes
-- Session lifecycle hooks (session-start, session-end)
+- Session lifecycle hook definitions (session-start, session-end)
 - 114 tests covering scorer, index-manager, and end-to-end lifecycle
 - Zero external dependencies

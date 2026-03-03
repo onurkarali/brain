@@ -1,0 +1,231 @@
+const fs = require('fs');
+const path = require('path');
+const os = require('os');
+
+const PACKAGE_ROOT = path.resolve(__dirname, '..');
+
+const RUNTIMES = {
+  claude: {
+    name: 'Claude Code',
+    globalDir: path.join(os.homedir(), '.claude'),
+    localDir: '.claude',
+    commandsSubdir: 'commands',
+    promptFile: 'CLAUDE.md',
+    promptSource: 'claude.md',
+    commandStyle: 'flat',
+  },
+  gemini: {
+    name: 'Gemini CLI',
+    globalDir: path.join(os.homedir(), '.gemini'),
+    localDir: '.gemini',
+    commandsSubdir: 'commands',
+    promptFile: 'GEMINI.md',
+    promptSource: 'gemini.md',
+    commandStyle: 'flat',
+  },
+  openai: {
+    name: 'OpenAI Codex CLI',
+    globalDir: path.join(os.homedir(), '.codex'),
+    localDir: '.codex',
+    commandsSubdir: 'skills',
+    promptFile: 'AGENTS.md',
+    promptSource: 'openai.md',
+    commandStyle: 'skills',
+  },
+};
+
+const BRAIN_MARKER_START = '<!-- BRAIN-MEMORY-START -->';
+const BRAIN_MARKER_END = '<!-- BRAIN-MEMORY-END -->';
+
+function copyDir(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  const entries = fs.readdirSync(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) {
+      copyDir(srcPath, destPath);
+    } else {
+      fs.copyFileSync(srcPath, destPath);
+    }
+  }
+}
+
+function installSkills(commandsSrc, skillsDest) {
+  const entries = fs.readdirSync(commandsSrc).filter((f) => f.endsWith('.md'));
+  for (const file of entries) {
+    const name = file.replace('.md', '');
+    const skillDir = path.join(skillsDest, `brain-${name}`);
+    fs.mkdirSync(skillDir, { recursive: true });
+    fs.copyFileSync(
+      path.join(commandsSrc, file),
+      path.join(skillDir, 'SKILL.md')
+    );
+  }
+}
+
+function injectPrompt(targetDir, promptFile, promptSource) {
+  const promptContent = fs.readFileSync(
+    path.join(PACKAGE_ROOT, 'prompts', promptSource),
+    'utf-8'
+  );
+  const targetPath = path.join(targetDir, promptFile);
+
+  const wrappedContent = `\n${BRAIN_MARKER_START}\n${promptContent}\n${BRAIN_MARKER_END}\n`;
+
+  if (fs.existsSync(targetPath)) {
+    let existing = fs.readFileSync(targetPath, 'utf-8');
+    // Remove old brain section if present
+    const startIdx = existing.indexOf(BRAIN_MARKER_START);
+    const endIdx = existing.indexOf(BRAIN_MARKER_END);
+    if (startIdx !== -1 && endIdx !== -1) {
+      existing =
+        existing.substring(0, startIdx) +
+        existing.substring(endIdx + BRAIN_MARKER_END.length);
+    }
+    fs.writeFileSync(targetPath, existing.trimEnd() + '\n' + wrappedContent);
+  } else {
+    fs.writeFileSync(targetPath, wrappedContent.trim() + '\n');
+  }
+}
+
+function installForRuntime(runtime, scope) {
+  const config = RUNTIMES[runtime];
+  const targetDir = scope === 'global' ? config.globalDir : config.localDir;
+  const commandsSrc = path.join(PACKAGE_ROOT, 'commands', 'brain');
+
+  if (config.commandStyle === 'skills') {
+    const skillsDest = path.join(targetDir, config.commandsSubdir);
+    installSkills(commandsSrc, skillsDest);
+  } else {
+    const commandsDest = path.join(targetDir, config.commandsSubdir, 'brain');
+    copyDir(commandsSrc, commandsDest);
+  }
+
+  const promptTarget = scope === 'global' ? config.globalDir : '.';
+  injectPrompt(promptTarget, config.promptFile, config.promptSource);
+}
+
+function initializeBrain(projectDir) {
+  const brainDir = path.join(projectDir || process.cwd(), '.brain');
+
+  if (fs.existsSync(brainDir)) {
+    return { alreadyExists: true };
+  }
+
+  const now = new Date().toISOString();
+
+  // Create directories
+  const categories = ['professional', 'personal', 'social', 'family', '_consolidated', '_archived'];
+  for (const cat of categories) {
+    fs.mkdirSync(path.join(brainDir, cat), { recursive: true });
+  }
+
+  // Create index.json
+  const index = {
+    version: 2,
+    created: now,
+    last_updated: now,
+    memory_count: 0,
+    memories: {},
+    config: {
+      max_depth: 6,
+      consolidation_threshold: 0.3,
+      decay_check_interval_days: 7,
+      strength_boost_on_recall: 0.05,
+      auto_consolidate: true,
+      propagation_window_days: 7,
+      association_config: {
+        co_retrieval_boost: 0.10,
+        link_decay_rate: 0.998,
+        link_prune_threshold: 0.05,
+        spreading_activation_depth: 2,
+        spreading_activation_decay: 0.5,
+      },
+    },
+  };
+  fs.writeFileSync(
+    path.join(brainDir, 'index.json'),
+    JSON.stringify(index, null, 2) + '\n'
+  );
+
+  // Create associations.json
+  fs.writeFileSync(
+    path.join(brainDir, 'associations.json'),
+    JSON.stringify({ version: 1, edges: {} }, null, 2) + '\n'
+  );
+
+  // Create contexts.json
+  fs.writeFileSync(
+    path.join(brainDir, 'contexts.json'),
+    JSON.stringify({ version: 1, sessions: [] }, null, 2) + '\n'
+  );
+
+  // Create review-queue.json
+  fs.writeFileSync(
+    path.join(brainDir, 'review-queue.json'),
+    JSON.stringify({ version: 1, items: [] }, null, 2) + '\n'
+  );
+
+  // Create _archived/index.json
+  fs.writeFileSync(
+    path.join(brainDir, '_archived', 'index.json'),
+    JSON.stringify({ version: 1, archived_count: 0, memories: {} }, null, 2) + '\n'
+  );
+
+  // Load category descriptions from template
+  const templatePath = path.join(PACKAGE_ROOT, 'templates', 'default-categories.json');
+  let template = { top_categories: [] };
+  if (fs.existsSync(templatePath)) {
+    template = JSON.parse(fs.readFileSync(templatePath, 'utf-8'));
+  }
+
+  // Create _meta.json for each category
+  const mainCategories = ['professional', 'personal', 'social', 'family'];
+  for (const cat of mainCategories) {
+    const templateCat = template.top_categories.find((c) => c.name === cat) || {};
+    const meta = {
+      category: cat,
+      description: templateCat.description || cat,
+      created: now,
+      memory_count: 0,
+      subcategories: [],
+    };
+    fs.writeFileSync(
+      path.join(brainDir, cat, '_meta.json'),
+      JSON.stringify(meta, null, 2) + '\n'
+    );
+  }
+
+  // Create _meta.json for special directories
+  for (const special of ['_consolidated', '_archived']) {
+    const meta = {
+      category: special,
+      description:
+        special === '_consolidated'
+          ? 'Merged memories from consolidation operations'
+          : 'Archived memories preserved for recovery',
+      created: now,
+      memory_count: 0,
+      subcategories: [],
+    };
+    fs.writeFileSync(
+      path.join(brainDir, special, '_meta.json'),
+      JSON.stringify(meta, null, 2) + '\n'
+    );
+  }
+
+  return { alreadyExists: false, brainDir };
+}
+
+module.exports = {
+  RUNTIMES,
+  BRAIN_MARKER_START,
+  BRAIN_MARKER_END,
+  PACKAGE_ROOT,
+  copyDir,
+  installSkills,
+  injectPrompt,
+  installForRuntime,
+  initializeBrain,
+};

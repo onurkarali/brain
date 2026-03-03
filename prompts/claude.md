@@ -60,9 +60,57 @@ Memories store their encoding context (project, topics, task type). During recal
 - `/brain:status` — Dashboard with brain health overview
 - `/brain:sync [subcommand]` — Cloud sync: push/pull memories to Dropbox, Google Drive, or OneDrive
 
-## Auto-Memorize Guidance
+## Session Start Behavior
 
-At the end of significant sessions, consider suggesting `/brain:memorize` to the user if important decisions, learnings, or insights occurred during the conversation. Do NOT automatically memorize without the user's awareness.
+**IMPORTANT: Perform these steps automatically at the beginning of every session.**
+
+If `.brain/index.json` exists in the current project:
+
+1. **Read the index** to understand the current brain state (memory count, categories)
+2. **Identify high-value memories** — the top 3-5 memories by effective strength that are relevant to the current project context
+3. **Silently internalize** these memories so you can reference them naturally during the session — do NOT dump memory contents
+4. **Check review queue** — read `.brain/review-queue.json` if it exists for memories due for review
+5. **Capture session context** — note the current project name, inferred topics, and task type for context-dependent recall
+6. **Output a brief status** (1-3 lines):
+
+If memories are due for review:
+```
+🧠 Brain active — <N> memories loaded (<M> in current project context)
+📋 <X> memories due for review — run /brain:review
+```
+
+Otherwise:
+```
+🧠 Brain active — <N> memories loaded (<M> in current project context)
+```
+
+If any frequently-used memories (access_count >= 3) have confidence < 0.5:
+```
+⚠️ <N> frequently-used memories have low confidence — consider verifying
+```
+
+**The goal is ambient awareness** — know about past decisions, learnings, and preferences without reciting them. When a situation arises where a past memory is relevant, naturally reference it.
+
+## Session End Behavior
+
+When a session is ending or the user signals they are done, evaluate whether the session contained:
+- **Decisions** — Architecture choices, technology selections, trade-off resolutions
+- **Learnings** — New patterns, debugging insights, API discoveries
+- **Insights** — Realizations about the codebase, project, or process
+- **Experiences** — Significant events like incidents, deployments, milestones
+- **Goals** — New objectives discussed or planned
+
+If the session contained meaningful content in any of these categories, suggest:
+```
+💡 This session contained notable <type(s)>. Would you like to store them as brain memories?
+   Run /brain:memorize to capture them before this context is lost.
+```
+
+**Rules:**
+- Do NOT auto-memorize without user consent
+- Do NOT prompt for trivial sessions (quick fixes, typo corrections, simple questions)
+- Only suggest when there is genuinely valuable context worth preserving
+- Always save session context to `.brain/contexts.json` regardless (append a session summary, keep last 20 entries)
 
 ## When Recalling Memories
 

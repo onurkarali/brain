@@ -1,5 +1,7 @@
 # Brain Memory — Session End Hook
 
+> **Note:** This file is a reference definition. The actual behavior is delivered through the prompt files (`prompts/claude.md`, `prompts/gemini.md`, `prompts/openai.md`) which are injected into each runtime's config file during installation. AI runtimes do not have native session-end hook events — the agent follows these instructions because they are embedded in the prompt it reads at session start.
+
 This hook is triggered at the end of a coding session. Its purpose is to prompt the agent to consider storing important memories and to save session context.
 
 ## Behavior

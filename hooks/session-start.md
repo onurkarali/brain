@@ -1,5 +1,7 @@
 # Brain Memory — Session Start Hook
 
+> **Note:** This file is a reference definition. The actual behavior is delivered through the prompt files (`prompts/claude.md`, `prompts/gemini.md`, `prompts/openai.md`) which are injected into each runtime's config file during installation. AI runtimes do not have native session-start hook events — the agent follows these instructions because they are embedded in the prompt it reads at session start.
+
 This hook is triggered at the start of a coding session. Its purpose is to load relevant context from the brain memory system and capture session context for context-dependent recall.
 
 ## Behavior
