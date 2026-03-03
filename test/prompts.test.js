@@ -165,7 +165,7 @@ describe('Prompt content consistency across runtimes', () => {
       '## Session Start Behavior',
       '## Session End Behavior',
       '## When Recalling Memories',
-      '## Cloud Sync',
+      '## Portable Sync',
     ];
 
     for (const section of coreSections) {

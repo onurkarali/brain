@@ -58,7 +58,7 @@ Memories store their encoding context (project, topics, task type). During recal
 - `/brain:sunshine [target]` — Deep forensic erasure — trace and remove all references to a memory
 - `/brain:sleep [scope]` — Full maintenance cycle: replay, synaptic homeostasis, knowledge propagation, semantic crystallization, reorganize, consolidate, prune, REM dreaming, and expertise detection
 - `/brain:status` — Dashboard with brain health overview
-- `/brain:sync [subcommand]` — Cloud sync: push/pull memories to Dropbox, Google Drive, or OneDrive
+- `/brain:sync [subcommand]` — Sync memories via Git remote or export/import for portability
 
 ## Session Start Behavior
 
@@ -123,6 +123,11 @@ When the user asks you to "remember" something, or when context from past sessio
 6. Strengthen Hebbian links between co-retrieved memories
 7. If no active matches, search the archive (`.brain/_archived/`)
 
-## Cloud Sync
+## Portable Sync
 
-Brain memories can be synced across devices via `/brain:sync`. Supports Dropbox, Google Drive, and OneDrive with optional AES-256-GCM encryption. Sync is always manual (push/pull) — never automatic. Run `/brain:sync login` to set up, then use `/brain:sync push` and `/brain:sync pull` to keep memories in sync.
+Brain memories can be synced across devices in two ways:
+
+1. **Git remote** — Push/pull `.brain/` to any private Git repository (GitHub, GitLab, Codeberg, self-hosted). Run `/brain:sync setup <url>` to configure, then use `/brain:sync push` and `/brain:sync pull`.
+2. **Export/Import** — Pack the entire `.brain/` into a single portable file for manual transfer. Run `/brain:sync export` and `/brain:sync import <path>`.
+
+Both methods support optional AES-256-GCM encryption. Sync is always manual — never automatic.

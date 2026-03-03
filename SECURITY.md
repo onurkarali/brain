@@ -13,10 +13,9 @@ You should receive a response within 48 hours. Please include:
 
 Brain Memory handles sensitive data in several areas:
 
-- **OAuth tokens** — Stored locally in `.brain/.sync/credentials.enc`, encrypted with AES-256-GCM
-- **AES-256-GCM encryption** — Optional encryption for cloud-synced memory files using a user-provided passphrase
+- **AES-256-GCM encryption** — Optional encryption for Git-synced and exported memory files using a user-provided passphrase (PBKDF2-SHA512, 100K iterations)
 - **File system access** — Reads and writes to the `.brain/` directory tree
-- **Cloud provider APIs** — Communicates with Dropbox, Google Drive, and OneDrive APIs when sync is configured
+- **Git operations** — When sync is configured, pushes/pulls to a user-specified Git remote using the system `git` binary and the user's existing Git/SSH authentication
 
 ## Supported Versions
 
@@ -27,5 +26,5 @@ Brain Memory handles sensitive data in several areas:
 ## Design Principles
 
 - **No runtime dependencies** — Reduces supply chain attack surface
-- **Local-first** — Sensitive data stays on disk by default; cloud sync is opt-in
-- **User-owned credentials** — Users register their own OAuth apps; Brain Memory never has access to a shared client secret
+- **Local-first** — Sensitive data stays on disk by default; sync is opt-in
+- **No stored credentials** — Git sync relies on the user's existing SSH keys or Git credential helpers; Brain Memory never stores auth tokens

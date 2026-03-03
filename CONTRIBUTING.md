@@ -51,15 +51,9 @@ brain/
 ├── src/
 │   ├── scorer.js               # Decay, spreading activation, context matching, spaced reinforcement
 │   ├── index-manager.js        # Index, associations, contexts, review queue, archive CRUD
-│   └── sync/                   # Cloud sync module
-│       ├── crypto-utils.js     # AES-256-GCM encryption + credential storage
-│       ├── oauth.js            # OAuth2 PKCE + Device Code Flow
-│       ├── provider.js         # SyncProvider base class + factory
-│       ├── sync-engine.js      # Local-first sync with 3-way diff
-│       └── providers/
-│           ├── dropbox.js      # Dropbox API v2
-│           ├── google-drive.js # Google Drive API v3
-│           └── onedrive.js     # Microsoft Graph API
+│   ├── crypto.js               # AES-256-GCM encryption (PBKDF2 key derivation)
+│   ├── git-sync.js             # Git-based sync engine (push/pull via system git)
+│   └── export-import.js        # Single-file encrypted export/import
 ├── CLAUDE.md                   # Development guide for this repo
 ├── package.json
 └── README.md

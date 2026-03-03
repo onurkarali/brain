@@ -95,7 +95,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 | `/brain:sunshine [target]` | Deep forensic erasure — trace and remove all references |
 | `/brain:sleep [scope]` | Full maintenance cycle — 9 neuroscience-inspired phases |
 | `/brain:status` | Dashboard with brain health metrics and recommendations |
-| `/brain:sync [subcommand]` | Cloud sync — push/pull memories to Dropbox, Google Drive, or OneDrive |
+| `/brain:sync [subcommand]` | Sync memories via Git remote or export/import for portability |
 
 ## Session Lifecycle
 
@@ -358,24 +358,28 @@ Each expertise area gets an `_expertise.md` profile documenting what you know we
 
 Failed recalls reset the interval to 1 day. Successful recalls extend the interval by the ease factor. This ensures you spend time on memories that need reinforcement, not ones you already know well.
 
-### Cloud Sync
+### Portable Sync
 
-`/brain:sync` lets you push and pull your `.brain/` memories to a cloud provider for cross-device access. Supports **Dropbox**, **Google Drive**, and **OneDrive** with zero npm dependencies (uses Node.js 18+ built-in `fetch`).
+`/brain:sync` provides two ways to sync memories across devices — no OAuth apps, no cloud provider setup.
+
+**Git remote** — Push/pull `.brain/` to any private Git repository. Works with GitHub, GitLab, Codeberg, or any self-hosted Git server. Uses your existing Git/SSH authentication — no additional credentials needed.
+
+**Export/Import** — Pack the entire `.brain/` into a single encrypted file for manual transfer via USB, email, or any file-sharing service.
 
 **Key features:**
 - **Manual push/pull** — No background watchers, no auto-sync. You control when data moves.
-- **Three-way diff** — Compares local state, remote state, and last-known sync state to detect changes and conflicts.
-- **Conflict resolution** — When the same file is modified locally and remotely, sync detects the conflict and lets you choose: keep local, keep remote, or keep both.
-- **Optional encryption** — AES-256-GCM encryption with a user-provided passphrase. When enabled, all files are encrypted before upload and decrypted after download. The cloud provider only ever sees opaque bytes.
-- **OAuth2 authentication** — PKCE authorization code flow with a Device Code Flow fallback for headless/SSH environments. Users register their own OAuth app with the provider and supply their client ID.
+- **Optional encryption** — AES-256-GCM encryption with a user-provided passphrase. When enabled, all files are encrypted before committing or exporting.
+- **Merge mode** — Import supports merge mode (only import newer files) or overwrite mode.
+- **Zero dependencies** — Uses Node.js built-in `crypto` and the system `git` binary.
 
 **Setup:**
-1. Register an OAuth app with your chosen provider (Dropbox / Google Drive / OneDrive)
-2. Run `/brain:sync login <provider>` and provide your client ID
-3. Authorize in the browser (or enter the device code for headless environments)
-4. Use `/brain:sync push` and `/brain:sync pull` to keep memories in sync
+1. Create a private Git repo (e.g., `gh repo create brain-data --private`)
+2. Run `/brain:sync setup git@github.com:you/brain-data.git`
+3. Use `/brain:sync push` and `/brain:sync pull` to keep memories in sync
 
-Sync state is stored locally in `.brain/.sync/` and is never uploaded to the cloud.
+For one-off transfers, use `/brain:sync export` and `/brain:sync import <path>`.
+
+Sync state is stored locally in `.brain/.sync/` and is never pushed to the remote.
 
 ## File Structure
 
@@ -410,10 +414,9 @@ Sync state is stored locally in `.brain/.sync/` and is never uploaded to the clo
 ├── _archived/              # Decayed memories (recoverable + searchable)
 │   ├── _meta.json
 │   └── index.json          # Searchable archive index
-└── .sync/                  # Cloud sync state (never synced, local only)
-    ├── config.json          # Provider, client ID, encryption flag
-    ├── credentials.enc      # AES-256-GCM encrypted OAuth tokens
-    └── sync-state.json      # Per-file revisions, cursor, conflicts
+└── .sync/                  # Sync state (local only, never pushed)
+    ├── config.json          # Remote URL, encryption flag
+    └── repo/                # Hidden git repo for sync
 ```
 
 Subdirectories are created **on demand** — the agent decides placement depth based on how specific the memory is. A generic career thought lands in `professional/`, but a specific deployment incident goes to `professional/companies/acme/projects/alpha/`.

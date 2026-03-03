@@ -6,21 +6,33 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
-### Fixed
+### Added
 
-- Session lifecycle was dead code — session-start/end hook instructions were defined in `hooks/` but never installed or referenced anywhere. The prompt injected into CLAUDE.md/GEMINI.md/AGENTS.md only had a weak one-liner about memorization. Now all three prompt files contain full "Session Start Behavior" and "Session End Behavior" sections with automatic brain context loading, review queue alerts, and end-of-session memorization suggestions.
-- `release:beta` npm script now automatically updates the `latest` dist-tag after publishing
+- Git-based sync — push/pull `.brain/` to any private Git remote (GitHub, GitLab, Codeberg, self-hosted) via `/brain:sync setup/push/pull`
+- Export/Import — single-file encrypted backup for portable transfers via `/brain:sync export` and `/brain:sync import`
+- `src/crypto.js` — standalone AES-256-GCM crypto module extracted from the old sync code
+- `src/git-sync.js` — Git sync engine using `child_process.execFileSync`
+- `src/export-import.js` — single-file export/import with encryption and merge mode
+- 74 new tests: installer unit tests (`test/install.test.js`) and prompt content validation + integration tests (`test/prompts.test.js`)
 
 ### Changed
 
+- `/brain:sync` now uses Git remotes instead of OAuth cloud providers — no more registering OAuth apps
+- Replaced cloud sync dashboard in `/brain:status` with git sync status (remote URL, ahead/behind counts)
 - Extracted installer logic from `bin/install.js` into `src/installer.js` for testability — `bin/install.js` is now a thin CLI wrapper
 - Hook files (`hooks/session-start.md`, `hooks/session-end.md`) now have reference notes clarifying that behavior is delivered through prompt injection, not native hook events
 - Removed dead `settingsFile` config from runtime definitions — it was never used
 - Removed `hooks/` from npm package since they are internal reference docs, not user-facing files
 
-### Added
+### Removed
 
-- 74 new tests: installer unit tests (`test/install.test.js`) and prompt content validation + integration tests (`test/prompts.test.js`)
+- Cloud sync module (`src/sync/`) — OAuth2, Dropbox, Google Drive, and OneDrive providers
+- OAuth token storage (`credentials.enc`) and three-way diff sync state (`sync-state.json`)
+
+### Fixed
+
+- Session lifecycle was dead code — session-start/end hook instructions were defined in `hooks/` but never installed or referenced anywhere. The prompt injected into CLAUDE.md/GEMINI.md/AGENTS.md only had a weak one-liner about memorization. Now all three prompt files contain full "Session Start Behavior" and "Session End Behavior" sections with automatic brain context loading, review queue alerts, and end-of-session memorization suggestions.
+- `release:beta` npm script now automatically updates the `latest` dist-tag after publishing
 
 ## [0.1.0-beta.4] - 2026-03-03
 
