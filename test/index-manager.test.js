@@ -61,9 +61,9 @@ describe('getBrainDir', () => {
     assert.equal(getBrainDir(input), path.join(input, '.brain'));
   });
 
-  it('defaults to cwd when no arg', () => {
+  it('defaults to ~/.brain when no arg', () => {
     const result = getBrainDir();
-    assert.equal(result, path.join(process.cwd(), '.brain'));
+    assert.equal(result, path.join(os.homedir(), '.brain'));
   });
 });
 

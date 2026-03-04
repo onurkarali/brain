@@ -1,14 +1,15 @@
 /**
  * Brain Memory — Index Manager
  *
- * Utilities for reading, updating, and maintaining the .brain/index.json
+ * Utilities for reading, updating, and maintaining the ~/.brain/index.json
  * file. Used by hooks and external integrations.
  */
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 
-const DEFAULT_BRAIN_DIR = '.brain';
+const DEFAULT_BRAIN_DIR = path.join(os.homedir(), '.brain');
 const INDEX_FILE = 'index.json';
 const ASSOCIATIONS_FILE = 'associations.json';
 const CONTEXTS_FILE = 'contexts.json';
@@ -18,11 +19,12 @@ const ARCHIVE_INDEX_FILE = '_archived/index.json';
 /**
  * Resolve the brain directory path.
  *
- * @param {string} [projectRoot] - Project root directory (defaults to cwd)
- * @returns {string} Absolute path to .brain/
+ * @param {string} [overrideBase] - Override base directory (for testing)
+ * @returns {string} Absolute path to ~/.brain/ (or overrideBase/.brain/ if provided)
  */
-function getBrainDir(projectRoot) {
-  return path.join(projectRoot || process.cwd(), DEFAULT_BRAIN_DIR);
+function getBrainDir(overrideBase) {
+  if (overrideBase) return path.join(overrideBase, '.brain');
+  return DEFAULT_BRAIN_DIR;
 }
 
 /**
@@ -106,7 +108,7 @@ function generateId() {
 /**
  * Read a _meta.json file from a brain subdirectory.
  *
- * @param {string} categoryPath - Relative path within .brain/
+ * @param {string} categoryPath - Relative path within ~/.brain/
  * @param {string} [projectRoot] - Project root directory
  * @returns {Object|null} Parsed meta or null
  */
@@ -119,7 +121,7 @@ function readMeta(categoryPath, projectRoot) {
 /**
  * Write a _meta.json file to a brain subdirectory.
  *
- * @param {string} categoryPath - Relative path within .brain/
+ * @param {string} categoryPath - Relative path within ~/.brain/
  * @param {Object} meta - Meta object to write
  * @param {string} [projectRoot] - Project root directory
  */

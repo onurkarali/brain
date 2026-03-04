@@ -1,8 +1,8 @@
 /**
  * Brain Memory — Git Sync Engine
  *
- * Push/pull .brain/ memories via any Git remote (GitHub, GitLab, Codeberg, etc.).
- * A hidden git repo lives at .brain/.sync/repo/ — the project's own git history
+ * Push/pull ~/.brain/ memories via any Git remote (GitHub, GitLab, Codeberg, etc.).
+ * A hidden git repo lives at ~/.brain/.sync/repo/ — the project's own git history
  * is never touched.
  *
  * Zero external dependencies — uses child_process.execFileSync to call the git binary.
@@ -17,7 +17,7 @@ const SYNC_DIR = '.sync';
 const REPO_DIR = 'repo';
 const CONFIG_FILE = 'config.json';
 
-// Files/dirs inside .brain/ that should NOT be synced
+// Files/dirs inside ~/.brain/ that should NOT be synced
 const EXCLUDED = new Set(['.sync', '.DS_Store']);
 
 /**
@@ -37,7 +37,7 @@ function checkGitAvailable() {
 /**
  * Run a git command inside the sync repo.
  *
- * @param {string} repoDir - Absolute path to .brain/.sync/repo/
+ * @param {string} repoDir - Absolute path to ~/.brain/.sync/repo/
  * @param {string[]} args - Git arguments
  * @param {Object} [opts] - Extra execFileSync options
  * @returns {string} stdout (trimmed)
@@ -45,7 +45,7 @@ function checkGitAvailable() {
 function git(repoDir, args, opts = {}) {
   // Explicitly set GIT_DIR and GIT_WORK_TREE to prevent git from walking up
   // the directory tree and finding the parent project's .git directory.
-  // Without this, if .brain/.sync/repo/.git doesn't exist yet (first push or
+  // Without this, if ~/.brain/.sync/repo/.git doesn't exist yet (first push or
   // failed init), git operations would silently affect the parent project repo.
   const env = {
     ...process.env,
@@ -64,7 +64,7 @@ function git(repoDir, args, opts = {}) {
 /**
  * Resolve paths for sync infrastructure.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @returns {{ syncDir: string, repoDir: string, configPath: string }}
  */
 function resolvePaths(brainDir) {
@@ -75,9 +75,9 @@ function resolvePaths(brainDir) {
 }
 
 /**
- * Initialize a git repo inside .brain/.sync/repo/.
+ * Initialize a git repo inside ~/.brain/.sync/repo/.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @returns {{ repoDir: string }} Created repo path
  */
 function initSyncRepo(brainDir) {
@@ -94,7 +94,7 @@ function initSyncRepo(brainDir) {
 /**
  * Configure (or update) the remote URL for the sync repo.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string} remoteUrl - Git remote URL (SSH or HTTPS)
  */
 function configureRemote(brainDir, remoteUrl) {
@@ -111,11 +111,11 @@ function configureRemote(brainDir, remoteUrl) {
 }
 
 /**
- * Copy .brain/ files into the sync repo, excluding .sync/.
+ * Copy ~/.brain/ files into the sync repo, excluding .sync/.
  * If encryption is enabled, files are encrypted before writing.
  *
- * @param {string} brainDir - Absolute path to .brain/
- * @param {string} repoDir - Absolute path to .brain/.sync/repo/
+ * @param {string} brainDir - Absolute path to ~/.brain/
+ * @param {string} repoDir - Absolute path to ~/.brain/.sync/repo/
  * @param {string|null} passphrase - Encryption passphrase or null
  */
 function copyBrainToRepo(brainDir, repoDir, passphrase) {
@@ -126,7 +126,7 @@ function copyBrainToRepo(brainDir, repoDir, passphrase) {
     fs.rmSync(path.join(repoDir, entry), { recursive: true, force: true });
   }
 
-  // Recursively copy .brain/ → repo/
+  // Recursively copy ~/.brain/ → repo/
   copyDir(brainDir, repoDir, brainDir, passphrase);
 }
 
@@ -163,11 +163,11 @@ function copyDir(srcDir, destDir, brainDir, passphrase) {
 }
 
 /**
- * Copy files from the sync repo back into .brain/.
+ * Copy files from the sync repo back into ~/.brain/.
  * If encryption is enabled, files are decrypted after reading.
  *
- * @param {string} repoDir - Absolute path to .brain/.sync/repo/
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} repoDir - Absolute path to ~/.brain/.sync/repo/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string|null} passphrase - Decryption passphrase or null
  */
 function copyRepoToBrain(repoDir, brainDir, passphrase) {
@@ -202,7 +202,7 @@ function copyRepoDir(srcDir, destDir, repoDir, passphrase) {
 /**
  * Get a summary of local vs remote sync status.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @returns {{ configured: boolean, remote: string|null, branch: string|null, ahead: number, behind: number, lastPush: string|null }}
  */
 function getStatus(brainDir) {
@@ -244,9 +244,9 @@ function getStatus(brainDir) {
 }
 
 /**
- * Push .brain/ contents to the remote.
+ * Push ~/.brain/ contents to the remote.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string} [message] - Commit message (defaults to timestamp)
  * @param {string} [passphrase] - Encryption passphrase (if configured)
  * @returns {{ committed: boolean, pushed: boolean, message: string }}
@@ -302,9 +302,9 @@ function push(brainDir, message, passphrase) {
 }
 
 /**
- * Pull remote changes into .brain/.
+ * Pull remote changes into ~/.brain/.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string} [passphrase] - Decryption passphrase (if configured)
  * @returns {{ pulled: boolean, message: string }}
  */
@@ -329,7 +329,7 @@ function pull(brainDir, passphrase) {
   } catch (err) {
     // Could be first pull (nothing to pull), or merge conflict
     if (err.message && err.message.includes('Not possible to fast-forward')) {
-      return { pulled: false, message: 'Merge conflict detected. Push your local changes first, or manually resolve in .brain/.sync/repo/' };
+      return { pulled: false, message: 'Merge conflict detected. Push your local changes first, or manually resolve in ~/.brain/.sync/repo/' };
     }
     // First clone — try to set up tracking
     try {
@@ -351,7 +351,7 @@ function pull(brainDir, passphrase) {
 }
 
 /**
- * Read sync config from .brain/.sync/config.json.
+ * Read sync config from ~/.brain/.sync/config.json.
  *
  * @param {string} configPath - Absolute path to config.json
  * @returns {Object|null}
@@ -365,7 +365,7 @@ function readConfig(configPath) {
 }
 
 /**
- * Write sync config to .brain/.sync/config.json.
+ * Write sync config to ~/.brain/.sync/config.json.
  *
  * @param {string} configPath - Absolute path to config.json
  * @param {Object} config
@@ -378,7 +378,7 @@ function writeConfig(configPath, config) {
 /**
  * Read the sync config for a brain directory.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @returns {Object|null}
  */
 function getSyncConfig(brainDir) {
@@ -389,7 +389,7 @@ function getSyncConfig(brainDir) {
 /**
  * Write the sync config for a brain directory.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {Object} config
  */
 function writeSyncConfig(brainDir, config) {

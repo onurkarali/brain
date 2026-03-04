@@ -210,8 +210,8 @@ function installForRuntime(runtime, scope) {
   injectPrompt(promptTarget, config.promptFile, config.promptSource);
 }
 
-function initializeBrain(projectDir) {
-  const brainDir = path.join(projectDir || process.cwd(), '.brain');
+function initializeBrain(overrideBase) {
+  const brainDir = path.join(overrideBase || os.homedir(), '.brain');
 
   if (fs.existsSync(brainDir)) {
     return { alreadyExists: true };

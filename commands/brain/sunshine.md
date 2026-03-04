@@ -1,6 +1,6 @@
 # /brain:sunshine — Deep Forensic Memory Erasure
 
-You are performing **deep forensic erasure** on a memory in the Brain Memory system. Like the procedure in *Eternal Sunshine of the Spotless Mind*, this command doesn't just delete a memory — it traces every ripple that memory left across the entire `.brain/` tree and surgically removes or repairs each one. When complete, it's as if the memory never existed.
+You are performing **deep forensic erasure** on a memory in the Brain Memory system. Like the procedure in *Eternal Sunshine of the Spotless Mind*, this command doesn't just delete a memory — it traces every ripple that memory left across the entire `~/.brain/` tree and surgically removes or repairs each one. When complete, it's as if the memory never existed.
 
 Use this for erasing accidentally stored credentials, removing knowledge of a deprecated anti-pattern that leaked into other memories, or cleaning up after a fully reversed technical decision.
 
@@ -32,12 +32,12 @@ If no target is provided, ask the user what memory they want to erase.
 
 Search for the target memory:
 
-1. Read `.brain/index.json` and search `memories` by:
+1. Read `~/.brain/index.json` and search `memories` by:
    - Exact ID match
    - Title substring match (case-insensitive)
    - Path substring match
-2. If not found in active memories, check `.brain/_archived/index.json`
-3. If still not found, check `.brain/_erased.json` — if found there, report:
+2. If not found in active memories, check `~/.brain/_archived/index.json`
+3. If still not found, check `~/.brain/_erased.json` — if found there, report:
    ```
    Memory was previously erased on <date>.
    Reason: <reason or "unspecified">
@@ -50,10 +50,10 @@ Once located, read the full memory file to capture its ID, title, path, tags, `r
 
 ### 3. Trace All References (Blast Radius Scan)
 
-Scan the entire `.brain/` tree for every trace of the target memory. Track 8 reference types:
+Scan the entire `~/.brain/` tree for every trace of the target memory. Track 8 reference types:
 
 **3a. `related` arrays in other memories' frontmatter:**
-Parse the YAML frontmatter of every `.md` memory file in `.brain/`. For each file whose `related` array contains the target ID, record:
+Parse the YAML frontmatter of every `.md` memory file in `~/.brain/`. For each file whose `related` array contains the target ID, record:
 - File path
 - Current `related` array contents
 
@@ -70,22 +70,22 @@ Among all memory files with `type: consolidated`, check if their `consolidated_f
 - Number of other sources remaining
 
 **3d. Association edges (`associations.json`):**
-Read `.brain/associations.json`. Find all edges involving the target ID:
+Read `~/.brain/associations.json`. Find all edges involving the target ID:
 - Outgoing: `edges[target_id][*]`
 - Incoming: `edges[*][target_id]`
 Record each edge with its neighbor, weight, and origin.
 
 **3e. Context sessions (`contexts.json`):**
-Read `.brain/contexts.json`. Search all sessions for the target ID in:
+Read `~/.brain/contexts.json`. Search all sessions for the target ID in:
 - `memories_created` arrays
 - `memories_recalled` arrays
 Record each session timestamp and which array contained the reference.
 
 **3f. Review queue (`review-queue.json`):**
-Read `.brain/review-queue.json`. Check if any item has `memory_id` equal to the target ID.
+Read `~/.brain/review-queue.json`. Check if any item has `memory_id` equal to the target ID.
 
 **3g. Archive index (`_archived/index.json`):**
-Read `.brain/_archived/index.json`. Check if the target ID exists as a key in `memories`.
+Read `~/.brain/_archived/index.json`. Check if the target ID exists as a key in `memories`.
 
 **3h. Crystallization comments:**
 Search all memory files for HTML comments matching the pattern:
@@ -230,13 +230,13 @@ For each directory in the target's path, read the `_meta.json` and decrement `me
 - Clean up empty parent directories (but never delete top-level category directories)
 
 **7g. Remove archived copy:**
-If an archived copy exists at `.brain/_archived/<original-path>`, delete it.
+If an archived copy exists at `~/.brain/_archived/<original-path>`, delete it.
 - If `--sensitive`: overwrite with null bytes before deletion
 - Clean up empty directories in `_archived/`
 
 ### 8. Write Audit Log
 
-Unless `--no-trace` is set, write or append to `.brain/_erased.json`:
+Unless `--no-trace` is set, write or append to `~/.brain/_erased.json`:
 
 ```json
 {
@@ -317,7 +317,7 @@ Print a summary:
 
 7. **Empty `related` arrays after cleanup**: Leave as `related: []`. Do not remove the field entirely — it maintains schema consistency.
 
-8. **Memory referenced by memories outside `.brain/`**: This command only operates within `.brain/`. If external files (e.g., `CLAUDE.md`, project docs) reference the memory, note this limitation in the summary.
+8. **Memory referenced by memories outside `~/.brain/`**: This command only operates within `~/.brain/`. If external files (e.g., `CLAUDE.md`, project docs) reference the memory, note this limitation in the summary.
 
 9. **Multiple memories matching a title substring**: Present all matches with their IDs, paths, and strengths. Ask the user to select the specific memory to erase.
 

@@ -3,6 +3,7 @@
 const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const {
   RUNTIMES,
   installForRuntime,
@@ -114,7 +115,7 @@ async function runInstall(flags) {
     console.log('');
     const initBrain = await ask(
       rl,
-      '  Initialize .brain/ directory in current project? (Y/n): '
+      '  Initialize ~/.brain/ directory? (Y/n): '
     );
 
     // Perform installation
@@ -130,9 +131,9 @@ async function runInstall(flags) {
     if (initBrain.trim().toLowerCase() !== 'n') {
       const result = initializeBrain();
       if (result.alreadyExists) {
-        console.log('\n    .brain/ already exists, skipping initialization.');
+        console.log('\n    ~/.brain/ already exists, skipping initialization.');
       } else {
-        console.log('\n    .brain/ initialized successfully.');
+        console.log('\n    ~/.brain/ initialized successfully.');
         console.log('');
         console.log('    Use /brain:sync to set up portable sync across devices.');
       }
@@ -265,30 +266,30 @@ async function runUninstall(flags) {
   }
 
   // Handle .brain/ data
-  const brainDir = path.join(process.cwd(), '.brain');
+  const brainDir = path.join(os.homedir(), '.brain');
   if (fs.existsSync(brainDir)) {
     if (flags.has('delete-data')) {
       fs.rmSync(brainDir, { recursive: true, force: true });
-      console.log('\n  Deleted .brain/ directory.');
+      console.log('\n  Deleted ~/.brain/ directory.');
     } else if (!flags.has('yes') && !flags.has('y')) {
       const rl = createRL();
       try {
         console.log('');
         const answer = await ask(
           rl,
-          '  Delete .brain/ data directory? This removes all memories. (y/N): '
+          '  Delete ~/.brain/ data directory? This removes all memories. (y/N): '
         );
         if (answer.trim().toLowerCase() === 'y') {
           fs.rmSync(brainDir, { recursive: true, force: true });
-          console.log('  Deleted .brain/ directory.');
+          console.log('  Deleted ~/.brain/ directory.');
         } else {
-          console.log('  Kept .brain/ directory (your memories are preserved).');
+          console.log('  Kept ~/.brain/ directory (your memories are preserved).');
         }
       } finally {
         rl.close();
       }
     } else {
-      console.log('\n  Kept .brain/ directory (use --delete-data to remove memories).');
+      console.log('\n  Kept ~/.brain/ directory (use --delete-data to remove memories).');
     }
   }
 

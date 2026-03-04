@@ -1,6 +1,6 @@
 # /brain:sync — Portable Sync
 
-You are managing synchronization for the Brain Memory system. This enables manual push/pull of `.brain/` memories via any Git remote, plus encrypted single-file export/import for portable transfers.
+You are managing synchronization for the Brain Memory system. This enables manual push/pull of `~/.brain/` memories via any Git remote, plus encrypted single-file export/import for portable transfers.
 
 **CRITICAL RULES:**
 - NEVER auto-sync — always require explicit user action
@@ -15,7 +15,7 @@ Parse the user's input to determine the subcommand:
 - `push` → Commit and push local changes to remote
 - `pull` → Fetch and merge remote changes to local
 - `status` → Show sync state (ahead/behind)
-- `export [path]` → Export .brain/ to an encrypted single file
+- `export [path]` → Export ~/.brain/ to an encrypted single file
 - `import <path>` → Import from an export file
 - `disconnect` → Remove sync configuration
 
@@ -28,9 +28,9 @@ If no subcommand is given, show available subcommands.
 ### Steps
 
 1. **Check prerequisites:**
-   - Verify `.brain/` exists. If not, suggest `/brain:init` first.
+   - Verify `~/.brain/` exists. If not, suggest `/brain:init` first.
    - Verify `git` is available (`checkGitAvailable()` from `src/git-sync.js`).
-   - Check if sync is already configured (`.brain/.sync/config.json`). If so, ask if they want to reconfigure.
+   - Check if sync is already configured (`~/.brain/.sync/config.json`). If so, ask if they want to reconfigure.
 
 2. **Get remote URL** (if not provided):
    - Ask for the Git remote URL (SSH or HTTPS).
@@ -46,7 +46,7 @@ If no subcommand is given, show available subcommands.
 
 4. **Initialize sync:**
    - Call `initSyncRepo()` and `configureRemote()` from `src/git-sync.js`.
-   - Write config to `.brain/.sync/config.json` via `writeSyncConfig()`.
+   - Write config to `~/.brain/.sync/config.json` via `writeSyncConfig()`.
 
 5. **Show result:**
    ```
@@ -207,7 +207,7 @@ If no subcommand is given, show available subcommands.
 
 1. **Show current config** (remote URL).
 2. **Ask for confirmation:** "This will remove sync configuration. Your remote data will NOT be deleted."
-3. **Remove `.brain/.sync/` directory.**
+3. **Remove `~/.brain/.sync/` directory.**
 4. **Confirm:** "✓ Sync disconnected. Remote repository is untouched."
 
 ---
@@ -217,6 +217,6 @@ If no subcommand is given, show available subcommands.
 - Git sync engine: `src/git-sync.js`
 - Export/import: `src/export-import.js`
 - Crypto utilities: `src/crypto.js`
-- Sync config stored in `.brain/.sync/config.json` (local only)
-- Hidden git repo at `.brain/.sync/repo/` — never interferes with the project's own git
+- Sync config stored in `~/.brain/.sync/config.json` (local only)
+- Hidden git repo at `~/.brain/.sync/repo/` — never interferes with the project's own git
 - All git operations use `execFileSync` — no npm dependencies

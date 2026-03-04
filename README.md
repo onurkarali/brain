@@ -7,7 +7,7 @@ A hierarchical, file-system-based memory plugin for AI coding agents. Inspired b
 Works with **Claude Code**, **Gemini CLI**, and **OpenAI Codex CLI**.
 
 ```
-.brain/
+~/.brain/
 ├── professional/
 │   └── companies/
 │       └── acme-corp/
@@ -71,7 +71,7 @@ Auto-detects installed runtimes and refreshes commands + prompt sections. Target
 npx brain-memory@beta uninstall
 ```
 
-Removes commands and prompt sections. Your `.brain/` directory (memories) is preserved by default. Add `--delete-data` to remove it too. Use `--yes` to skip confirmation prompts.
+Removes commands and prompt sections. Your `~/.brain/` directory (memories) is preserved by default. Add `--delete-data` to remove it too. Use `--yes` to skip confirmation prompts.
 
 ### Manual Install
 
@@ -101,7 +101,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 
 | Command | Description |
 |---------|-------------|
-| `/brain:init` | Initialize `.brain/` directory structure with default categories |
+| `/brain:init` | Initialize `~/.brain/` directory structure with default categories |
 | `/brain:memorize [topic]` | Store memories from current session context |
 | `/brain:remember [query]` | Recall relevant memories with spreading activation and context matching |
 | `/brain:review [scope]` | Spaced repetition review session for due memories |
@@ -119,7 +119,7 @@ Brain Memory works automatically in the background — no commands needed for ba
 
 ### Session Start
 
-When a session begins and `.brain/` exists, the agent automatically:
+When a session begins and `~/.brain/` exists, the agent automatically:
 
 1. Reads the brain index and loads the top 3-5 memories relevant to the current project
 2. Checks the review queue for memories due for spaced repetition
@@ -142,7 +142,7 @@ When a session ends, the agent evaluates whether significant decisions, learning
    Run /brain:memorize to capture them before this context is lost.
 ```
 
-The agent never auto-memorizes without user consent. Session context is always saved to `.brain/contexts.json` for context-dependent recall.
+The agent never auto-memorizes without user consent. Session context is always saved to `~/.brain/contexts.json` for context-dependent recall.
 
 ## How It Works
 
@@ -282,7 +282,7 @@ The agent then decides the response strategy:
 
 ### Associative Network
 
-Memories are connected via weighted edges in `.brain/associations.json`:
+Memories are connected via weighted edges in `~/.brain/associations.json`:
 
 ```json
 {
@@ -374,13 +374,19 @@ Each expertise area gets an `_expertise.md` profile documenting what you know we
 
 Failed recalls reset the interval to 1 day. Successful recalls extend the interval by the ease factor. This ensures you spend time on memories that need reinforcement, not ones you already know well.
 
+### Cross-Agent Memory Sharing
+
+`~/.brain/` is a single global directory in the user's home folder. All memories are shared across every project and every supported agent automatically. A decision stored by Claude Code in one project is immediately available to Gemini CLI or Codex CLI in any other project — no configuration, no export, no per-project setup. The format is agent-agnostic: plain Markdown files with YAML frontmatter, readable by any tool.
+
+To share memories across different machines, use `/brain:sync` (see below).
+
 ### Portable Sync
 
 `/brain:sync` provides two ways to sync memories across devices — no OAuth apps, no cloud provider setup.
 
-**Git remote** — Push/pull `.brain/` to any private Git repository. Works with GitHub, GitLab, Codeberg, or any self-hosted Git server. Uses your existing Git/SSH authentication — no additional credentials needed.
+**Git remote** — Push/pull `~/.brain/` to any private Git repository. Works with GitHub, GitLab, Codeberg, or any self-hosted Git server. Uses your existing Git/SSH authentication — no additional credentials needed.
 
-**Export/Import** — Pack the entire `.brain/` into a single encrypted file for manual transfer via USB, email, or any file-sharing service.
+**Export/Import** — Pack the entire `~/.brain/` into a single encrypted file for manual transfer via USB, email, or any file-sharing service.
 
 **Key features:**
 - **Manual push/pull** — No background watchers, no auto-sync. You control when data moves.
@@ -395,12 +401,12 @@ Failed recalls reset the interval to 1 day. Successful recalls extend the interv
 
 For one-off transfers, use `/brain:sync export` and `/brain:sync import <path>`.
 
-Sync state is stored locally in `.brain/.sync/` and is never pushed to the remote.
+Sync state is stored locally in `~/.brain/.sync/` and is never pushed to the remote.
 
 ## File Structure
 
 ```
-.brain/
+~/.brain/
 ├── index.json              # Memory inventory — fast lookup for all memories
 ├── associations.json       # Weighted associative network between memories
 ├── contexts.json           # Session context snapshots for context-dependent recall
@@ -439,7 +445,7 @@ Subdirectories are created **on demand** — the agent decides placement depth b
 
 ## Configuration
 
-Brain configuration lives in `.brain/index.json` under the `config` key:
+Brain configuration lives in `~/.brain/index.json` under the `config` key:
 
 ```json
 {

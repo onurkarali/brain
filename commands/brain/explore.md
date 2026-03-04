@@ -13,7 +13,7 @@ You are exploring the Brain Memory system's hierarchical structure. This gives t
 
 ### 2. Read Structure
 
-Read the directory structure of `.brain/` (or the specified subtree). For each directory, read its `_meta.json` to get metadata.
+Read the directory structure of `~/.brain/` (or the specified subtree). For each directory, read its `_meta.json` to get metadata.
 
 ### 3. Display Tree View
 
@@ -24,7 +24,7 @@ Present the brain structure as a visual tree with statistics:
 Last updated: <timestamp>
 Total memories: <count>
 
-.brain/
+~/.brain/
 ├── professional/ (12 memories)
 │   ├── companies/ (8 memories)
 │   │   ├── acme-corp/ (5 memories)

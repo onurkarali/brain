@@ -9,7 +9,7 @@ You are consolidating memories in the Brain Memory system. Consolidation combine
 ### 1. Determine Scope
 
 - If $ARGUMENTS specifies a category path, consolidate within that subtree
-- If $ARGUMENTS is empty, scan the entire `.brain/` for consolidation candidates
+- If $ARGUMENTS is empty, scan the entire `~/.brain/` for consolidation candidates
 - If $ARGUMENTS is "auto", perform automatic consolidation based on thresholds
 
 ### 2. Find Consolidation Candidates
@@ -126,7 +126,7 @@ encoding_context:
 
 ### 7. Archive Source Memories
 
-Move the original source memory files to a `.brain/_archived/` directory (create if needed), preserving their paths as subdirectories. This keeps them recoverable and searchable via `/brain:remember`.
+Move the original source memory files to a `~/.brain/_archived/` directory (create if needed), preserving their paths as subdirectories. This keeps them recoverable and searchable via `/brain:remember`.
 
 Update `index.json`:
 - Remove archived memory entries from `memories`

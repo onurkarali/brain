@@ -12,7 +12,7 @@ This implements a simplified SM-2 (SuperMemo 2) spaced repetition algorithm. Mem
 
 ### 1. Load Review Queue
 
-Read `.brain/review-queue.json`. If it doesn't exist or is empty, generate it:
+Read `~/.brain/review-queue.json`. If it doesn't exist or is empty, generate it:
 - Scan all memories in `index.json`
 - For memories with `access_count > 0`, calculate initial review schedule
 - For memories never recalled, add with `next_review` = now (immediate first review)
@@ -41,7 +41,7 @@ For each due memory (process up to 10 per session):
    ### Review 1 of <N>
 
    **Memory:** <title>
-   **Path:** .brain/<path>
+   **Path:** ~/.brain/<path>
    **Type:** <type> (<cognitive_type>) | **Last reviewed:** <date> | **Interval:** <days>d
    **Confidence:** <confidence>
 

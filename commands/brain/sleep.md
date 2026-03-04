@@ -1,6 +1,6 @@
 # /brain:sleep — Overnight Memory Reorganization
 
-You are performing a **sleep cycle** on the Brain Memory system. Just like the human brain during sleep — where the hippocampus replays recent experiences and the neocortex reorganizes them into long-term structured knowledge — this command restructures, consolidates, prunes, and deepens the `.brain/` hierarchy.
+You are performing a **sleep cycle** on the Brain Memory system. Just like the human brain during sleep — where the hippocampus replays recent experiences and the neocortex reorganizes them into long-term structured knowledge — this command restructures, consolidates, prunes, and deepens the `~/.brain/` hierarchy.
 
 **Scope:** $ARGUMENTS
 
@@ -24,7 +24,7 @@ During sleep, the hippocampus replays the day's events. Here, we scan and assess
 
 ### Steps
 
-1. Read `.brain/index.json` to load all memories
+1. Read `~/.brain/index.json` to load all memories
 2. If $ARGUMENTS specifies a category path, limit scope to that subtree. Otherwise, process the entire brain.
 3. For **every** memory, compute the current decayed strength:
 
@@ -327,7 +327,7 @@ During deep sleep, the brain merges related experiences into generalized knowled
 
 5. For approved consolidations:
    - Write consolidated memory files using the standard format with `type: consolidated`
-   - Archive source memories to `.brain/_archived/` and add them to `_archived/index.json`
+   - Archive source memories to `~/.brain/_archived/` and add them to `_archived/index.json`
    - Transfer association edges from source memories to the consolidated memory in `associations.json`
    - Update `index.json` and `_meta.json` files
 
@@ -351,7 +351,7 @@ During sleep, the brain prunes weak synaptic connections to maintain efficiency.
 4. Get user approval (default: archive all)
 
 5. Execute:
-   - Move to `.brain/_archived/`, preserving directory structure
+   - Move to `~/.brain/_archived/`, preserving directory structure
    - Add to `_archived/index.json` with original metadata
    - Remove from `index.json` and update `_meta.json` files
    - Remove association edges involving pruned memories from `associations.json`

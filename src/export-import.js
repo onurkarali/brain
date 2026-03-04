@@ -2,7 +2,7 @@
  * Brain Memory — Export / Import
  *
  * Single-file encrypted export/import for portable memory transfers.
- * Pack all .brain/ files into one JSON blob, optionally AES-256-GCM encrypt,
+ * Pack all ~/.brain/ files into one JSON blob, optionally AES-256-GCM encrypt,
  * and write a single .brain-export file. Import reverses the process.
  *
  * Zero external dependencies — uses only Node.js built-in fs and crypto.
@@ -12,20 +12,20 @@ const fs = require('fs');
 const path = require('path');
 const { encrypt, decrypt } = require('./crypto');
 
-// Directories inside .brain/ to skip during export
+// Directories inside ~/.brain/ to skip during export
 const EXCLUDED = new Set(['.sync', '.DS_Store']);
 
 /**
- * Export the entire .brain/ directory to a single file.
+ * Export the entire ~/.brain/ directory to a single file.
  *
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string} outputPath - Destination file path
  * @param {string|null} [passphrase] - If provided, encrypt the export
  * @returns {{ fileCount: number, outputPath: string }}
  */
 function exportBrain(brainDir, outputPath, passphrase) {
   if (!fs.existsSync(brainDir)) {
-    throw new Error('.brain/ directory not found. Run /brain:init first.');
+    throw new Error('~/.brain/ directory not found. Run /brain:init first.');
   }
 
   const files = {};
@@ -47,7 +47,7 @@ function exportBrain(brainDir, outputPath, passphrase) {
  * Recursively collect all files from brainDir into a flat { relativePath: content } map.
  *
  * @param {string} dir - Current directory to scan
- * @param {string} brainDir - Root .brain/ directory
+ * @param {string} brainDir - Root ~/.brain/ directory
  * @param {Object} files - Accumulator object
  */
 function collectFiles(dir, brainDir, files) {
@@ -69,10 +69,10 @@ function collectFiles(dir, brainDir, files) {
 }
 
 /**
- * Import memories from a .brain-export file into .brain/.
+ * Import memories from a .brain-export file into ~/.brain/.
  *
  * @param {string} inputPath - Path to the export file
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string|null} [passphrase] - Decryption passphrase (if the export is encrypted)
  * @param {Object} [options]
  * @param {string} [options.mode='overwrite'] - 'overwrite' replaces all files; 'merge' only imports newer files
@@ -142,7 +142,7 @@ function importBrain(inputPath, brainDir, passphrase, options = {}) {
  * Preview what an import would do without writing any files.
  *
  * @param {string} inputPath - Path to the export file
- * @param {string} brainDir - Absolute path to .brain/
+ * @param {string} brainDir - Absolute path to ~/.brain/
  * @param {string|null} [passphrase] - Decryption passphrase
  * @returns {{ totalFiles: number, newFiles: string[], existingFiles: string[], exportedAt: string }}
  */

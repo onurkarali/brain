@@ -1,12 +1,12 @@
 # /brain:init — Initialize Brain Memory Structure
 
-You are initializing the Brain Memory system. This creates a `.brain/` directory that serves as a hierarchical, file-system-based memory store inspired by human cognition.
+You are initializing the Brain Memory system. This creates a `~/.brain/` directory that serves as a hierarchical, file-system-based memory store inspired by human cognition.
 
 ## Steps
 
 ### 1. Check for Existing Brain
 
-Check if `.brain/` directory already exists in the current project root.
+Check if `~/.brain/` directory already exists in the user's home directory.
 
 - If it exists, inform the user and ask if they want to reset or keep it.
 - If not, proceed with creation.
@@ -16,7 +16,7 @@ Check if `.brain/` directory already exists in the current project root.
 Create the following structure:
 
 ```
-.brain/
+~/.brain/
 ├── index.json
 ├── associations.json
 ├── contexts.json
@@ -131,7 +131,7 @@ If the user provides custom categories or subcategories, create them with approp
 
 ### 10. Add .brain to .gitignore (Optional)
 
-Ask the user if they want `.brain/` added to `.gitignore` (some users may want to track their memory in git, others may not).
+Ask the user if they want `~/.brain/` added to `.gitignore` (some users may want to track their memory in git, others may not).
 
 ### 11. Confirm
 

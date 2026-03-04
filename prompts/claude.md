@@ -4,7 +4,7 @@ This project uses the **Brain Memory** plugin — a hierarchical, file-system-ba
 
 ## Memory Location
 
-All memories are stored in `.brain/` with a deep nested directory structure organized by life domains (professional, personal, social, family) with on-demand subcategories.
+All memories are stored in a single global `~/.brain/` directory in the user's home folder, shared across all projects and all supported AI agents. The directory uses a deep nested structure organized by life domains (professional, personal, social, family) with on-demand subcategories.
 
 ## How It Works
 
@@ -37,7 +37,7 @@ Each memory is a Markdown file with YAML frontmatter containing: `id`, `type`, `
 | observation | 0.40 | 0.950 | Casual facts or notices |
 
 ### Associative Network
-Memories are connected via weighted edges in `.brain/associations.json`. When you recall memory A, **spreading activation** automatically surfaces related memories B and C — just like how the brain activates linked neurons. Links are strengthened through **Hebbian learning**: memories recalled together become more tightly connected over time.
+Memories are connected via weighted edges in `~/.brain/associations.json`. When you recall memory A, **spreading activation** automatically surfaces related memories B and C — just like how the brain activates linked neurons. Links are strengthened through **Hebbian learning**: memories recalled together become more tightly connected over time.
 
 ### Context-Dependent Recall
 Memories store their encoding context (project, topics, task type). During recall, memories encoded in a similar context to the current session are scored higher — matching how human memory works better when recall context matches encoding context.
@@ -64,12 +64,12 @@ Memories store their encoding context (project, topics, task type). During recal
 
 **IMPORTANT: Perform these steps automatically at the beginning of every session.**
 
-If `.brain/index.json` exists in the current project:
+If `~/.brain/index.json` exists:
 
 1. **Read the index** to understand the current brain state (memory count, categories)
 2. **Identify high-value memories** — the top 3-5 memories by effective strength that are relevant to the current project context
 3. **Silently internalize** these memories so you can reference them naturally during the session — do NOT dump memory contents
-4. **Check review queue** — read `.brain/review-queue.json` if it exists for memories due for review
+4. **Check review queue** — read `~/.brain/review-queue.json` if it exists for memories due for review
 5. **Capture session context** — note the current project name, inferred topics, and task type for context-dependent recall
 6. **Output a brief status** (1-3 lines):
 
@@ -110,24 +110,24 @@ If the session contained meaningful content in any of these categories, suggest:
 - Do NOT auto-memorize without user consent
 - Do NOT prompt for trivial sessions (quick fixes, typo corrections, simple questions)
 - Only suggest when there is genuinely valuable context worth preserving
-- Always save session context to `.brain/contexts.json` regardless (append a session summary, keep last 20 entries)
+- Always save session context to `~/.brain/contexts.json` regardless (append a session summary, keep last 20 entries)
 
 ## When Recalling Memories
 
 When the user asks you to "remember" something, or when context from past sessions would be helpful:
-1. Check `.brain/index.json` for relevant memories
-2. Load `.brain/associations.json` for spreading activation
+1. Check `~/.brain/index.json` for relevant memories
+2. Load `~/.brain/associations.json` for spreading activation
 3. Score by v4 formula: `0.38*relevance + 0.18*decayed_strength + 0.08*recency + 0.14*spreading_bonus + 0.14*context_match + 0.08*salience`
 4. Return strong individual matches or synthesize from multiple related memories
 5. Apply spaced reinforcement (spacing-aware boost) and improve decay rate
 6. Strengthen Hebbian links between co-retrieved memories
-7. If no active matches, search the archive (`.brain/_archived/`)
+7. If no active matches, search the archive (`~/.brain/_archived/`)
 
 ## Portable Sync
 
 Brain memories can be synced across devices in two ways:
 
-1. **Git remote** — Push/pull `.brain/` to any private Git repository (GitHub, GitLab, Codeberg, self-hosted). Run `/brain:sync setup <url>` to configure, then use `/brain:sync push` and `/brain:sync pull`.
-2. **Export/Import** — Pack the entire `.brain/` into a single portable file for manual transfer. Run `/brain:sync export` and `/brain:sync import <path>`.
+1. **Git remote** — Push/pull `~/.brain/` to any private Git repository (GitHub, GitLab, Codeberg, self-hosted). Run `/brain:sync setup <url>` to configure, then use `/brain:sync push` and `/brain:sync pull`.
+2. **Export/Import** — Pack the entire `~/.brain/` into a single portable file for manual transfer. Run `/brain:sync export` and `/brain:sync import <path>`.
 
 Both methods support optional AES-256-GCM encryption. Sync is always manual — never automatic.

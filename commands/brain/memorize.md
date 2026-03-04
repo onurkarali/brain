@@ -1,6 +1,6 @@
 # /brain:memorize — Store a New Memory
 
-You are storing a new memory in the Brain Memory system. Memories are filed into the `.brain/` hierarchical directory structure based on their semantic content.
+You are storing a new memory in the Brain Memory system. Memories are filed into the `~/.brain/` hierarchical directory structure based on their semantic content.
 
 **User input:** $ARGUMENTS
 
@@ -49,7 +49,7 @@ For each memory to store, determine:
 
 ### 3. Determine File Path (Categorization)
 
-Choose the most appropriate path in the `.brain/` hierarchy. This is the most critical step.
+Choose the most appropriate path in the `~/.brain/` hierarchy. This is the most critical step.
 
 **Rules for path selection:**
 1. Start with the top-level category: `professional/`, `personal/`, `social/`, `family/`
@@ -118,12 +118,12 @@ encoding_context:
 
 ### 6. Update Index
 
-Read `.brain/index.json` and add an entry:
+Read `~/.brain/index.json` and add an entry:
 
 ```json
 {
   "<memory_id>": {
-    "path": "<relative path from .brain/>",
+    "path": "<relative path from ~/.brain/>",
     "title": "<short title>",
     "type": "<memory_type>",
     "cognitive_type": "<episodic|semantic|procedural>",
@@ -148,7 +148,7 @@ Increment `memory_count`. Update `last_updated`.
 
 ### 7. Update Associations
 
-Read `.brain/associations.json` and create edges for this memory:
+Read `~/.brain/associations.json` and create edges for this memory:
 
 **A. Explicit `related` links:** For each ID in the `related` field, create an edge with weight 0.20 and origin `manual`.
 

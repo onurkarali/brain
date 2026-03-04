@@ -236,6 +236,8 @@ describe('pull', () => {
     // Simulate a remote change by cloning, modifying, pushing
     const cloneDir = path.join(tmpDir, 'clone');
     execFileSync('git', ['clone', bareRemote, cloneDir], { stdio: 'pipe' });
+    execFileSync('git', ['config', 'user.email', 'test@test.local'], { cwd: cloneDir, stdio: 'pipe' });
+    execFileSync('git', ['config', 'user.name', 'Test'], { cwd: cloneDir, stdio: 'pipe' });
     fs.writeFileSync(path.join(cloneDir, 'index.json'), '{"v":2}');
     execFileSync('git', ['add', '-A'], { cwd: cloneDir, stdio: 'pipe' });
     execFileSync('git', ['commit', '-m', 'remote update'], { cwd: cloneDir, stdio: 'pipe' });

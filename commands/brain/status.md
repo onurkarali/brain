@@ -6,13 +6,13 @@ You are displaying a comprehensive overview of the Brain Memory system's current
 
 ### 1. Read Brain State
 
-Read `.brain/index.json` to get the full memory inventory. If `.brain/` doesn't exist, inform the user and suggest running `/brain:init`.
+Read `~/.brain/index.json` to get the full memory inventory. If `~/.brain/` doesn't exist, inform the user and suggest running `/brain:init`.
 
 Also read (if they exist):
-- `.brain/associations.json` — for association network stats
-- `.brain/review-queue.json` — for review schedule info
-- `.brain/_archived/index.json` — for archive stats
-- `.brain/.sync/config.json` — for git sync configuration
+- `~/.brain/associations.json` — for association network stats
+- `~/.brain/review-queue.json` — for review schedule info
+- `~/.brain/_archived/index.json` — for archive stats
+- `~/.brain/.sync/config.json` — for git sync configuration
 
 ### 2. Compute Statistics
 

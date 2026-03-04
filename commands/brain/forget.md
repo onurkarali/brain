@@ -64,8 +64,8 @@ The user must explicitly choose an action. Default to **archive** (safest).
 ### 5. Execute
 
 **Archive:**
-- Move memory files to `.brain/_archived/<original-path>/`
-- Add entry to `.brain/_archived/index.json` with all original metadata:
+- Move memory files to `~/.brain/_archived/<original-path>/`
+- Add entry to `~/.brain/_archived/index.json` with all original metadata:
   ```json
   {
     "<memory_id>": {

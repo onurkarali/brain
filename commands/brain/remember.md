@@ -1,6 +1,6 @@
 # /brain:remember — Recall Relevant Memories
 
-You are recalling memories from the Brain Memory system. This command searches the `.brain/` hierarchy, scores memories by relevance, strength, associative links, and context match, and returns the most useful memories — either individually or as a consolidated synthesis.
+You are recalling memories from the Brain Memory system. This command searches the `~/.brain/` hierarchy, scores memories by relevance, strength, associative links, and context match, and returns the most useful memories — either individually or as a consolidated synthesis.
 
 **User query:** $ARGUMENTS
 
@@ -27,7 +27,7 @@ recall_context:
 
 ### 3. Search the Brain
 
-Read `.brain/index.json` to get the full memory inventory.
+Read `~/.brain/index.json` to get the full memory inventory.
 
 **Search strategy (in order):**
 
@@ -40,7 +40,7 @@ Collect all candidate memories.
 
 ### 3.5. Spreading Activation
 
-Read `.brain/associations.json`. For each candidate memory scoring > 0.3 in initial relevance:
+Read `~/.brain/associations.json`. For each candidate memory scoring > 0.3 in initial relevance:
 1. Traverse the association graph up to 2 hops
 2. For each reached memory: `spread_bonus = parent_score * link_weight * 0.5^hop`
 3. Memories NOT in the initial candidates but reached via spreading activation with bonus >= 0.05 are **added** to the candidate pool (they were "reminded" by association)
@@ -88,7 +88,7 @@ List the top 5-7 memories with titles, paths, types, and effective scores.
 Ask the user which ones they'd like to explore in detail.
 
 **Case D — No matches in active brain:**
-Search `.brain/_archived/` via the archive index (`_archived/index.json`). If archived matches are found with relevance > 0.3:
+Search `~/.brain/_archived/` via the archive index (`_archived/index.json`). If archived matches are found with relevance > 0.3:
 - Present them with a note that they're archived
 - Offer to restore them (move back to active brain with strength +0.10)
 
@@ -134,7 +134,7 @@ Format the output clearly. Include confidence indicators for low-confidence memo
 ```
 ## Recalled Memory: <Title>
 
-**Path:** .brain/<path>
+**Path:** ~/.brain/<path>
 **Strength:** <decayed_strength> (original: <base_strength>)
 **Type:** <type> (<cognitive_type>) | **Created:** <date> | **Recalled:** <access_count> times
 **Confidence:** <confidence> <show ⚠️ if < 0.5>
@@ -153,8 +153,8 @@ For consolidated responses (Case B):
 <consolidated narrative>
 
 ### Contributing Memories
-1. **<title>** (.brain/<path>) — score: <score>, confidence: <confidence>
-2. **<title>** (.brain/<path>) — score: <score>, confidence: <confidence>
+1. **<title>** (~/.brain/<path>) — score: <score>, confidence: <confidence>
+2. **<title>** (~/.brain/<path>) — score: <score>, confidence: <confidence>
 ...
 
 ---
@@ -166,7 +166,7 @@ For archived matches (Case D fallback):
 ```
 ## Found in Archive: <Title>
 
-**Path:** .brain/_archived/<path>
+**Path:** ~/.brain/_archived/<path>
 **Original Strength:** <strength> | **Archived:** <date>
 
 <memory content summary>
