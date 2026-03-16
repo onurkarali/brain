@@ -1,0 +1,109 @@
+export const metadata = {
+  title: "Overview - Brain Memory",
+  description: "Introduction to Brain Memory and how it works.",
+  category: "Getting Started",
+  order: 0,
+};
+
+# Brain Memory
+
+A hierarchical, file-system-based memory system for AI coding agents. Inspired by human neuroscience — memories decay, strengthen through recall, and connect via associative networks.
+
+Brain Memory works with **Claude Code**, **Gemini CLI**, and **OpenAI Codex CLI**.
+
+## What is Brain Memory?
+
+Brain Memory gives your AI coding agent persistent, long-term memory that behaves like the human brain. Instead of a flat database or vector store, memories are organized into a deep nested directory tree that encodes semantic meaning through its hierarchy:
+
+```
+~/.brain/
+├── professional/
+│   └── companies/
+│       └── acme-corp/
+│           └── projects/
+│               └── alpha-launch.md        ⚡ 0.88
+├── personal/
+│   └── education/
+│       └── typescript-generics.md         ⚡ 0.72
+├── social/
+│   └── communities/
+│       └── open-source-contrib.md         ⚡ 0.65
+└── family/
+    └── events/
+        └── annual-reunion-planning.md     ⚡ 0.55
+```
+
+Every memory is a Markdown file with YAML frontmatter. Human-readable, Git-friendly, and completely portable.
+
+## Why Brain Memory?
+
+Existing AI memory solutions use flat databases with tag-based retrieval. Brain Memory is different:
+
+- **The directory tree IS the semantic structure** — `professional/companies/acme/projects/` tells the agent everything about context without vector search
+- **Human-inspectable** — Browse your "brain" in any file explorer
+- **Git-friendly** — Full version history of how memories evolve
+- **Strength + decay** — Recalled memories get stronger, forgotten ones fade. Just like your brain
+- **Associative network** — Memories link to each other with weighted connections. Recalling one activates related ones automatically
+- **Context-dependent recall** — Memories encoded in a similar context to the current session are scored higher
+- **Spaced reinforcement** — Memories recalled after longer intervals get bigger boosts; cramming produces diminishing returns
+- **Cognitive types** — Episodic, semantic, and procedural memories each decay differently, just like in the brain
+- **Consolidation** — Weak related memories merge into stronger combined knowledge
+- **Zero dependencies** — Pure file I/O, no databases, no servers, no embeddings required
+
+## Key Features
+
+### Neuroscience-Inspired Memory Model
+
+Brain Memory implements mechanisms from peer-reviewed neuroscience research:
+
+| Brain Mechanism | Implementation |
+|-----------------|---------------|
+| **Spreading activation** | Recalling memory A automatically surfaces linked memories B and C via a weighted association graph |
+| **Hebbian learning** | "Neurons that fire together wire together" — memories recalled together strengthen mutual links |
+| **Context-dependent recall** | Memories encoded in a similar context (project, task type) are scored higher at retrieval |
+| **Spacing effect** | Longer intervals between recalls produce larger strength boosts |
+| **Ebbinghaus decay** | Exponential forgetting curve with per-memory decay rates |
+| **Episodic to Semantic** | Event-specific memories crystallize into abstract principles during sleep |
+| **Synaptic homeostasis** | Global strength downscaling during sleep prevents inflation |
+| **REM dreaming** | Creative cross-domain association discovery via analogical reasoning |
+
+### Memory Lifecycle
+
+```
+Create → Store → Decay → Recall → Reinforce → Review → Sleep → Archive
+                                      ↑                   │
+                                      └── Associations ────┘
+```
+
+1. **Create** — `/brain:memorize` analyzes the session and extracts significant decisions, learnings, insights, or experiences
+2. **Store** — Each memory is filed into the hierarchy at the appropriate depth with full metadata
+3. **Decay** — Memories naturally weaken over time via exponential decay
+4. **Recall** — `/brain:remember` searches, scores with spreading activation and context matching, and returns the best matches
+5. **Reinforce** — Each recall applies spaced reinforcement and improves decay resistance
+6. **Review** — `/brain:review` implements SM-2 spaced repetition for long-term retention
+7. **Sleep** — `/brain:sleep` performs a 9-phase maintenance cycle inspired by real neuroscience
+8. **Archive** — Fully decayed memories move to `_archived/` where they remain recoverable and searchable
+
+### Session Lifecycle
+
+Brain Memory works automatically in the background. When a session begins, the agent loads relevant memories silently and references them naturally. When a session ends, it suggests capturing notable decisions or learnings — but never auto-memorizes without your consent.
+
+## Getting Started
+
+Ready to give your AI agent a brain? Head to [Installation](/docs/getting-started/installation/) to set up Brain Memory, then follow the [Quick Start](/docs/getting-started/quick-start/) guide.
+
+## Commands at a Glance
+
+| Command | Description |
+|---------|-------------|
+| `/brain:init` | Initialize the `~/.brain/` directory structure |
+| `/brain:memorize` | Store memories from current session |
+| `/brain:remember` | Recall relevant memories |
+| `/brain:review` | Spaced repetition review session |
+| `/brain:explore` | Browse the brain hierarchy |
+| `/brain:consolidate` | Merge weak related memories |
+| `/brain:forget` | Decay, archive, or remove memories |
+| `/brain:sunshine` | Deep forensic erasure |
+| `/brain:sleep` | 9-phase maintenance cycle |
+| `/brain:status` | Brain health dashboard |
+| `/brain:sync` | Sync across devices |

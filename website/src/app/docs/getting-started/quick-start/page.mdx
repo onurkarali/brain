@@ -1,0 +1,94 @@
+import Callout from "@/app/components/docs/Callout";
+import Steps, { Step } from "@/app/components/docs/Steps";
+
+export const metadata = {
+  title: "Quick Start - Brain Memory",
+  description: "Get up and running with Brain Memory in five minutes.",
+  category: "Getting Started",
+  order: 2,
+};
+
+# Quick Start
+
+Get Brain Memory working in under five minutes. This guide walks you through installation, creating your first memory, recalling it, and checking the status dashboard.
+
+<Steps>
+  <Step title="Install Brain Memory">
+    Run the installer and follow the interactive prompts to select your agent(s) and install scope:
+
+    ```bash
+    npx brain-memory@beta
+    ```
+
+    Or use flags for a non-interactive install:
+
+    ```bash
+    npx brain-memory@beta --claude --global
+    ```
+  </Step>
+
+  <Step title="Initialize your brain">
+    Open a new session with your AI agent and run:
+
+    ```
+    /brain:init
+    ```
+
+    This creates the `~/.brain/` directory structure with default categories (`professional/`, `personal/`, `social/`, `family/`) and sets up `index.json`, `associations.json`, and other supporting files.
+  </Step>
+
+  <Step title="Memorize something">
+    After working on a task — making an architecture decision, learning a new pattern, or debugging an issue — store it:
+
+    ```
+    /brain:memorize
+    ```
+
+    The agent analyzes your current session, extracts significant decisions, learnings, insights, or experiences, and creates memory files in the appropriate place in the hierarchy. You can also provide a topic:
+
+    ```
+    /brain:memorize architecture decisions
+    ```
+  </Step>
+
+  <Step title="Recall a memory">
+    In a future session, recall what you stored:
+
+    ```
+    /brain:remember kafka architecture
+    ```
+
+    The agent searches the memory index, scores candidates using spreading activation and context matching, and returns the most relevant memories. Recalled memories get stronger through spaced reinforcement.
+  </Step>
+
+  <Step title="Check your brain status">
+    See the overall health of your memory system:
+
+    ```
+    /brain:status
+    ```
+
+    This shows a dashboard with memory count, strength distribution, upcoming reviews, and any maintenance recommendations.
+  </Step>
+</Steps>
+
+## What Happens Automatically
+
+Once installed, Brain Memory works in the background without any commands:
+
+- **Session start** — The agent silently loads the top 3-5 memories relevant to your current project and checks for memories due for review
+- **During the session** — When past context is relevant, the agent references stored memories naturally
+- **Session end** — If significant decisions, learnings, or insights occurred, the agent suggests running `/brain:memorize`
+
+You never need to explicitly manage the system — just use `/brain:memorize` and `/brain:remember` when you want to, and the agent handles everything else.
+
+## Next Steps
+
+- Learn about [Memory Types](/docs/concepts/memory-types/) to understand how different memories behave
+- Explore [Strength & Decay](/docs/concepts/strength-decay/) to see how memories change over time
+- Run `/brain:sleep` periodically to trigger the [9-phase maintenance cycle](/docs/advanced/sleep-cycle/)
+- Set up [Portable Sync](/docs/advanced/portable-sync/) to share memories across devices
+
+<Callout type="tip">
+  Run `/brain:sleep` about once a week. It consolidates weak memories, prunes faded ones, discovers cross-domain connections, and generates expertise profiles — just like real sleep does for your brain.
+</Callout>

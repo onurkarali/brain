@@ -1,0 +1,167 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "/brain:sleep - Brain Memory",
+  description: "Full 9-phase maintenance cycle inspired by neuroscience.",
+  category: "Commands",
+  order: 17,
+};
+
+# /brain:sleep
+
+Run a full 9-phase maintenance cycle inspired by how the human brain reorganizes memories during sleep. This is the most comprehensive brain maintenance command.
+
+## Usage
+
+```
+/brain:sleep [scope]
+```
+
+**Arguments:**
+- `[scope]` — (Optional) Limit sleep to a specific subtree (e.g., `professional/skills`). If omitted, processes the entire brain.
+
+## What It Does
+
+`/brain:sleep` runs nine sequential phases that mirror neuroscience research on memory consolidation during sleep:
+
+### Phase 1: Replay
+
+Scans all memories and computes current effective strengths based on decay. Categorizes memories into tiers:
+
+| Tier | Strength | Status |
+|---|:---:|---|
+| Strong | > 0.7 | Healthy, well-reinforced |
+| Moderate | 0.4 - 0.7 | Active but fading |
+| Weak | 0.1 - 0.4 | Consolidation candidates |
+| Fading | < 0.1 | Archive candidates |
+
+### Phase 2: Synaptic Homeostasis
+
+If the mean strength across all memories exceeds 0.5, proportionally scales down ALL strengths to prevent inflation. Then selectively re-boosts:
+- High-salience memories (>= 0.7)
+- Recently-accessed memories (within last 7 days)
+- Frequently-recalled memories (access_count >= 5)
+
+Based on Tononi and Cirelli's Synaptic Homeostasis Hypothesis (SHY) — the idea that sleep's primary function is to downscale synaptic weights that accumulate during waking.
+
+### Phase 3: Knowledge Propagation
+
+Evaluates recent memories (within `propagation_window_days`, default: 7) against the existing hierarchy:
+
+- **Enrichment** — New details that supplement existing memories
+- **Contradiction detection** — New information that conflicts with stored knowledge (reduces confidence by -0.20)
+- **Validation** — New evidence that confirms stored knowledge (boosts confidence by +0.10)
+- **Obsolescence marking** — New information that makes older memories outdated
+- **Cross-referencing** — Discovering connections between previously unlinked memories
+
+Based on memory reconsolidation research — the finding that recalling a memory makes it temporarily malleable and subject to updating.
+
+### Phase 4: Semantic Crystallization
+
+Finds frequently-recalled episodic memories and extracts generalizable principles into new semantic memories. The event details begin fading but the lesson persists.
+
+For example, three episodic memories about deploy failures might crystallize into one semantic memory: "Deploy failures consistently stem from skipping the pre-deploy checklist."
+
+### Phase 5: Reorganize
+
+Detects flat clusters — 3 or more related memories at the same directory level — and restructures them into deeper subcategories automatically. This keeps the hierarchy clean and meaningful as your brain grows.
+
+### Phase 6: Consolidate
+
+Groups weak related memories (below the consolidation threshold) and merges them into stronger combined memories:
+
+```
+consolidated_strength = max(source_strengths) + 0.15
+consolidated_decay    = min(source_decay_rates)
+```
+
+See [/brain:consolidate](/docs/commands/consolidate/) for details.
+
+### Phase 7: Prune
+
+Archives memories that have faded below 0.1 strength by moving them to `_archived/`. Their index entries are transferred to `_archived/index.json` and they remain searchable as a fallback.
+
+Memories with salience >= 0.7 are exempt from pruning — they must be explicitly forgotten via `/brain:forget`.
+
+### Phase 8: REM Dreaming
+
+Selects random memories from different categories and discovers creative cross-domain connections via analogical reasoning. Each discovered connection is scored by:
+
+- **Novelty** — How unexpected the connection is
+- **Utility** — How practically useful the connection could be
+- **Surprise** — How much it challenges existing assumptions
+
+High-scoring connections are stored as new insight memories with association links to the source memories.
+
+### Phase 9: Expertise Detection
+
+Identifies dense knowledge areas by analyzing memory concentration, strength, recall frequency, and temporal span within each category. Generates expertise profiles at four levels:
+
+| Level | Score | Meaning |
+|---|:---:|---|
+| Awareness | 0.2 - 0.4 | Surface familiarity |
+| Working Knowledge | 0.4 - 0.6 | Competent with reference |
+| Deep Knowledge | 0.6 - 0.8 | Strong command, can reason about trade-offs |
+| Expert | 0.8 - 1.0 | Mastery — dense, frequently-recalled, long-standing |
+
+Each expertise area gets an `_expertise.md` profile documenting what you know well, knowledge gaps, and contributing memories. The phase also populates the spaced repetition review queue.
+
+## Example Interaction
+
+```
+User: /brain:sleep
+
+Agent: 😴 Starting sleep cycle...
+
+Phase 1/9: Replay
+  Scanned 42 memories: 12 strong, 18 moderate, 8 weak, 4 fading
+
+Phase 2/9: Synaptic Homeostasis
+  Mean strength: 0.54 — applying downscaling
+  Re-boosted 5 high-salience and 3 recently-accessed memories
+
+Phase 3/9: Knowledge Propagation
+  Evaluated 6 recent memories against hierarchy
+  • 2 enrichments applied
+  • 1 contradiction detected (confidence reduced)
+  • 1 cross-reference created
+
+Phase 4/9: Semantic Crystallization
+  Crystallized 1 pattern from 3 episodic memories:
+  → "Pre-deploy checklist failures are the leading cause of incidents"
+
+Phase 5/9: Reorganize
+  Moved 4 memories into new subcategory: professional/skills/typescript/
+
+Phase 6/9: Consolidate
+  Merged 3 weak memories into 1 consolidated memory
+
+Phase 7/9: Prune
+  Archived 4 fading memories (salience < 0.7)
+
+Phase 8/9: REM Dreaming
+  Discovered 1 cross-domain connection:
+  → "The event sourcing pattern from project-alpha could solve the
+     audit trail problem discussed in personal/education/compliance"
+  Novelty: 0.7 | Utility: 0.8 | Surprise: 0.6
+
+Phase 9/9: Expertise Detection
+  Updated 3 expertise profiles:
+  • TypeScript: Deep Knowledge (0.72)
+  • System Architecture: Working Knowledge (0.58)
+  • DevOps: Awareness (0.35)
+  Added 8 memories to review queue.
+
+✅ Sleep complete. Brain health improved.
+   Active: 38 memories (was 42)
+   Archived: 9 (was 5)
+   New: 2 (1 crystallized, 1 dream insight)
+```
+
+<Callout type="tip">
+  Run `/brain:sleep` about once a week for optimal brain health. It is safe to run more frequently — the phases are idempotent and adaptive.
+</Callout>
+
+<Callout type="info">
+  Sleep can target a specific subtree. For example, `/brain:sleep professional/skills` only processes skill-related memories, which is faster for focused maintenance.
+</Callout>

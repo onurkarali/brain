@@ -1,0 +1,196 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Sleep Cycle - Brain Memory",
+  description: "Detailed description of all 9 phases in the sleep maintenance cycle.",
+  category: "Advanced",
+  order: 22,
+};
+
+# Sleep Cycle
+
+The `/brain:sleep` command runs a 9-phase maintenance cycle inspired by neuroscience research on how the human brain consolidates, reorganizes, and maintains memories during sleep. Each phase maps to a specific brain mechanism.
+
+## Phase Overview
+
+| Phase | Name | Neuroscience Basis |
+|:---:|---|---|
+| 1 | Replay | Memory replay during slow-wave sleep |
+| 2 | Synaptic Homeostasis | Tononi & Cirelli's SHY hypothesis |
+| 3 | Knowledge Propagation | Memory reconsolidation |
+| 4 | Semantic Crystallization | Episodic-to-semantic transformation |
+| 5 | Reorganize | Hippocampal-cortical transfer |
+| 6 | Consolidate | Memory integration during sleep |
+| 7 | Prune | Synaptic pruning and forgetting |
+| 8 | REM Dreaming | REM sleep and creative association |
+| 9 | Expertise Detection | Schema formation and expertise |
+
+## Phase 1: Replay
+
+**Neuroscience basis:** During slow-wave sleep, the hippocampus replays recent experiences, reactivating neural patterns from the day.
+
+**What it does:**
+- Scans all memories in the brain
+- Computes current effective strengths based on the decay formula
+- Categorizes every memory into strength tiers
+
+**Tier classification:**
+
+| Tier | Strength Range | Status |
+|---|:---:|---|
+| Strong | > 0.7 | Healthy, well-reinforced |
+| Moderate | 0.4 - 0.7 | Active but fading |
+| Weak | 0.1 - 0.4 | Consolidation candidates |
+| Fading | < 0.1 | Archive candidates |
+
+The replay results feed into all subsequent phases.
+
+## Phase 2: Synaptic Homeostasis
+
+**Neuroscience basis:** Tononi and Cirelli's Synaptic Homeostasis Hypothesis (SHY) proposes that sleep's primary function is to downscale synaptic weights that accumulate during waking, preventing runaway potentiation.
+
+**What it does:**
+1. Calculates the mean strength across all memories
+2. If mean strength exceeds 0.5, applies proportional downscaling to ALL memories
+3. After downscaling, selectively re-boosts important memories:
+   - High-salience memories (salience >= 0.7)
+   - Recently-accessed memories (within last 7 days)
+   - Frequently-recalled memories (access_count >= 5)
+
+**Why it matters:** Without homeostasis, frequently used memories would all approach strength 1.0 over time, making the scoring system meaningless. Homeostasis ensures that relative differences in strength remain informative.
+
+## Phase 3: Knowledge Propagation
+
+**Neuroscience basis:** Memory reconsolidation research shows that recalling a memory makes it temporarily malleable, allowing new information to update and reshape it.
+
+**What it does:**
+- Evaluates recent memories (within `propagation_window_days`, default: 7) against the existing hierarchy
+- Checks for five types of interactions:
+
+| Interaction | Description | Effect |
+|---|---|---|
+| **Enrichment** | New details supplement an existing memory | Content is appended |
+| **Contradiction** | New information conflicts with stored knowledge | Confidence reduced by -0.20 |
+| **Validation** | New evidence confirms stored knowledge | Confidence boosted by +0.10 |
+| **Obsolescence** | New information makes an older memory outdated | Older memory is marked |
+| **Cross-referencing** | Previously unlinked memories are discovered to be related | New association link created |
+
+## Phase 4: Semantic Crystallization
+
+**Neuroscience basis:** Over time, episodic memories (event-specific) are transformed into semantic memories (abstract knowledge) as the hippocampus transfers knowledge to the neocortex.
+
+**What it does:**
+1. Finds episodic memories that have been recalled 3 or more times
+2. Identifies common patterns across related episodic memories
+3. Extracts the generalizable principle into a new semantic memory
+4. Creates association links between the new semantic memory and its episodic sources
+5. The episodic sources continue decaying naturally — the details fade but the lesson persists
+
+**Example:**
+
+Three episodic memories:
+- "Deploy failed March 5 — missing env variable"
+- "Deploy failed March 19 — staging not tested"
+- "Deploy failed April 2 — migration script error"
+
+Crystallizes into:
+- "Deploy failures consistently stem from skipping pre-deploy verification. Three critical gates: env variable check, staging validation, migration review."
+
+## Phase 5: Reorganize
+
+**Neuroscience basis:** The hippocampus reorganizes memory traces, creating new associations and restructuring existing schemas.
+
+**What it does:**
+- Detects flat clusters: 3 or more related memories at the same directory level
+- Restructures them into deeper subcategories
+- Updates all references (index entries, association links) to reflect new paths
+
+**Example:**
+Before: `professional/skills/` contains `typescript-generics.md`, `typescript-satisfies.md`, `typescript-utility-types.md`, `react-hooks.md`, `react-server-components.md`
+
+After: Creates `professional/skills/typescript/` and `professional/skills/react/` and moves files accordingly.
+
+## Phase 6: Consolidate
+
+**Neuroscience basis:** During sleep, the brain integrates new memories with existing knowledge structures, strengthening important connections and merging related traces.
+
+**What it does:**
+- Groups weak memories (strength < consolidation threshold) by relatedness
+- Merges each group into a single consolidated memory
+- Applies the consolidation formula:
+
+```
+consolidated_strength = max(source_strengths) + 0.15    (capped at 1.0)
+consolidated_decay    = min(source_decay_rates)          (slowest decay wins)
+```
+
+- Archives the source memories
+- Transfers association links to the consolidated memory
+
+See [/brain:consolidate](/docs/commands/consolidate/) for details.
+
+## Phase 7: Prune
+
+**Neuroscience basis:** Synaptic pruning removes weak neural connections, improving the signal-to-noise ratio of the neural network.
+
+**What it does:**
+- Identifies memories with effective strength below 0.1
+- Checks salience — memories with salience >= 0.7 are exempt from pruning
+- Moves qualifying memories to `_archived/`
+- Transfers their index entries to `_archived/index.json`
+- Prunes association links with weight below the link prune threshold (default: 0.05)
+
+Archived memories remain searchable as a fallback during recall.
+
+## Phase 8: REM Dreaming
+
+**Neuroscience basis:** During REM sleep, the brain makes creative associations between seemingly unrelated memories, which is believed to underlie insight and creative problem-solving.
+
+**What it does:**
+1. Selects random memories from different categories
+2. Analyzes pairs for potential cross-domain connections
+3. Uses analogical reasoning to discover non-obvious similarities
+4. Scores each discovered connection by three criteria:
+
+| Criterion | Description |
+|---|---|
+| **Novelty** | How unexpected and non-obvious the connection is |
+| **Utility** | How practically useful the connection could be |
+| **Surprise** | How much it challenges existing assumptions |
+
+5. High-scoring connections are stored as new insight memories with association links to the source memories
+
+**Example:**
+- Memory A: "Event sourcing pattern in project-alpha uses append-only logs"
+- Memory B: "Personal finance tracking works best with transaction history"
+- Dream insight: "The append-only pattern from event sourcing could be applied to the personal finance tracker — every change is a transaction, enabling audit trails and time-travel queries"
+
+## Phase 9: Expertise Detection
+
+**Neuroscience basis:** Schema formation — the brain identifies areas of dense, well-connected knowledge and creates abstract schemas that organize domain expertise.
+
+**What it does:**
+1. Analyzes each category for knowledge density (memory count, strength, recall frequency, temporal span)
+2. Computes an expertise score for each area
+3. Classifies expertise into four levels:
+
+| Level | Score Range | Meaning |
+|---|:---:|---|
+| Awareness | 0.2 - 0.4 | Surface familiarity with the topic |
+| Working Knowledge | 0.4 - 0.6 | Competent with reference material |
+| Deep Knowledge | 0.6 - 0.8 | Strong command, can reason about trade-offs |
+| Expert | 0.8 - 1.0 | Mastery — dense, frequently-recalled, long-standing knowledge |
+
+4. Generates or updates `_expertise.md` profiles documenting:
+   - What you know well in that area
+   - Identified knowledge gaps
+   - Contributing memories
+5. Populates the spaced repetition review queue (`review-queue.json`) with memories that would benefit from review
+
+<Callout type="tip">
+  Run `/brain:sleep` about once a week for optimal brain health. You can also target specific areas with a scope argument — for example, `/brain:sleep professional/skills` runs all 9 phases only on your skills subtree.
+</Callout>
+
+<Callout type="info">
+  Each phase is idempotent — running sleep multiple times in a row is safe and will not cause unintended side effects. Subsequent runs will simply find fewer items to process.
+</Callout>

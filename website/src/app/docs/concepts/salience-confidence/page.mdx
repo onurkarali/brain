@@ -1,0 +1,117 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Salience & Confidence - Brain Memory",
+  description: "How emotional significance and epistemic certainty affect memory behavior.",
+  category: "Concepts",
+  order: 8,
+};
+
+# Salience & Confidence
+
+Every memory carries two meta-cognitive scores that influence how it is handled: **salience** (emotional/motivational significance) and **confidence** (epistemic certainty). Together, they determine which memories are protected from pruning and which should be flagged as uncertain during recall.
+
+## Salience (0.0 - 1.0)
+
+Salience captures how emotionally or motivationally significant a memory is. High-salience memories represent things that deeply matter — critical decisions, hard-won lessons, or personally important events.
+
+### Salience Levels
+
+| Range | Level | Description |
+|:---:|---|---|
+| 0.0 - 0.3 | Low | Routine information, minor observations |
+| 0.3 - 0.5 | Moderate | Useful knowledge, standard decisions |
+| 0.5 - 0.7 | High | Important decisions, significant learnings |
+| 0.7 - 1.0 | Critical | Career-defining decisions, hard-won lessons, core values |
+
+### Protection From Pruning
+
+Memories with salience **>= 0.7** are **never auto-pruned**. Even if their strength decays below the archive threshold (0.1), they will not be moved to `_archived/` during the [sleep cycle](/docs/advanced/sleep-cycle/). They must be explicitly removed via `/brain:forget` or `/brain:sunshine`.
+
+This models how emotionally significant memories persist in the human brain long after neutral memories fade.
+
+### Consolidation Anchoring
+
+During [consolidation](/docs/commands/consolidate/), the memory with the highest salience in a group serves as the **anchor**. Its framing, key details, and perspective take priority in the synthesized result. Lower-salience memories in the group contribute supplementary details.
+
+### Scoring Impact
+
+Salience contributes **0.08** (8%) of the [scoring formula](/docs/advanced/scoring-formula/):
+
+```
+score = 0.38 * relevance
+      + 0.18 * decayed_strength
+      + 0.08 * recency_bonus
+      + 0.14 * spreading_bonus
+      + 0.14 * context_match
+      + 0.08 * salience          ← this factor
+```
+
+While 8% may seem modest, for memories with similar relevance and strength scores, salience can be the tiebreaker that determines which memory surfaces.
+
+### Synaptic Homeostasis Re-Boost
+
+During the Synaptic Homeostasis phase of sleep, high-salience memories receive selective re-boosts after the global downscaling. This means important memories are preserved even when the overall memory system is being normalized.
+
+## Confidence (0.0 - 1.0)
+
+Confidence tracks how epistemically certain a memory is — how much you should trust it. Not all memories are equally reliable. Some are well-established facts, while others are tentative observations or secondhand information.
+
+### Confidence Levels
+
+| Range | Level | Description |
+|:---:|---|---|
+| 0.0 - 0.3 | Low | Unverified, tentative, or potentially outdated |
+| 0.3 - 0.5 | Moderate | Likely correct but not confirmed |
+| 0.5 - 0.7 | Standard | Based on direct experience or reliable sources |
+| 0.7 - 1.0 | High | Verified, well-established, or authoritative |
+
+### How Confidence Is Set
+
+Confidence is initially set at encoding time based on the quality of the source:
+
+- **Direct experience** — You did it yourself, saw the result → 0.8-1.0
+- **Reliable documentation** — Official docs, peer-reviewed sources → 0.7-0.9
+- **Team knowledge** — Information from colleagues → 0.5-0.7
+- **Secondhand or inferred** — Heard from someone, read in a forum → 0.3-0.5
+- **Speculation or assumption** — Educated guess, untested hypothesis → 0.1-0.3
+
+### How Confidence Changes
+
+Confidence is not static. It changes through several mechanisms:
+
+**Knowledge Propagation** (during sleep):
+- When new evidence **contradicts** a stored memory, its confidence is reduced by -0.20
+- When new evidence **validates** a stored memory, its confidence is boosted by +0.10
+
+**Manual adjustment**:
+- You can ask the agent to update a memory's confidence when you discover new information
+
+### Low-Confidence Flagging
+
+During recall, memories with **confidence < 0.5** that have been accessed frequently (access_count >= 3) are flagged:
+
+```
+⚠️ 2 frequently-used memories have low confidence — consider verifying
+```
+
+This warns you that you are relying on uncertain information. The agent may also add a caveat when referencing a low-confidence memory during a session.
+
+<Callout type="warning">
+  Low confidence does not prevent a memory from being recalled — it just adds a warning. This is by design: uncertain memories can still be useful, but you should be aware of their reliability.
+</Callout>
+
+## Salience vs. Confidence
+
+These two dimensions are independent:
+
+| Combination | Meaning | Example |
+|---|---|---|
+| High salience, high confidence | Critical and reliable | A verified architecture decision that shaped the entire system |
+| High salience, low confidence | Important but uncertain | A hypothesis about a production bug that has not been confirmed |
+| Low salience, high confidence | Reliable but routine | A well-documented API endpoint format |
+| Low salience, low confidence | Uncertain and unimportant | A casual observation about a library version |
+
+<Callout type="tip">
+  If you notice the brain status showing frequently-used memories with low confidence, run `/brain:review` to evaluate and either verify or discard them.
+</Callout>

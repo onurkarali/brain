@@ -1,0 +1,204 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "File Structure - Brain Memory",
+  description: "Complete file tree of the ~/.brain/ directory with descriptions.",
+  category: "Reference",
+  order: 25,
+};
+
+# File Structure
+
+The complete `~/.brain/` directory tree with descriptions of every file and directory.
+
+## Full Tree
+
+```
+~/.brain/
+├── index.json              # Memory inventory — fast lookup for all memories
+├── associations.json       # Weighted associative network between memories
+├── contexts.json           # Session context snapshots for context-dependent recall
+├── review-queue.json       # Spaced repetition scheduling
+│
+├── professional/           # Work, career, technical skills
+│   ├── _meta.json          # Category metadata and stats
+│   ├── _expertise.md       # Generated expertise profile (after sleep)
+│   ├── companies/          # On-demand: created when first needed
+│   │   └── <company>/
+│   │       ├── projects/
+│   │       │   └── <project>/
+│   │       │       └── *.md    # Project-specific memories
+│   │       └── decisions/
+│   │           └── *.md        # Company-level decisions
+│   ├── skills/
+│   │   └── <skill>/
+│   │       └── *.md            # Skill-related memories
+│   └── career/
+│       └── *.md                # Career-related memories
+│
+├── personal/               # Education, health, hobbies, goals
+│   ├── _meta.json
+│   ├── _expertise.md
+│   ├── education/
+│   │   └── *.md
+│   ├── health/
+│   │   └── *.md
+│   └── goals/
+│       └── *.md
+│
+├── social/                 # Communities, networks, collaborations
+│   ├── _meta.json
+│   ├── _expertise.md
+│   └── communities/
+│       └── *.md
+│
+├── family/                 # Family relationships and events
+│   ├── _meta.json
+│   └── events/
+│       └── *.md
+│
+├── _consolidated/          # Merged memories from consolidation
+│   └── _meta.json
+│
+├── _archived/              # Decayed memories (recoverable + searchable)
+│   ├── _meta.json
+│   └── index.json          # Searchable archive index
+│
+└── .sync/                  # Sync state (local only, never pushed)
+    ├── config.json         # Remote URL, encryption flag
+    └── repo/               # Hidden git repo for sync
+```
+
+## Root-Level Files
+
+### index.json
+
+The central registry for all memories. Contains:
+
+- **memories** — Array of memory entries with ID, path, type, cognitive type, strength, tags, and other metadata
+- **config** — Brain configuration settings (max depth, thresholds, association config)
+- **stats** — Global statistics (total memories, average strength, last sleep timestamp)
+
+This file is the primary lookup mechanism. The agent reads it at session start to understand the brain state and queries it during recall.
+
+### associations.json
+
+The weighted associative network graph. Contains:
+
+- **edges** — Object mapping memory IDs to their connections with weights, co-retrieval counts, last activation timestamps, and origin types
+
+See [Associative Network](/docs/concepts/associative-network/) for the full schema and mechanics.
+
+### contexts.json
+
+Session context snapshots for [context-dependent recall](/docs/concepts/context-recall/). Contains:
+
+- **sessions** — Array of the last 20 session summaries, each with timestamp, project, topics, task type, and a brief summary
+
+New entries are appended at session end. Older entries beyond 20 are removed.
+
+### review-queue.json
+
+Spaced repetition scheduling data generated during [sleep](/docs/commands/sleep/). Contains:
+
+- **queue** — Array of review items with memory ID, next review date, interval, ease factor, and review count
+
+Used by [/brain:review](/docs/commands/review/) to determine which memories are due for review.
+
+## Category Directories
+
+### professional/
+
+Work-related memories: career decisions, technical skills, company-specific knowledge, project details.
+
+**Common subdirectories** (created on demand):
+- `companies/<name>/` — Company-specific knowledge
+- `companies/<name>/projects/<name>/` — Project-specific memories
+- `companies/<name>/decisions/` — Company-level decisions
+- `skills/<name>/` — Technical skill memories
+- `career/` — Career development and planning
+
+### personal/
+
+Personal knowledge: education, health, hobbies, personal goals.
+
+**Common subdirectories** (created on demand):
+- `education/` — Learning and educational content
+- `health/` — Health-related memories
+- `goals/` — Personal objectives and aspirations
+- `hobbies/` — Hobby and interest memories
+
+### social/
+
+Social and community knowledge: open-source contributions, professional networks, community involvement.
+
+**Common subdirectories** (created on demand):
+- `communities/` — Community-related memories
+- `networks/` — Professional network connections
+
+### family/
+
+Family-related memories: events, relationships, traditions.
+
+**Common subdirectories** (created on demand):
+- `events/` — Family events and milestones
+- `relationships/` — Family relationship dynamics
+
+## Special Directories
+
+### _consolidated/
+
+Contains metadata about consolidation operations. The consolidated memories themselves are stored in their original category location — this directory tracks the consolidation history.
+
+### _archived/
+
+Memories that have decayed below 0.1 strength during sleep. They are moved here rather than deleted, preserving them as a searchable fallback.
+
+- `index.json` — A searchable index of archived memories, separate from the main index
+- Archived memory files retain their original frontmatter
+
+Archived memories can be recovered by recalling them via `/brain:remember`, which moves them back to an active location with a strength boost.
+
+### .sync/
+
+Local sync state. Never pushed to the remote or included in exports.
+
+- `config.json` — Sync configuration (remote URL, encryption flag)
+- `repo/` — Hidden Git repository used for sync operations
+
+## Per-Directory Files
+
+### _meta.json
+
+Every category directory has a `_meta.json` file containing:
+
+```json
+{
+  "memory_count": 5,
+  "average_strength": 0.68,
+  "last_updated": "2026-02-14T09:00:00Z",
+  "subcategories": ["projects", "decisions"]
+}
+```
+
+These are updated during sleep and when memories are created or modified.
+
+### _expertise.md
+
+Generated during the Expertise Detection phase of sleep. Contains:
+
+- Expertise level assessment (Awareness, Working Knowledge, Deep Knowledge, Expert)
+- Summary of knowledge in this area
+- Identified gaps
+- Contributing memories
+- Recommendations for improvement
+
+## On-Demand Depth
+
+Subdirectories are created as needed by the agent. The directory structure is not pre-defined beyond the four top-level categories. When a memory's content warrants deeper nesting, the agent creates the appropriate subdirectories, up to `max_depth` (default: 6).
+
+A generic career thought lands in `professional/`, but a specific deployment incident for a particular project goes to `professional/companies/acme/projects/alpha/incidents/`.
+
+<Callout type="info">
+  The entire directory structure is human-readable. You can browse it in any file explorer, search with `grep`, or manage it with Git.
+</Callout>

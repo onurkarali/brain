@@ -1,0 +1,101 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "/brain:forget - Brain Memory",
+  description: "Decay, archive, or remove memories.",
+  category: "Commands",
+  order: 15,
+};
+
+# /brain:forget
+
+Deliberately decay, archive, or remove a memory. Use this when information is outdated, incorrect, or no longer relevant.
+
+## Usage
+
+```
+/brain:forget [target]
+```
+
+**Arguments:**
+- `[target]` — A memory ID, file path, or descriptive query to identify the memory to forget. The agent will confirm before taking action.
+
+## What It Does
+
+`/brain:forget` provides three levels of forgetting, from gentle to complete:
+
+### 1. Decay
+
+Reduce the memory's strength significantly, accelerating its natural decline. The memory remains in its current location but will be a weaker candidate for recall.
+
+```
+decayed_strength = strength * 0.3
+```
+
+This is useful when a memory is not wrong but is losing relevance. It will naturally fade further and eventually be archived during sleep.
+
+### 2. Archive
+
+Move the memory to `_archived/`. The memory is removed from the active hierarchy but remains searchable as a fallback during recall. It can be recovered if needed.
+
+The memory's entry is removed from `index.json` and added to `_archived/index.json`. Association links pointing to the memory are preserved but deactivated.
+
+### 3. Remove
+
+Permanently delete the memory file. Its entry is removed from `index.json` and all association links are cleaned up. This cannot be undone (unless your `~/.brain/` is under Git version control).
+
+## Example Interaction
+
+```
+User: /brain:forget the old database schema notes
+
+Agent: Found 1 matching memory:
+
+📝 Initial Database Schema Notes
+   Path: professional/companies/acme/projects/alpha/db-schema-v1.md
+   Strength: 0.32 | Created: 2026-01-15 | Last accessed: 45 days ago
+   Salience: 0.3 | Confidence: 0.5
+
+How would you like to forget this?
+  1. Decay — reduce strength to 0.10, let it fade naturally
+  2. Archive — move to _archived/ (recoverable, searchable)
+  3. Remove — permanently delete
+
+User: 2
+
+Agent: ✅ Archived: db-schema-v1.md → _archived/db-schema-v1.md
+Association links deactivated (2 links).
+Index updated.
+```
+
+## Forgetting High-Salience Memories
+
+Memories with salience >= 0.7 are protected from automatic pruning during sleep. However, `/brain:forget` can still decay, archive, or remove them — this is the explicit forgetting mechanism.
+
+The agent will warn you when forgetting a high-salience memory:
+
+```
+Agent: ⚠️ This memory has high salience (0.85). It has been protected
+from automatic pruning because it was marked as emotionally/motivationally
+significant. Are you sure you want to forget it?
+```
+
+## Forgetting vs. Sunshine
+
+`/brain:forget` handles a single memory. If you need to erase all traces of a topic — including references in other memories, association links, and index entries — use [`/brain:sunshine`](/docs/commands/sunshine/) instead.
+
+| Feature | `/brain:forget` | `/brain:sunshine` |
+|---|---|---|
+| Scope | Single memory | All traces of a topic |
+| Association cleanup | Deactivates links to target | Traces and removes all references |
+| Other memories | Unchanged | References in other memories are edited |
+| Index cleanup | Removes target entry | Removes all related entries |
+| Use case | Outdated single memory | Complete topic erasure |
+
+<Callout type="warning">
+  The "Remove" option permanently deletes the memory file. If your `~/.brain/` is not tracked by Git, this cannot be undone. Consider using "Archive" instead — archived memories can always be recovered.
+</Callout>
+
+<Callout type="tip">
+  You rarely need to forget memories manually. The natural decay mechanism, combined with periodic `/brain:sleep`, handles most cleanup automatically. Use `/brain:forget` only for information that is actively wrong or harmful to keep.
+</Callout>

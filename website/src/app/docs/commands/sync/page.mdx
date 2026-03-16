@@ -1,0 +1,175 @@
+import Callout from "@/app/components/docs/Callout";
+import Steps, { Step } from "@/app/components/docs/Steps";
+
+export const metadata = {
+  title: "/brain:sync - Brain Memory",
+  description: "Sync memories via Git remote or export/import for portability.",
+  category: "Commands",
+  order: 19,
+};
+
+# /brain:sync
+
+Sync your brain across devices using Git remote push/pull or file-based export/import. Supports optional AES-256-GCM encryption.
+
+## Usage
+
+```
+/brain:sync [subcommand]
+```
+
+**Subcommands:**
+- `setup <url>` — Configure a Git remote for syncing
+- `push` — Push local changes to the remote
+- `pull` — Pull remote changes to local
+- `export` — Export the brain to a portable file
+- `import <path>` — Import a brain from a portable file
+
+## Git Remote Sync
+
+The recommended way to sync your brain across machines. Uses your existing Git/SSH authentication — no additional credentials needed.
+
+### Setup
+
+<Steps>
+  <Step title="Create a private repository">
+    Create a private Git repository on your preferred hosting service:
+
+    ```bash
+    gh repo create brain-data --private
+    ```
+
+    You can use GitHub, GitLab, Codeberg, or any self-hosted Git server.
+  </Step>
+
+  <Step title="Configure the remote">
+    ```
+    /brain:sync setup git@github.com:you/brain-data.git
+    ```
+
+    This initializes a hidden Git repository inside `~/.brain/.sync/repo/` and sets the remote URL. Your brain files remain in their original locations.
+  </Step>
+
+  <Step title="Push your brain">
+    ```
+    /brain:sync push
+    ```
+
+    Commits all current brain files and pushes to the remote repository.
+  </Step>
+
+  <Step title="Pull on another machine">
+    On your other machine, after installing Brain Memory:
+
+    ```
+    /brain:sync setup git@github.com:you/brain-data.git
+    /brain:sync pull
+    ```
+  </Step>
+</Steps>
+
+### Push
+
+```
+/brain:sync push
+```
+
+Stages all changes in `~/.brain/`, creates a commit with a timestamp, and pushes to the configured remote. Only changed files are transferred.
+
+### Pull
+
+```
+/brain:sync pull
+```
+
+Fetches from the remote and merges changes into your local brain. If there are conflicts (rare — usually happens when two machines modify the same memory), the agent will prompt you to resolve them.
+
+## Export / Import
+
+For one-off transfers without setting up a Git remote.
+
+### Export
+
+```
+/brain:sync export
+```
+
+Packs the entire `~/.brain/` directory into a single file. The output file is saved to a location you specify (or a default like `~/brain-export-<timestamp>.tar.gz`).
+
+### Import
+
+```
+/brain:sync import <path>
+```
+
+Imports a previously exported brain file. Supports two modes:
+
+- **Merge mode** (default) — Only imports files that are newer than existing ones. Existing memories that were modified more recently on the local machine are preserved.
+- **Overwrite mode** — Replaces all local brain files with the imported ones.
+
+```
+/brain:sync import ~/brain-export-20260215.tar.gz
+/brain:sync import ~/brain-export-20260215.tar.gz --overwrite
+```
+
+## Encryption
+
+Both Git sync and export/import support optional AES-256-GCM encryption with a user-provided passphrase.
+
+### Enabling Encryption
+
+When setting up sync:
+
+```
+/brain:sync setup git@github.com:you/brain-data.git --encrypt
+```
+
+The agent will prompt for a passphrase. All files are encrypted before committing to the remote. You will need the same passphrase to pull on another machine.
+
+For exports:
+
+```
+/brain:sync export --encrypt
+```
+
+And when importing an encrypted file:
+
+```
+/brain:sync import ~/brain-export-encrypted.tar.gz
+```
+
+The agent will prompt for the passphrase.
+
+<Callout type="warning">
+  If you enable encryption, you must remember your passphrase. There is no recovery mechanism. Without the passphrase, encrypted data cannot be decrypted.
+</Callout>
+
+## Sync State
+
+Sync configuration and state are stored in `~/.brain/.sync/`:
+
+```
+~/.brain/.sync/
+├── config.json          # Remote URL, encryption flag
+└── repo/                # Hidden git repo for sync
+```
+
+This directory is local-only and is never pushed to the remote.
+
+## Key Features
+
+| Feature | Description |
+|---|---|
+| **Manual sync** | No background watchers, no auto-sync. You control when data moves. |
+| **Optional encryption** | AES-256-GCM with user-provided passphrase |
+| **Merge mode** | Import only newer files, preserving local changes |
+| **Zero dependencies** | Uses Node.js built-in `crypto` and the system `git` binary |
+| **Any Git host** | Works with GitHub, GitLab, Codeberg, or self-hosted servers |
+
+<Callout type="tip">
+  For most users, Git remote sync is the best approach — it gives you version history, conflict resolution, and works with your existing SSH keys. Use export/import for air-gapped or one-off transfers.
+</Callout>
+
+<Callout type="info">
+  Sync is always manual by design. Your brain data never leaves your machine unless you explicitly push or export. There are no background processes, no webhooks, and no cloud dependencies.
+</Callout>

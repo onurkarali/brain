@@ -1,0 +1,112 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Cognitive Types - Brain Memory",
+  description: "Episodic, semantic, and procedural memory types and how they behave differently.",
+  category: "Concepts",
+  order: 4,
+};
+
+# Cognitive Types
+
+In addition to its [memory type](/docs/concepts/memory-types/) (decision, insight, learning, etc.), every memory is classified by its cognitive type. This mirrors how the human brain processes different kinds of information using different neural systems.
+
+## The Three Cognitive Types
+
+| Cognitive Type | Strength Modifier | Decay Behavior | Character |
+|----------------|:---:|---|---|
+| **Episodic** | +0.10 | Faster decay | Event-specific, time-anchored |
+| **Semantic** | default | Standard decay | Abstract, generalized knowledge |
+| **Procedural** | -0.10 | Very slow decay once established | Skills, workflows, how-to |
+
+### Episodic Memories
+
+Episodic memories are tied to specific events. They remember *what happened*, *when*, and *where*. They start with higher initial strength (+0.10 modifier) because events feel vivid when fresh, but they decay faster — the details fade over time while the lessons persist.
+
+**Examples:**
+- "The deploy failed Tuesday at 3pm because the migration script had a typo in the column name"
+- "During the sprint retro, the team agreed that code reviews need a 24-hour SLA"
+- "The client demo on March 12th crashed because we forgot to seed the staging database"
+
+**Characteristics:**
+- Rich in contextual details (time, place, people involved)
+- Naturally time-anchored — they answer "what happened?"
+- Higher initial impact but details become fuzzy over time
+- Prime candidates for [crystallization](#crystallization) during sleep
+
+### Semantic Memories
+
+Semantic memories represent abstracted knowledge — facts, rules, and principles that are not tied to a specific event. They use the default decay rate, making them stable long-term storage.
+
+**Examples:**
+- "React hooks must follow the rules of hooks — no conditional calls, no loops"
+- "PostgreSQL JSONB indexes require a GIN index for efficient queries"
+- "The billing system uses event sourcing with a 30-day compaction window"
+
+**Characteristics:**
+- Context-independent — true regardless of when or where you learned it
+- Generalizable and reusable across projects
+- Standard decay rate — stable over time
+- Often the result of crystallizing multiple episodic memories
+
+### Procedural Memories
+
+Procedural memories encode skills and workflows — the *how-to* knowledge that becomes automatic with practice. They start with lower strength (-0.10 modifier) because skills take time to establish, but once reinforced through recall, they decay extremely slowly.
+
+**Examples:**
+- "Steps to debug a memory leak: 1. Take a heap snapshot, 2. Identify retained objects, 3. Trace the retention chain, 4. Fix the reference"
+- "Deployment checklist: Run tests, bump version, update changelog, create tag, push, verify staging, promote to production"
+- "Git rebase workflow: fetch upstream, rebase onto main, resolve conflicts file-by-file, force push to branch"
+
+**Characteristics:**
+- Sequential or workflow-oriented — describes a process
+- Low initial strength but extremely persistent once established
+- Gets stronger through practice (repeated recall)
+- Rarely needs updating — procedures tend to be stable
+
+## How Cognitive Types Affect Strength
+
+The base strength of a memory is determined by its [memory type](/docs/concepts/memory-types/), then modified by its cognitive type:
+
+```
+final_strength = base_strength + cognitive_modifier
+```
+
+For example:
+- A **decision** (base 0.85) stored as **episodic** = 0.95 initial strength
+- A **decision** (base 0.85) stored as **semantic** = 0.85 initial strength (no modifier)
+- A **decision** (base 0.85) stored as **procedural** = 0.75 initial strength
+
+The higher initial strength of episodic memories compensates for their faster decay — they start vivid and gradually lose detail, mirroring how human event memories work.
+
+## Crystallization
+
+One of the most powerful features of Brain Memory is **semantic crystallization**, which happens during the [sleep cycle](/docs/advanced/sleep-cycle/).
+
+When the agent notices frequently-recalled episodic memories, it extracts the generalizable principle into a new semantic memory. The event-specific details begin fading, but the lesson persists as stable long-term knowledge.
+
+**Example of crystallization:**
+
+Three episodic memories about deploy failures:
+1. "Deploy failed March 5 due to missing env variable"
+2. "Deploy failed March 19 because staging wasn't tested"
+3. "Deploy failed April 2 due to migration script error"
+
+Crystallize into one semantic memory:
+- "Deploy failures consistently stem from skipping the pre-deploy checklist. The three critical gates are: env variable verification, staging validation, and migration script review."
+
+The original episodic memories continue to decay (and may eventually be archived), but the crystallized semantic memory lives on with standard decay and a strong base.
+
+<Callout type="tip">
+  Crystallization only happens during `/brain:sleep`. Run it periodically (about once a week) to allow your brain to extract lasting knowledge from accumulated experiences.
+</Callout>
+
+## How Cognitive Types Are Assigned
+
+When you run `/brain:memorize`, the agent determines the cognitive type by analyzing the content:
+
+- **Episodic** — Contains specific dates, events, people, "what happened" narratives
+- **Semantic** — Expresses general rules, facts, principles, or abstracted knowledge
+- **Procedural** — Describes step-by-step processes, workflows, or how-to instructions
+
+The agent can also recognize transitions. If you discuss a specific event but then extract a general rule from it, the agent may create both an episodic memory (the event) and a semantic memory (the rule), with an association link between them.

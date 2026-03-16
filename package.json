@@ -27,6 +27,7 @@
     "brain-memory": "bin/install.js"
   },
   "files": [
+    "assets/",
     "bin/",
     "commands/",
     "prompts/",

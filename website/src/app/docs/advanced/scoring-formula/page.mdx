@@ -1,0 +1,168 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Scoring Formula - Brain Memory",
+  description: "Full breakdown of the 6-factor memory scoring formula.",
+  category: "Advanced",
+  order: 20,
+};
+
+# Scoring Formula
+
+When you run `/brain:remember`, every candidate memory is scored using a 6-factor weighted formula. The scores determine which memories surface and how they are presented.
+
+## The Formula
+
+```
+score = 0.38 * relevance
+      + 0.18 * decayed_strength
+      + 0.08 * recency_bonus
+      + 0.14 * spreading_bonus
+      + 0.14 * context_match
+      + 0.08 * salience
+```
+
+All six factors are normalized to the range 0.0 - 1.0 before weighting.
+
+## Factor Breakdown
+
+### Relevance (weight: 0.38)
+
+The largest factor. Measures how well the memory's content matches the recall query. This is a semantic match — not just keyword matching, but understanding the meaning of the query and the memory.
+
+**How it is calculated:**
+- The agent compares the query against the memory's title, content, tags, and category path
+- Exact keyword matches, semantic similarity, and topical relevance all contribute
+- A memory about "Kafka architecture" has high relevance for the query "event-driven design" even without exact keyword overlap
+
+### Decayed Strength (weight: 0.18)
+
+The memory's current effective strength after time decay:
+
+```
+decayed_strength = base_strength * (decay_rate ^ days_since_last_access)
+```
+
+This factor ensures that well-maintained, frequently-recalled memories rank higher than equally relevant but neglected ones. See [Strength & Decay](/docs/concepts/strength-decay/) for details.
+
+### Recency Bonus (weight: 0.08)
+
+A linear bonus that favors recently accessed memories. Fades to zero over one year:
+
+```
+recency_bonus = max(0, 1.0 - (days_since_last_access / 365))
+```
+
+| Days Since Access | Recency Bonus |
+|---:|---:|
+| 0 | 1.00 |
+| 30 | 0.92 |
+| 90 | 0.75 |
+| 180 | 0.51 |
+| 270 | 0.26 |
+| 365 | 0.00 |
+
+This provides a mild boost to recently touched memories without dominating the score.
+
+### Spreading Bonus (weight: 0.14)
+
+Activation received from linked memories in the [associative network](/docs/concepts/associative-network/). When a candidate memory is connected to other matching memories, it receives a spreading activation bonus.
+
+```
+spreading_bonus = sum(activation from connected memories)
+```
+
+Activation spreads up to 2 hops from source memories, decaying by 50% per hop. The spreading bonus is capped at 1.0.
+
+This factor surfaces memories that are part of a cluster of related knowledge, even if their direct relevance to the query is moderate.
+
+### Context Match (weight: 0.14)
+
+How similar the memory's [encoding context](/docs/concepts/context-recall/) is to the current session context. Compares project, topics, and task type:
+
+- **Project match** — Strong contribution if the memory was encoded in the same project
+- **Topic overlap** — Number of shared topics, normalized
+- **Task type match** — Contribution if the current task type matches the encoding task type
+
+### Salience (weight: 0.08)
+
+The memory's emotional/motivational significance score (0.0 - 1.0). See [Salience & Confidence](/docs/concepts/salience-confidence/).
+
+This factor provides a tiebreaker that favors personally important memories when other factors are similar.
+
+## Weight Rationale
+
+The weights reflect a hierarchy of importance for memory retrieval:
+
+| Factor | Weight | Rationale |
+|---|:---:|---|
+| Relevance | 0.38 | Most important — does the memory answer the question? |
+| Decayed strength | 0.18 | Well-maintained memories are more reliable |
+| Spreading bonus | 0.14 | Connected knowledge is richer and more useful |
+| Context match | 0.14 | Same-context memories are more applicable |
+| Recency bonus | 0.08 | Mild preference for recent information |
+| Salience | 0.08 | Mild preference for personally important memories |
+
+The weights sum to 1.0, producing a final score between 0.0 and 1.0.
+
+## Response Strategies
+
+After scoring all candidates, the agent decides how to present results:
+
+### Single Strong Match (top score > 0.7)
+
+One memory clearly dominates. The agent returns it in full with context:
+
+```
+Found a strong match:
+📝 [Memory title]
+   Strength: X | Recalled N times | Last: Y days ago
+
+[Full memory content]
+
+Related memories also activated:
+  • [Related memory 1] (strength X)
+  • [Related memory 2] (strength Y)
+```
+
+### Multiple Related (2-5 candidates > 0.4)
+
+Several memories are relevant. The agent synthesizes a consolidated response:
+
+```
+Found N related memories — synthesizing:
+
+Based on past experiences and learnings:
+1. [Key point from memory 1]
+2. [Key point from memory 2]
+3. [Key point from memory 3]
+
+Sources: [file1.md, file2.md, file3.md]
+```
+
+### Many Weak (> 5 candidates, all < 0.4)
+
+Many memories partially match but none are strong. The agent lists candidates for you to choose:
+
+```
+Found N partial matches. Which is most relevant?
+
+1. [Memory title 1] (score: 0.35)
+2. [Memory title 2] (score: 0.32)
+3. [Memory title 3] (score: 0.29)
+...
+```
+
+### No Active Matches
+
+No candidates above the minimum threshold. The agent searches the archive as a fallback, then suggests alternatives:
+
+```
+No active memories found for "[query]".
+Searched archive — [found N / no matches].
+Related topics you have memories about: [suggestions]
+```
+
+<Callout type="info">
+  The scoring formula is applied consistently every time you recall a memory, whether through explicit `/brain:remember` or the agent's automatic context loading at session start.
+</Callout>

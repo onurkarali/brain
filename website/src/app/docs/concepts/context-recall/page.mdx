@@ -1,0 +1,110 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Context-Dependent Recall - Brain Memory",
+  description: "How encoding context improves memory retrieval through context matching.",
+  category: "Concepts",
+  order: 7,
+};
+
+# Context-Dependent Recall
+
+Memories are easier to recall when the retrieval context matches the context in which they were originally encoded. This is a well-established finding in cognitive psychology — students who study in the same room where they take the exam perform better. Brain Memory implements this principle by storing encoding context with every memory and scoring context similarity during recall.
+
+## Encoding Context
+
+When a memory is created via `/brain:memorize`, the agent captures three dimensions of context:
+
+```yaml
+encoding_context:
+  project: project-alpha
+  topics: [architecture, scaling, kafka]
+  task_type: designing
+```
+
+### Project
+
+The name of the project being worked on when the memory was encoded. This is the strongest context signal — memories from the same project are highly relevant when working on that project again.
+
+### Topics
+
+A list of topics that were active during the session. These are inferred from the conversation — technologies being discussed, concepts being explored, problem domains being addressed.
+
+### Task Type
+
+The kind of work being done. Common task types include:
+- `designing` — Architecture, system design, planning
+- `implementing` — Writing code, building features
+- `debugging` — Investigating and fixing issues
+- `reviewing` — Code review, design review
+- `documenting` — Writing documentation
+- `learning` — Exploring new technologies or concepts
+- `configuring` — Setting up tools, environments, infrastructure
+
+## Context Matching During Recall
+
+When you run `/brain:remember`, the agent determines the current session's context (project, topics, task type) and compares it to each candidate memory's encoding context. The context match score (0.0 to 1.0) is computed based on overlap:
+
+- **Project match** — If the current project matches the memory's project, this contributes strongly to the context match score
+- **Topic overlap** — The number of shared topics between the current session and the encoding context, normalized by total unique topics
+- **Task type match** — If the current task type matches the memory's encoding task type
+
+The context match score is weighted at **0.14** (14%) in the [scoring formula](/docs/advanced/scoring-formula/):
+
+```
+score = 0.38 * relevance
+      + 0.18 * decayed_strength
+      + 0.08 * recency_bonus
+      + 0.14 * spreading_bonus
+      + 0.14 * context_match     ← this factor
+      + 0.08 * salience
+```
+
+## Example
+
+You are working on **project-alpha**, discussing **kafka** and **event-driven architecture**, while **designing** a new feature. The agent computes context match for two candidate memories:
+
+**Memory A** — Encoded while working on project-alpha, topics: [architecture, kafka, scaling], task: designing
+- Project match: yes
+- Topic overlap: 2 of 4 unique topics (kafka, architecture)
+- Task match: yes
+- Context score: high (~0.85)
+
+**Memory B** — Encoded while working on project-beta, topics: [react, components, testing], task: implementing
+- Project match: no
+- Topic overlap: 0
+- Task match: no
+- Context score: low (~0.05)
+
+Memory A gets a significant scoring boost from context matching, even if its raw relevance score is similar to Memory B.
+
+## Session Context Tracking
+
+The agent automatically saves session context to `~/.brain/contexts.json` at the end of each session, keeping the last 20 entries. This serves two purposes:
+
+1. **Context-dependent recall** — The accumulated context history helps the agent understand patterns in your work
+2. **Session continuity** — When you start a new session, the agent can reference what you were working on recently
+
+```json
+{
+  "sessions": [
+    {
+      "timestamp": "2026-02-14T09:00:00Z",
+      "project": "project-alpha",
+      "topics": ["architecture", "kafka", "event-sourcing"],
+      "task_type": "designing",
+      "summary": "Designed event-driven architecture for notification system"
+    }
+  ]
+}
+```
+
+<Callout type="tip">
+  Context matching is most effective when you work consistently within projects. The more sessions you have in a project, the richer the context signals become for memories encoded in that project.
+</Callout>
+
+## Cross-Project Recall
+
+While context matching boosts same-project memories, it does not prevent cross-project recall. A memory with very high relevance and strength will still surface even if it was encoded in a different project context. Context matching is one of six scoring factors — it adds a bonus but does not gate retrieval.
+
+This is important because knowledge often transfers across projects. A debugging technique learned in one project is valuable in another, even though the encoding context differs.

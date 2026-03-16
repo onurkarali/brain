@@ -1,0 +1,30 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Changelog - Brain Memory",
+  description: "Release history and version changes for Brain Memory.",
+  category: "Reference",
+  order: 28,
+};
+
+# Changelog
+
+For the full changelog with detailed release notes, see the [GitHub Releases page](https://github.com/onurkarali/brain/releases).
+
+You can also view the raw commit history on [GitHub](https://github.com/onurkarali/brain/commits/main).
+
+## Staying Updated
+
+To update Brain Memory to the latest version:
+
+```bash
+npx brain-memory@beta update
+```
+
+This auto-detects installed runtimes and refreshes commands and prompt sections. Your memories in `~/.brain/` are never modified by updates.
+
+See the [Installation page](/docs/getting-started/installation/) for more details on updating and managing your installation.
+
+<Callout type="info">
+  Brain Memory follows semantic versioning. During the beta period, minor versions may include breaking changes to the command format or memory schema. Major version bumps will be reserved for post-beta releases.
+</Callout>

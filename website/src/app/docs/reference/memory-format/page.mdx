@@ -1,0 +1,183 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Memory Format - Brain Memory",
+  description: "Full YAML frontmatter specification for memory files.",
+  category: "Reference",
+  order: 26,
+};
+
+# Memory Format
+
+Every memory in Brain Memory is a Markdown file with YAML frontmatter. This page documents every field in the frontmatter and the expected content structure.
+
+## Complete Example
+
+```markdown
+---
+id: mem_20260213_a3f2c1
+type: decision
+cognitive_type: semantic
+created: 2026-02-13T14:30:00Z
+last_accessed: 2026-02-14T09:00:00Z
+access_count: 3
+recall_history:
+  - "2026-02-13T14:30:00Z"
+  - "2026-02-13T18:00:00Z"
+  - "2026-02-14T09:00:00Z"
+strength: 0.92
+decay_rate: 0.995
+salience: 0.8
+confidence: 0.9
+tags:
+  - architecture
+  - microservices
+  - scaling
+related:
+  - mem_20260210_b4e5d6
+source: project-alpha-session
+encoding_context:
+  project: project-alpha
+  topics:
+    - architecture
+    - scaling
+    - kafka
+  task_type: designing
+---
+
+# Chose Event-Driven Architecture for Project Alpha
+
+We decided to use event-driven architecture with Kafka instead of
+synchronous REST calls between services, because the traffic analysis
+showed 10x burst patterns that would overwhelm synchronous endpoints.
+
+## Context
+
+Sprint planning for Q2, evaluating scaling strategy for the
+notification system.
+
+## Key Details
+
+- Kafka chosen over RabbitMQ for its replay capability
+- Event schema registry added to prevent breaking changes
+- Estimated 3-week implementation vs 1-week for REST
+  (but REST would need rework at scale)
+
+## Connections
+
+Related to the capacity planning decision (mem_20260210_b4e5d6) where
+we identified the 10x burst pattern in notification traffic.
+```
+
+## Field Reference
+
+### Identity Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `id` | string | Yes | Unique identifier. Format: `mem_<date>_<hash>` |
+| `type` | string | Yes | Memory type. One of: `decision`, `insight`, `goal`, `experience`, `learning`, `relationship`, `preference`, `observation` |
+| `cognitive_type` | string | Yes | Cognitive classification. One of: `episodic`, `semantic`, `procedural` |
+
+### Temporal Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `created` | ISO 8601 | Yes | When the memory was created |
+| `last_accessed` | ISO 8601 | Yes | When the memory was last recalled or accessed |
+| `access_count` | integer | Yes | Total number of times the memory has been recalled |
+| `recall_history` | array of ISO 8601 | Yes | Timestamps of each recall event |
+
+### Strength Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `strength` | float (0.0-1.0) | Yes | Current base strength of the memory |
+| `decay_rate` | float (0.0-1.0) | Yes | Daily retention factor. Higher = slower decay |
+
+See [Strength & Decay](/docs/concepts/strength-decay/) for how these values interact.
+
+### Meta-Cognitive Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `salience` | float (0.0-1.0) | Yes | Emotional/motivational significance. >= 0.7 prevents auto-pruning |
+| `confidence` | float (0.0-1.0) | Yes | Epistemic certainty. < 0.5 triggers low-confidence warnings |
+
+See [Salience & Confidence](/docs/concepts/salience-confidence/) for details.
+
+### Association Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `tags` | array of strings | Yes | Keywords for categorization and tag-overlap association |
+| `related` | array of strings | No | IDs of explicitly related memories |
+
+Tags are used to create automatic association links (when 2+ tags overlap with another memory). The `related` field creates explicit association links with higher initial weight.
+
+### Source Fields
+
+| Field | Type | Required | Description |
+|---|---|:---:|---|
+| `source` | string | Yes | Identifier for the source session or context |
+| `encoding_context` | object | Yes | Context at the time of encoding |
+| `encoding_context.project` | string | Yes | Project name when the memory was created |
+| `encoding_context.topics` | array of strings | Yes | Active topics during the session |
+| `encoding_context.task_type` | string | Yes | Type of work being done |
+
+See [Context-Dependent Recall](/docs/concepts/context-recall/) for how encoding context is used.
+
+## Content Structure
+
+The Markdown content after the frontmatter follows a recommended structure:
+
+### Title (H1)
+
+A clear, descriptive title summarizing the memory. This is the primary display text during recall.
+
+### Context Section (optional)
+
+Background information explaining why this memory exists — the situation, constraints, or motivation.
+
+### Key Details Section (optional)
+
+Specific facts, bullet points, or data that constitute the core knowledge.
+
+### Connections Section (optional)
+
+References to related memories, explaining how they connect. These supplement the `related` field in the frontmatter with human-readable context.
+
+## ID Format
+
+Memory IDs follow the format: `mem_<YYYYMMDD>_<6-char-hex>`
+
+- `mem_` — Prefix identifying this as a memory ID
+- `YYYYMMDD` — Date of creation
+- `6-char-hex` — Random hex string for uniqueness
+
+Examples:
+- `mem_20260213_a3f2c1`
+- `mem_20260115_d4e5f6`
+- `mem_20260301_789abc`
+
+## File Naming
+
+Memory files are named with a URL-friendly slug derived from the title:
+
+- Lowercase
+- Spaces replaced with hyphens
+- Special characters removed
+- Truncated to a reasonable length
+
+Examples:
+- `chose-event-driven-architecture.md`
+- `typescript-satisfies-operator.md`
+- `deploy-incident-march-5.md`
+
+<Callout type="info">
+  You can edit memory files manually, but be careful to maintain valid YAML frontmatter. Invalid frontmatter may cause the agent to skip the memory during indexing.
+</Callout>
+
+<Callout type="tip">
+  If you need to bulk-edit frontmatter fields (e.g., updating all confidence scores), you can use standard Unix tools like `sed` or write a simple script. The format is intentionally simple to support this.
+</Callout>

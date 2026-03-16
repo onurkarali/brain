@@ -1,0 +1,156 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "/brain:remember - Brain Memory",
+  description: "Recall relevant memories with spreading activation and context matching.",
+  category: "Commands",
+  order: 11,
+};
+
+# /brain:remember
+
+Search and recall relevant memories using a multi-factor scoring formula with spreading activation and context matching.
+
+## Usage
+
+```
+/brain:remember [query]
+```
+
+**Arguments:**
+- `[query]` — The topic, question, or keywords to search for. The agent interprets natural language queries.
+
+## What It Does
+
+When you run `/brain:remember`, the agent:
+
+1. **Searches the index** — Scans `~/.brain/index.json` for memories matching the query
+2. **Computes relevance** — Scores how well each memory matches the query semantically
+3. **Applies decay** — Calculates the current effective strength of each candidate based on time since last access
+4. **Runs spreading activation** — Loads `~/.brain/associations.json` and spreads activation from matching memories to their neighbors
+5. **Matches context** — Compares each memory's encoding context to the current session context
+6. **Ranks candidates** — Applies the [scoring formula](/docs/advanced/scoring-formula/) to rank all candidates
+7. **Decides response strategy** — Returns results based on the quality and distribution of matches
+8. **Applies reinforcement** — Boosts the strength and decay resistance of recalled memories via [spaced reinforcement](/docs/advanced/spaced-reinforcement/)
+9. **Strengthens links** — Applies Hebbian learning to strengthen association edges between co-recalled memories
+
+## Scoring Formula
+
+Each candidate memory is scored using six factors:
+
+```
+score = 0.38 * relevance
+      + 0.18 * decayed_strength
+      + 0.08 * recency_bonus
+      + 0.14 * spreading_bonus
+      + 0.14 * context_match
+      + 0.08 * salience
+```
+
+See [Scoring Formula](/docs/advanced/scoring-formula/) for a detailed breakdown.
+
+## Response Strategies
+
+The agent adapts its response based on the quality of matches:
+
+| Scenario | Condition | Response |
+|---|---|---|
+| **Single strong match** | Top score > 0.7 | Return the full memory with context |
+| **Multiple related** | 2-5 candidates > 0.4 | Synthesize a consolidated response from multiple memories |
+| **Many weak** | More than 5, all < 0.4 | List candidates for you to choose from |
+| **No active matches** | No candidates above threshold | Search the archive (`_archived/`), then suggest alternatives |
+
+## Example Interactions
+
+### Strong match
+
+```
+User: /brain:remember kafka architecture decision
+
+Agent: Found a strong match:
+
+📝 Chose Event-Driven Architecture for Project Alpha
+   Strength: 0.82 | Recalled 3 times | Last: 2 days ago
+
+We decided to use event-driven architecture with Kafka instead of
+synchronous REST calls for the notification system. The traffic
+analysis showed 10x burst patterns that would overwhelm synchronous
+endpoints. Kafka was chosen over RabbitMQ for its replay capability.
+
+Related memories also activated:
+  • Burst traffic patterns require async processing (strength 0.75)
+  • Kafka schema registry prevents breaking changes (strength 0.68)
+```
+
+### Multiple related memories
+
+```
+User: /brain:remember deployment best practices
+
+Agent: Found 3 related memories — synthesizing:
+
+Based on past experiences and learnings:
+
+1. Always verify environment variables before deploying (learned from
+   the March 5 incident where a missing DB_URL caused downtime)
+2. Run the full test suite against staging before promoting to
+   production (decision from Sprint 12 retro)
+3. Use blue-green deployment with automated rollback for critical
+   services (architecture decision from Q1 planning)
+
+Sources: deploy-incident-mar5.md, staging-gate-decision.md,
+blue-green-strategy.md
+```
+
+### No matches
+
+```
+User: /brain:remember kubernetes pod autoscaling
+
+Agent: No active memories found for "kubernetes pod autoscaling".
+
+Searched the archive — no matches there either.
+
+You might want to:
+  • Memorize this topic after exploring it
+  • Check related topics: I found memories about "scaling" and
+    "infrastructure" that might be tangentially relevant
+```
+
+## Side Effects
+
+Each successful recall has side effects that improve the memory system:
+
+### Spaced Reinforcement
+
+The recalled memory's strength is boosted based on the time since last recall:
+
+```
+boost = 0.05 * spacingMultiplier * diminishingFactor
+```
+
+Memories recalled after longer gaps get bigger boosts. See [Spaced Reinforcement](/docs/advanced/spaced-reinforcement/).
+
+### Decay Rate Improvement
+
+Each recall also improves the memory's decay rate:
+
+```
+new_decay_rate = decay_rate + 0.10 * (0.999 - decay_rate)
+```
+
+### Hebbian Link Strengthening
+
+When multiple memories are recalled together, their association edges are strengthened:
+
+```
+new_weight = min(1.0, weight + 0.10 * (1.0 - weight))
+```
+
+<Callout type="tip">
+  You do not always need to explicitly run `/brain:remember`. The agent automatically recalls relevant memories during sessions when context from past sessions would be helpful. Explicit recall is useful when you want to look something up deliberately.
+</Callout>
+
+<Callout type="info">
+  Recalled memories update their `last_accessed` timestamp, `access_count`, and `recall_history` fields. This metadata feeds into future decay calculations and spaced reinforcement.
+</Callout>

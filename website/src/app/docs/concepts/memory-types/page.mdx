@@ -1,0 +1,122 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Memory Types - Brain Memory",
+  description: "The eight memory types in Brain Memory and when each is used.",
+  category: "Concepts",
+  order: 3,
+};
+
+# Memory Types
+
+Every memory in Brain Memory is classified into one of eight types. Each type has a different base strength and decay rate, reflecting its typical importance and how long it should persist.
+
+## Type Overview
+
+| Type | Base Strength | Daily Decay Rate | Half-Life (approx.) | Description |
+|------|:---:|:---:|:---:|---|
+| `insight` | 0.90 | 0.997 | ~231 days | Deep realizations, patterns discovered |
+| `decision` | 0.85 | 0.995 | ~138 days | Choices made and their rationale |
+| `goal` | 0.80 | 0.993 | ~99 days | Objectives and aspirations |
+| `experience` | 0.75 | 0.985 | ~46 days | Notable events or processes |
+| `learning` | 0.70 | 0.990 | ~69 days | New knowledge acquired |
+| `relationship` | 0.70 | 0.997 | ~231 days | Connections between people or things |
+| `preference` | 0.60 | 0.998 | ~346 days | User style and preferences |
+| `observation` | 0.40 | 0.950 | ~14 days | Casual facts or notices |
+
+<Callout type="info">
+  The daily decay rate determines how fast a memory weakens. A rate of 0.995 means the memory retains 99.5% of its strength each day. Over time, this compounds into significant decay.
+</Callout>
+
+## Detailed Descriptions
+
+### Insight (0.90)
+
+Insights are deep realizations or patterns you have discovered. They start with the highest base strength because they represent distilled wisdom that is hard to re-derive.
+
+**Examples:**
+- "React Server Components are most effective when data fetching is colocated with the component that consumes it"
+- "Our deploy failures correlate with PRs that skip the staging environment"
+- "The team moves faster when architecture decisions are documented in ADRs"
+
+### Decision (0.85)
+
+Decisions capture choices made and the reasoning behind them. These are critical for maintaining consistency and avoiding re-litigating settled questions.
+
+**Examples:**
+- "Chose PostgreSQL over MongoDB for the billing system because ACID transactions are non-negotiable for financial data"
+- "Decided to use a monorepo after evaluating multi-repo coordination overhead"
+- "Selected Kafka over RabbitMQ for event streaming due to replay capability"
+
+### Goal (0.80)
+
+Goals are objectives and aspirations — things you are working toward. They decay somewhat faster than decisions because goals can shift as circumstances change.
+
+**Examples:**
+- "Migrate the authentication system to OAuth 2.0 by end of Q2"
+- "Achieve 95% test coverage on the core payment module"
+- "Learn Rust well enough to contribute to the compiler project"
+
+### Experience (0.75)
+
+Experiences are notable events or processes worth remembering. They have moderate strength but faster decay — the specific details fade while the lessons persist.
+
+**Examples:**
+- "The production outage on March 5th was caused by a connection pool exhaustion under load"
+- "The client demo went well — they were most impressed by the real-time collaboration feature"
+- "Onboarding the new engineer took three weeks because documentation was outdated"
+
+### Learning (0.70)
+
+Learnings represent new knowledge acquired during a session. They cover facts, techniques, and patterns that expand your understanding.
+
+**Examples:**
+- "TypeScript's `satisfies` operator preserves the narrowed type while checking assignability"
+- "Next.js parallel routes allow independent loading states for different page segments"
+- "The `structuredClone()` API handles circular references unlike `JSON.parse(JSON.stringify())`"
+
+### Relationship (0.70)
+
+Relationships track connections between people, teams, projects, or systems. They share the same base strength as learnings but decay much more slowly because relationship context tends to remain relevant.
+
+**Examples:**
+- "Sarah from the platform team is the domain expert on the event pipeline"
+- "The billing service depends on both the user service and the payment gateway"
+- "The design system team maintains the component library and reviews all UI PRs"
+
+### Preference (0.60)
+
+Preferences capture user style and personal choices. They start with lower strength but have very slow decay — your preferences rarely change rapidly.
+
+**Examples:**
+- "Prefer functional components with hooks over class components"
+- "Use kebab-case for file names and camelCase for variables"
+- "Prefer explicit error handling over try-catch-all patterns"
+
+### Observation (0.40)
+
+Observations are casual facts or notices that may or may not prove useful. They start weak and decay quickly — if they turn out to be important, recalling them will strengthen them through spaced reinforcement.
+
+**Examples:**
+- "The CI pipeline takes about 12 minutes for a full run"
+- "The staging database is on version 15.2 of PostgreSQL"
+- "The team has a standup at 10am EST on weekdays"
+
+<Callout type="tip">
+  Memory types interact with [cognitive types](/docs/concepts/cognitive-types/). An episodic decision (the story of making the decision) decays faster than a semantic decision (the abstracted rule). During [sleep](/docs/advanced/sleep-cycle/), episodic memories can crystallize into semantic ones.
+</Callout>
+
+## How Types Are Assigned
+
+When you run `/brain:memorize`, the agent analyzes the content and automatically assigns the most appropriate type based on the nature of the information:
+
+- **Decisions** are identified by language like "chose", "decided", "went with", "selected"
+- **Insights** involve patterns, realizations, or deep understanding
+- **Goals** involve future-oriented language and objectives
+- **Experiences** describe events, incidents, or processes
+- **Learnings** introduce new facts, APIs, or techniques
+- **Relationships** describe connections between entities
+- **Preferences** express personal style or choices
+- **Observations** are factual notes without strong significance
+
+The agent can also assign types based on the context of the conversation, not just keyword matching. You do not need to specify the type manually.

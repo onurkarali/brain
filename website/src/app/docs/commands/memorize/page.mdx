@@ -1,0 +1,137 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "/brain:memorize - Brain Memory",
+  description: "Store memories from the current session context.",
+  category: "Commands",
+  order: 10,
+};
+
+# /brain:memorize
+
+Analyze the current session and extract significant decisions, learnings, insights, experiences, or goals into persistent memory files.
+
+## Usage
+
+```
+/brain:memorize [topic]
+```
+
+**Arguments:**
+- `[topic]` — (Optional) Focus area for memorization. If provided, the agent focuses on memories related to that topic. If omitted, the agent analyzes the entire session.
+
+## What It Does
+
+When you run `/brain:memorize`, the agent:
+
+1. **Analyzes the session** — Reviews the conversation for significant content worth preserving
+2. **Identifies memory candidates** — Extracts decisions, learnings, insights, experiences, goals, relationships, preferences, and observations
+3. **Assigns metadata** — For each candidate, determines the memory type, cognitive type, strength, decay rate, salience, confidence, and tags
+4. **Places in hierarchy** — Decides where in the `~/.brain/` directory tree the memory belongs based on its content and specificity
+5. **Creates association links** — Connects the new memory to existing memories via tag overlap or explicit relationships
+6. **Updates the index** — Registers the memory in `index.json` for fast lookup
+
+## Hierarchy Placement
+
+The agent decides placement depth based on how specific the memory is:
+
+- A generic career thought lands in `professional/`
+- A skill-related learning goes to `professional/skills/`
+- A specific project decision goes to `professional/companies/acme/projects/alpha/`
+
+Subdirectories are created on demand — the agent creates deeper nesting when the content warrants it, up to the configured `max_depth` (default: 6).
+
+## Memory File Format
+
+Each memory is created as a Markdown file with YAML frontmatter:
+
+```markdown
+---
+id: mem_20260213_a3f2c1
+type: decision
+cognitive_type: semantic
+created: 2026-02-13T14:30:00Z
+last_accessed: 2026-02-13T14:30:00Z
+access_count: 0
+recall_history: []
+strength: 0.85
+decay_rate: 0.995
+salience: 0.8
+confidence: 0.9
+tags: [architecture, microservices, scaling]
+related: [mem_20260210_b4e5d6]
+source: project-alpha-session
+encoding_context:
+  project: project-alpha
+  topics: [architecture, scaling, kafka]
+  task_type: designing
+---
+
+# Chose Event-Driven Architecture for Project Alpha
+
+We decided to use event-driven architecture with Kafka instead of
+synchronous REST calls between services, because the traffic analysis
+showed 10x burst patterns that would overwhelm synchronous endpoints.
+
+## Context
+
+Sprint planning for Q2, evaluating scaling strategy for the notification system.
+
+## Key Details
+
+- Kafka chosen over RabbitMQ for its replay capability
+- Event schema registry added to prevent breaking changes
+- Estimated 3-week implementation vs 1-week for REST
+```
+
+See [Memory Format](/docs/reference/memory-format/) for a complete field reference.
+
+## Example Interactions
+
+### Memorizing the entire session
+
+```
+User: /brain:memorize
+
+Agent: Analyzed the session and found 3 memories to store:
+
+1. 📝 Decision: Chose event-driven architecture for Project Alpha
+   → professional/companies/acme/projects/alpha/architecture-decision.md
+   Strength: 0.85 | Salience: 0.8 | Type: semantic
+
+2. 💡 Insight: Burst traffic patterns require async processing
+   → professional/skills/architecture/async-patterns.md
+   Strength: 0.90 | Salience: 0.6 | Type: semantic
+
+3. 📖 Learning: Kafka schema registry prevents breaking changes
+   → professional/skills/kafka/schema-registry.md
+   Strength: 0.70 | Salience: 0.4 | Type: semantic
+
+Created 2 association links:
+  • Decision ↔ Insight (tag overlap: architecture)
+  • Decision ↔ Learning (explicit relation)
+```
+
+### Memorizing a specific topic
+
+```
+User: /brain:memorize deployment lessons
+
+Agent: Focused on deployment-related content from this session:
+
+1. 📝 Experience: Production deploy failed due to missing env variable
+   → professional/companies/acme/projects/alpha/deploy-incident-mar5.md
+   Strength: 0.85 | Salience: 0.7 | Type: episodic
+
+2. 📖 Learning: Always verify env variables before deploy
+   → professional/skills/devops/pre-deploy-checklist.md
+   Strength: 0.70 | Salience: 0.5 | Type: procedural
+```
+
+<Callout type="info">
+  The agent never auto-memorizes without your consent. It will suggest running `/brain:memorize` at session end if significant content was discussed, but the decision is always yours.
+</Callout>
+
+<Callout type="tip">
+  Use a topic argument when you want to focus on a specific aspect of the session. Without a topic, the agent captures everything noteworthy.
+</Callout>

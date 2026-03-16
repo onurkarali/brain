@@ -1,0 +1,104 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Configuration - Brain Memory",
+  description: "All configuration options with defaults and descriptions.",
+  category: "Reference",
+  order: 27,
+};
+
+# Configuration
+
+Brain configuration lives in `~/.brain/index.json` under the `config` key. All settings have sensible defaults set during `/brain:init`.
+
+## Full Configuration
+
+```json
+{
+  "config": {
+    "max_depth": 6,
+    "consolidation_threshold": 0.3,
+    "decay_check_interval_days": 7,
+    "strength_boost_on_recall": 0.05,
+    "auto_consolidate": true,
+    "propagation_window_days": 7,
+    "association_config": {
+      "co_retrieval_boost": 0.10,
+      "link_decay_rate": 0.998,
+      "link_prune_threshold": 0.05,
+      "spreading_activation_depth": 2,
+      "spreading_activation_decay": 0.5
+    }
+  }
+}
+```
+
+## Core Settings
+
+| Setting | Type | Default | Description |
+|---|---|:---:|---|
+| `max_depth` | integer | 6 | Maximum directory nesting depth for memory placement. Higher values allow more specific categorization but deeper paths. |
+| `consolidation_threshold` | float | 0.3 | Strength below which memories become candidates for consolidation. Lower values wait longer before consolidating. |
+| `decay_check_interval_days` | integer | 7 | How often (in days) to suggest decay maintenance. The agent will remind you to run `/brain:sleep` after this many days. |
+| `strength_boost_on_recall` | float | 0.05 | Base strength increase per recall event, before spacing and diminishing adjustments are applied. |
+| `auto_consolidate` | boolean | true | Whether to suggest consolidation when candidates are found during recall. Set to false to only consolidate via explicit `/brain:consolidate` or `/brain:sleep`. |
+| `propagation_window_days` | integer | 7 | How far back (in days) to look for recent memories during Knowledge Propagation in sleep. Recent memories within this window are evaluated against the existing hierarchy. |
+
+## Association Config
+
+Settings for the [Associative Network](/docs/concepts/associative-network/):
+
+| Setting | Type | Default | Description |
+|---|---|:---:|---|
+| `co_retrieval_boost` | float | 0.10 | Hebbian reinforcement increment for co-retrieved memories. When two memories are recalled together, their edge weight increases by this factor times the remaining distance to 1.0. |
+| `link_decay_rate` | float | 0.998 | Daily decay factor for association edge weights. An unused link retains 99.8% of its weight each day. |
+| `link_prune_threshold` | float | 0.05 | Minimum weight before an association link is pruned during sleep. Links below this weight are removed. |
+| `spreading_activation_depth` | integer | 2 | Maximum number of hops for spreading activation during recall. Higher values surface more distantly related memories. |
+| `spreading_activation_decay` | float | 0.5 | Activation decay factor per hop. At depth 2 with decay 0.5, activation at the second hop is 25% of the original. |
+
+## Tuning Guide
+
+### Making Memories Last Longer
+
+To slow down decay and keep memories active longer:
+- Increase `consolidation_threshold` (e.g., 0.4) — memories are consolidated sooner, preserving knowledge before it fades too much
+- Decrease `decay_check_interval_days` (e.g., 3) — more frequent reminders to run sleep
+
+### More Aggressive Association Discovery
+
+To surface more related memories during recall:
+- Increase `spreading_activation_depth` to 3 — allows 3-hop traversal (more distant connections)
+- Increase `co_retrieval_boost` (e.g., 0.15) — faster link strengthening through Hebbian learning
+- Decrease `link_prune_threshold` (e.g., 0.03) — keeps weaker links alive longer
+
+### More Conservative Association
+
+To reduce noise and only surface strongly related memories:
+- Decrease `spreading_activation_depth` to 1 — only direct neighbors
+- Increase `spreading_activation_decay` (e.g., 0.7) — faster activation falloff per hop
+- Increase `link_prune_threshold` (e.g., 0.10) — more aggressively prune weak links
+
+### Deeper Hierarchy
+
+To allow more specific categorization:
+- Increase `max_depth` (e.g., 8) — allows deeper nesting for very specific memories
+- Note: deeper hierarchies can make manual browsing harder
+
+## Editing Configuration
+
+You can edit the configuration directly in `~/.brain/index.json`, or ask the agent to update it:
+
+```
+You: Change the consolidation threshold to 0.4
+
+Agent: Updated consolidation_threshold from 0.3 to 0.4 in ~/.brain/index.json.
+Memories with strength between 0.3 and 0.4 will no longer be consolidation candidates.
+```
+
+<Callout type="warning">
+  Be careful when editing `index.json` directly — it contains the full memory inventory alongside the config. Make a backup before making manual edits.
+</Callout>
+
+<Callout type="tip">
+  The defaults work well for most users. Consider tuning only after you have been using Brain Memory for a few weeks and have a feel for how your memories behave.
+</Callout>

@@ -1,0 +1,131 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "/brain:status - Brain Memory",
+  description: "Dashboard with brain health metrics and recommendations.",
+  category: "Commands",
+  order: 18,
+};
+
+# /brain:status
+
+Display a comprehensive dashboard showing brain health metrics, memory distribution, and maintenance recommendations.
+
+## Usage
+
+```
+/brain:status
+```
+
+No arguments required.
+
+## What It Does
+
+`/brain:status` reads your brain's index, associations, review queue, and directory structure to generate a health overview. It covers six areas:
+
+### 1. Memory Inventory
+
+Total count of active, archived, and consolidated memories, broken down by category and type.
+
+### 2. Strength Distribution
+
+How your memories are distributed across strength tiers:
+- **Strong** (> 0.7) — Well-reinforced, healthy memories
+- **Moderate** (0.4 - 0.7) — Active but could benefit from recall
+- **Weak** (0.1 - 0.4) — Consolidation candidates
+- **Fading** (< 0.1) — Archive candidates
+
+### 3. Network Health
+
+Statistics about the associative network:
+- Total association links and average weight
+- Orphaned memories (no connections to other memories)
+- Strongest and weakest links
+
+### 4. Review Queue
+
+How many memories are due for spaced repetition review and their distribution by urgency.
+
+### 5. Expertise Profile Summary
+
+A summary of detected expertise areas and their levels.
+
+### 6. Recommendations
+
+Actionable suggestions based on the current brain state.
+
+## Example Interaction
+
+```
+User: /brain:status
+
+Agent: 🧠 Brain Status Dashboard
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📊 Memory Inventory
+  Active:       38 memories
+  Archived:      9 memories
+  Consolidated:  3 memories
+
+  By category:
+    professional/  22 (58%)
+    personal/       8 (21%)
+    social/         5 (13%)
+    family/         3 (8%)
+
+  By type:
+    decision     12 | learning    9 | insight     6
+    experience    5 | preference  3 | goal        2
+    relationship  1 | observation 0
+
+📈 Strength Distribution
+  Strong  (>0.7):  ████████░░  14 (37%)
+  Moderate (0.4-0.7): ██████████░░  16 (42%)
+  Weak   (0.1-0.4): ████░░  6 (16%)
+  Fading (<0.1):  ██░░  2 (5%)
+
+  Mean strength: 0.58
+  Median strength: 0.62
+
+🔗 Network Health
+  Association links: 47
+  Average weight: 0.31
+  Orphaned memories: 2 (no connections)
+  Strongest link: architecture-decision ↔ scaling-insight (0.82)
+  Weakest active link: old-setup ↔ config-notes (0.06)
+
+📋 Review Queue
+  Due now: 5 memories
+  Due this week: 3 more
+  Next review: architecture-decision.md (due today)
+
+🎓 Expertise Areas
+  TypeScript:          Deep Knowledge (0.72) ████████░░
+  System Architecture: Working Knowledge (0.58) ██████░░░░
+  DevOps:              Awareness (0.35) ████░░░░░░
+  PostgreSQL:          Awareness (0.28) ███░░░░░░░
+
+💡 Recommendations
+  • 5 memories are due for review — run /brain:review
+  • 6 weak memories could be consolidated — run /brain:consolidate
+  • 2 fading memories will be archived on next sleep
+  • 2 orphaned memories have no associations — consider linking them
+  • Last sleep: 8 days ago — consider running /brain:sleep
+```
+
+## Health Indicators
+
+The status dashboard uses these indicators to flag concerns:
+
+| Indicator | Trigger | Recommendation |
+|---|---|---|
+| Memories due for review | Review queue has due items | Run `/brain:review` |
+| Weak memories accumulating | More than 5 memories below 0.3 | Run `/brain:consolidate` |
+| Stale brain | Last sleep more than 7 days ago | Run `/brain:sleep` |
+| Orphaned memories | Memories with no association links | Recall related memories together to build links |
+| Low-confidence frequent memories | access_count >= 3 and confidence < 0.5 | Verify and update confidence |
+| Strength inflation | Mean strength > 0.6 | Run `/brain:sleep` for homeostasis |
+
+<Callout type="tip">
+  Check `/brain:status` at the start of your work week to see if any maintenance is needed. The recommendations section will tell you exactly what to do.
+</Callout>

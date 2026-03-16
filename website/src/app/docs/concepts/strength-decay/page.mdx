@@ -1,0 +1,129 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Strength & Decay - Brain Memory",
+  description: "How memory strength is determined and how it decays over time.",
+  category: "Concepts",
+  order: 5,
+};
+
+# Strength & Decay
+
+Every memory in Brain Memory has a **strength** value (0.0 to 1.0) that determines how easily it can be recalled. Strength decays over time following an exponential curve, modeling the Ebbinghaus forgetting curve from cognitive psychology.
+
+## The Decay Formula
+
+```
+effective_strength = base_strength * (decay_rate ^ days_since_last_access)
+```
+
+Where:
+- **base_strength** — The stored strength value in the memory's frontmatter (0.0 to 1.0)
+- **decay_rate** — A per-day retention factor (e.g., 0.995 means 99.5% retained each day)
+- **days_since_last_access** — Calendar days since the memory was last recalled or accessed
+
+## How Strength Is Set at Creation
+
+When a memory is first created via `/brain:memorize`, its initial strength is determined by two factors:
+
+1. **Memory type** — Each type has a base strength (see [Memory Types](/docs/concepts/memory-types/))
+2. **Cognitive type modifier** — Episodic memories get +0.10, procedural get -0.10, semantic is unchanged
+
+```
+initial_strength = type_base_strength + cognitive_modifier
+```
+
+For example:
+- An episodic insight: `0.90 + 0.10 = 1.00` (capped at 1.0)
+- A semantic decision: `0.85 + 0.00 = 0.85`
+- A procedural learning: `0.70 - 0.10 = 0.60`
+
+## Example Decay Calculations
+
+Consider a **decision** memory (base strength 0.85, decay rate 0.995):
+
+| Days Since Access | Effective Strength | Calculation |
+|---:|---:|---|
+| 0 | 0.850 | `0.85 * 0.995^0` |
+| 7 | 0.820 | `0.85 * 0.995^7` |
+| 30 | 0.731 | `0.85 * 0.995^30` |
+| 90 | 0.542 | `0.85 * 0.995^90` |
+| 180 | 0.346 | `0.85 * 0.995^180` |
+| 365 | 0.141 | `0.85 * 0.995^365` |
+
+Now compare with an **observation** (base strength 0.40, decay rate 0.950):
+
+| Days Since Access | Effective Strength | Calculation |
+|---:|---:|---|
+| 0 | 0.400 | `0.40 * 0.950^0` |
+| 7 | 0.279 | `0.40 * 0.950^7` |
+| 14 | 0.195 | `0.40 * 0.950^14` |
+| 30 | 0.086 | `0.40 * 0.950^30` |
+| 60 | 0.018 | `0.40 * 0.950^60` |
+
+Observations fade quickly. If they turn out to be important, recalling them will boost their strength through [spaced reinforcement](/docs/advanced/spaced-reinforcement/).
+
+## How Strength Changes Over Time
+
+Strength is not static. Several mechanisms modify it:
+
+### Reinforcement Through Recall
+
+Every time a memory is recalled via `/brain:remember`, it receives a strength boost:
+
+```
+new_strength = min(1.0, strength + boost)
+```
+
+The boost amount depends on the time since last recall (spacing effect) and the number of prior recalls (diminishing returns). See [Spaced Reinforcement](/docs/advanced/spaced-reinforcement/) for the full formula.
+
+### Decay Rate Improvement
+
+Each recall also improves the memory's decay rate, making it more resistant to forgetting:
+
+```
+new_decay_rate = decay_rate + 0.10 * (0.999 - decay_rate)
+```
+
+This means frequently recalled memories gradually become nearly permanent. The decay rate asymptotically approaches 0.999 (the slowest possible decay).
+
+### Synaptic Homeostasis During Sleep
+
+During the [sleep cycle](/docs/advanced/sleep-cycle/), if the mean strength across all memories exceeds 0.5, a global downscaling is applied to prevent strength inflation. After downscaling, high-salience, recently-accessed, and frequently-recalled memories receive selective re-boosts. This mirrors the Synaptic Homeostasis Hypothesis (SHY) from neuroscience.
+
+### Consolidation
+
+When memories decay below the consolidation threshold (default: 0.3), they become candidates for merging. Related weak memories are combined into a single stronger memory:
+
+```
+consolidated_strength = max(source_strengths) + 0.15   (capped at 1.0)
+consolidated_decay    = min(source_decay_rates)         (slowest decay wins)
+```
+
+See [Consolidate command](/docs/commands/consolidate/) for details.
+
+## Decay Rate Reference
+
+| Memory Type | Decay Rate | Meaning |
+|-------------|:---:|---|
+| Observation | 0.950 | Loses 5% of strength per day — fades in about 2 weeks |
+| Experience | 0.985 | Loses 1.5% per day — fades in about 6 weeks |
+| Learning | 0.990 | Loses 1% per day — fades in about 10 weeks |
+| Goal | 0.993 | Loses 0.7% per day — fades in about 14 weeks |
+| Decision | 0.995 | Loses 0.5% per day — fades in about 20 weeks |
+| Insight | 0.997 | Loses 0.3% per day — fades in about 8 months |
+| Relationship | 0.997 | Loses 0.3% per day — fades in about 8 months |
+| Preference | 0.998 | Loses 0.2% per day — fades in about 1 year |
+
+<Callout type="info">
+  These are the default decay rates at creation. Each recall improves the rate, so frequently-accessed memories decay much more slowly than these defaults suggest.
+</Callout>
+
+## Key Thresholds
+
+| Threshold | Value | What Happens |
+|-----------|:---:|---|
+| Strong memory | > 0.7 | Returned as a confident single match |
+| Moderate memory | 0.4 - 0.7 | Included in synthesized responses |
+| Consolidation candidate | < 0.3 | Eligible for merging with related memories |
+| Archive threshold | < 0.1 | Moved to `_archived/` during sleep (unless salience >= 0.7) |

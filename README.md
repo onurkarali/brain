@@ -1,6 +1,14 @@
-# Brain Memory
+<p align="center">
+  <img src="assets/icon.png" alt="Brain Memory" width="128" height="128">
+</p>
 
-[![CI](https://github.com/onurkarali/brain/actions/workflows/ci.yml/badge.svg)](https://github.com/onurkarali/brain/actions/workflows/ci.yml)
+<h1 align="center">Brain Memory</h1>
+
+<p align="center">
+  <a href="https://github.com/onurkarali/brain/actions/workflows/ci.yml"><img src="https://github.com/onurkarali/brain/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://www.npmjs.com/package/brain-memory"><img src="https://img.shields.io/npm/v/brain-memory" alt="npm version"></a>
+  <a href="https://github.com/onurkarali/brain/blob/main/LICENSE"><img src="https://img.shields.io/npm/l/brain-memory" alt="license"></a>
+</p>
 
 A hierarchical, file-system-based memory plugin for AI coding agents. Inspired by human neuroscience — memories are organized into deep nested life-domain categories, connected via associative networks, strengthened through spaced recall, and naturally decay over time.
 

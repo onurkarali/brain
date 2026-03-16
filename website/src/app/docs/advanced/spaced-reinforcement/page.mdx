@@ -1,0 +1,124 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Spaced Reinforcement - Brain Memory",
+  description: "How recall timing affects memory strength and decay resistance.",
+  category: "Advanced",
+  order: 21,
+};
+
+# Spaced Reinforcement
+
+Every time a memory is recalled, it receives a strength boost. The size of the boost depends on two factors: how long it has been since the last recall (spacing effect) and how many times the memory has been recalled before (diminishing returns). This models the well-established spacing effect from cognitive psychology — distributed practice is more effective than massed practice.
+
+## The Boost Formula
+
+```
+spacingMultiplier = min(3.0, 1.0 + log2(1 + daysSinceLastAccess))
+diminishingFactor = 1.0 / (1.0 + 0.1 * recallCount)
+boost = 0.05 * spacingMultiplier * diminishingFactor
+```
+
+### Spacing Multiplier
+
+The spacing multiplier rewards longer gaps between recalls. It uses a logarithmic function that grows quickly at first and then plateaus:
+
+```
+spacingMultiplier = min(3.0, 1.0 + log2(1 + daysSinceLastAccess))
+```
+
+| Days Since Last Access | Spacing Multiplier |
+|---:|---:|
+| 0 (same day) | 1.00 |
+| 1 | 2.00 |
+| 3 | 2.58 |
+| 7 | 3.00 (capped) |
+| 14 | 3.00 (capped) |
+| 30 | 3.00 (capped) |
+
+The cap at 3.0 prevents unreasonably large boosts for very old memories recalled after months of absence.
+
+### Diminishing Factor
+
+The diminishing factor reduces the boost for memories that have already been recalled many times. Each additional recall provides less marginal benefit:
+
+```
+diminishingFactor = 1.0 / (1.0 + 0.1 * recallCount)
+```
+
+| Recall Count | Diminishing Factor |
+|---:|---:|
+| 0 (first recall) | 1.00 |
+| 1 | 0.91 |
+| 3 | 0.77 |
+| 5 | 0.67 |
+| 10 | 0.50 |
+| 20 | 0.33 |
+| 50 | 0.17 |
+
+This prevents any single memory from being boosted indefinitely through repeated recall. It also penalizes "cramming" — recalling the same memory many times in quick succession yields diminishing returns.
+
+## Example Scenarios
+
+| Scenario | Days Gap | Recall Count | Spacing | Diminishing | Boost |
+|---|---:|---:|---:|---:|---:|
+| First recall after 1 day | 1 | 0 | 2.00 | 1.00 | +0.100 |
+| First recall after 7 days | 7 | 0 | 3.00 | 1.00 | +0.150 |
+| First recall after 30 days | 30 | 0 | 3.00 | 1.00 | +0.150 |
+| Third recall after 7 days | 7 | 2 | 3.00 | 0.83 | +0.125 |
+| Same-day cramming, 20th recall | 0 | 19 | 1.00 | 0.34 | +0.017 |
+| 5th recall after 1 day | 1 | 4 | 2.00 | 0.71 | +0.071 |
+| 10th recall after 14 days | 14 | 9 | 3.00 | 0.53 | +0.079 |
+
+The optimal strategy is clear: recall memories at spaced intervals rather than repeatedly in the same session.
+
+## Strength Update
+
+After computing the boost, the memory's strength is updated:
+
+```
+new_strength = min(1.0, current_strength + boost)
+```
+
+Strength is capped at 1.0. A memory that is already at maximum strength still benefits from the decay rate improvement (see below).
+
+## Decay Rate Improvement
+
+Each recall also improves the memory's decay rate, making it more resistant to future forgetting:
+
+```
+new_decay_rate = decay_rate + 0.10 * (0.999 - decay_rate)
+```
+
+This formula asymptotically approaches 0.999 (the slowest possible decay). The improvement is proportional to how far the current rate is from the maximum.
+
+| Current Decay Rate | New Decay Rate | Improvement |
+|---:|---:|---:|
+| 0.950 | 0.955 | +0.005 |
+| 0.985 | 0.986 | +0.001 |
+| 0.990 | 0.991 | +0.001 |
+| 0.995 | 0.995 | +0.0004 |
+| 0.998 | 0.998 | +0.0001 |
+
+Memories with lower decay rates (faster forgetting) benefit more from each recall. Over many recalls, even an observation (initial decay 0.950) can approach the permanence of an insight (0.997).
+
+## Combined Effect
+
+Over multiple recalls, spaced reinforcement produces compounding benefits:
+
+1. **Strength increases** — Each recall adds a boost
+2. **Decay slows** — Each recall improves the decay rate
+3. **Effective half-life extends** — The combination of higher strength and slower decay means the memory persists much longer
+
+A decision memory (strength 0.85, decay 0.995) recalled 5 times over 2 months might have:
+- Strength: ~0.92 (after boosts minus decay between recalls)
+- Decay rate: ~0.997 (improved from 0.995)
+- Effective half-life: ~8 months (up from ~4.5 months)
+
+<Callout type="tip">
+  The spaced repetition review system (`/brain:review`) is designed to recall memories at optimal intervals, maximizing the spacing effect. Use it regularly for the best long-term retention.
+</Callout>
+
+<Callout type="info">
+  Spaced reinforcement is applied automatically during any recall — whether through explicit `/brain:remember`, automatic session-start loading, or `/brain:review`. You do not need to do anything special to benefit from it.
+</Callout>

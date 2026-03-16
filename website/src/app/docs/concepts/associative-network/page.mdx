@@ -1,0 +1,162 @@
+import Callout from "@/app/components/docs/Callout";
+
+export const metadata = {
+  title: "Associative Network - Brain Memory",
+  description: "How memories connect via spreading activation and Hebbian learning.",
+  category: "Concepts",
+  order: 6,
+};
+
+# Associative Network
+
+Memories in Brain Memory are not isolated files — they are nodes in a weighted association graph. When you recall one memory, activation spreads along its edges to surface related memories you did not explicitly search for. This mirrors Collins and Loftus' spreading activation model of human semantic memory.
+
+## How It Works
+
+The associative network is stored in `~/.brain/associations.json` as a weighted edge graph:
+
+```json
+{
+  "edges": {
+    "mem_20260213_a3f2c1": {
+      "mem_20260210_b4e5d6": {
+        "weight": 0.45,
+        "co_retrievals": 3,
+        "last_activated": "2026-02-14T09:00:00Z",
+        "origin": "co_retrieval"
+      },
+      "mem_20260215_c7d8e9": {
+        "weight": 0.20,
+        "co_retrievals": 0,
+        "last_activated": "2026-02-13T14:30:00Z",
+        "origin": "tag_overlap"
+      }
+    }
+  }
+}
+```
+
+Each edge connects two memory IDs and tracks:
+- **weight** (0.0 to 1.0) — How strongly the memories are associated
+- **co_retrievals** — Number of times both memories were recalled together
+- **last_activated** — When the link was last used
+- **origin** — How the link was created (`tag_overlap`, `explicit_relation`, `co_retrieval`, `consolidation`)
+
+## Spreading Activation
+
+When you recall a memory, activation spreads outward along its association edges:
+
+1. The recalled memory (source) has activation = 1.0
+2. Each directly connected memory receives activation proportional to the edge weight
+3. From those memories, activation spreads one more hop, decaying further
+4. Memories with high accumulated activation are surfaced alongside the direct match
+
+**Key parameters:**
+
+| Parameter | Default | Description |
+|-----------|:---:|---|
+| `spreading_activation_depth` | 2 | Maximum hops from the source memory |
+| `spreading_activation_decay` | 0.5 | Activation decay factor per hop (50%) |
+
+**Example:**
+
+You recall memory A. It has edges to B (weight 0.6) and C (weight 0.3):
+
+```
+A (activation = 1.0)
+├── B receives: 1.0 * 0.6 = 0.60
+│   └── D receives: 0.60 * 0.5 * 0.4 = 0.12  (hop 2, edge B→D weight 0.4)
+└── C receives: 1.0 * 0.3 = 0.30
+    └── E receives: 0.30 * 0.5 * 0.5 = 0.075 (hop 2, edge C→E weight 0.5)
+```
+
+Memory B gets a spreading bonus of 0.60, D gets 0.12, C gets 0.30, and E gets 0.075. These bonuses are factored into the [scoring formula](/docs/advanced/scoring-formula/) to determine which memories appear in the recall results.
+
+## Hebbian Learning
+
+"Neurons that fire together wire together." When multiple memories are recalled together in the same session, their mutual edge weights are strengthened:
+
+```
+new_weight = min(1.0, weight + co_retrieval_boost * (1.0 - weight))
+```
+
+With the default `co_retrieval_boost` of 0.10, each co-retrieval increases the edge weight by 10% of the remaining distance to 1.0.
+
+**Example progression:**
+
+| Co-Retrievals | Weight |
+|---:|---:|
+| 0 (initial, tag overlap) | 0.10 |
+| 1 | 0.19 |
+| 2 | 0.27 |
+| 3 | 0.34 |
+| 5 | 0.47 |
+| 10 | 0.65 |
+| 20 | 0.88 |
+
+Frequently co-recalled memories develop strong associations over time.
+
+## Link Creation
+
+Association links are created automatically in several situations:
+
+- **Tag overlap** — When two memories share 2 or more tags, a link is created with an initial weight of 0.10
+- **Explicit relation** — When a memory's `related` field references another memory ID, a link is created with weight 0.20
+- **Co-retrieval** — When two memories are recalled in the same session and both score above the recall threshold
+- **Consolidation** — When memories are merged during consolidation, links from all source memories are transferred to the consolidated memory
+
+## Link Decay and Pruning
+
+Association links also decay over time, modeling how unused neural connections weaken:
+
+```
+decayed_weight = weight * (link_decay_rate ^ days_since_last_activated)
+```
+
+With the default `link_decay_rate` of 0.998, an unused link loses about 0.2% of its weight per day. Links that fall below the `link_prune_threshold` (default: 0.05) are removed during the [sleep cycle](/docs/advanced/sleep-cycle/).
+
+**Decay timeline for an unused link starting at weight 0.20:**
+
+| Days | Weight |
+|---:|---:|
+| 0 | 0.200 |
+| 30 | 0.188 |
+| 90 | 0.167 |
+| 180 | 0.139 |
+| 365 | 0.097 |
+| 500 | 0.074 |
+| 700 | 0.049 (pruned) |
+
+<Callout type="info">
+  Link pruning only happens during `/brain:sleep`. Between sleep cycles, all links remain active regardless of how low their weight has decayed.
+</Callout>
+
+## Configuration
+
+All association parameters are configurable in `~/.brain/index.json` under the `association_config` key:
+
+```json
+{
+  "config": {
+    "association_config": {
+      "co_retrieval_boost": 0.10,
+      "link_decay_rate": 0.998,
+      "link_prune_threshold": 0.05,
+      "spreading_activation_depth": 2,
+      "spreading_activation_decay": 0.5
+    }
+  }
+}
+```
+
+| Setting | Default | Description |
+|---------|:---:|---|
+| `co_retrieval_boost` | 0.10 | Hebbian reinforcement increment for co-retrieved memories |
+| `link_decay_rate` | 0.998 | Daily decay factor for edge weights |
+| `link_prune_threshold` | 0.05 | Minimum weight before an edge is pruned |
+| `spreading_activation_depth` | 2 | Maximum hops for spreading activation |
+| `spreading_activation_decay` | 0.5 | Activation decay factor per hop |
+
+<Callout type="tip">
+  Increasing `spreading_activation_depth` to 3 will surface more distantly related memories, but may introduce noise. The default of 2 provides a good balance between discovery and relevance.
+</Callout>

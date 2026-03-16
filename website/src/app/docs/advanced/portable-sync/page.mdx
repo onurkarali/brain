@@ -1,0 +1,195 @@
+import Callout from "@/app/components/docs/Callout";
+import Steps, { Step } from "@/app/components/docs/Steps";
+
+export const metadata = {
+  title: "Portable Sync - Brain Memory",
+  description: "Sync memories across devices via Git remote or export/import with optional encryption.",
+  category: "Advanced",
+  order: 24,
+};
+
+# Portable Sync
+
+Brain Memory provides two ways to sync memories across devices. Both are manual, privacy-respecting, and require no cloud services beyond what you already use.
+
+## Git Remote Sync
+
+Push and pull your brain to any private Git repository. This is the recommended approach for regular syncing between devices.
+
+### Why Git?
+
+- **Version history** — See how your memories evolve over time
+- **Conflict resolution** — Git handles merge conflicts if two machines edit the same memory
+- **Existing auth** — Uses your existing SSH keys or Git credentials
+- **Any host** — Works with GitHub, GitLab, Codeberg, or self-hosted Git servers
+- **Selective sync** — Only changed files are transferred
+
+### Setup
+
+<Steps>
+  <Step title="Create a private repository">
+    Use any Git hosting service. The repository must be private — your brain contains personal knowledge.
+
+    ```bash
+    # GitHub
+    gh repo create brain-data --private
+
+    # GitLab
+    glab repo create brain-data --private
+
+    # Or create manually on any Git hosting service
+    ```
+  </Step>
+
+  <Step title="Configure the remote">
+    Run the sync setup command with your agent:
+
+    ```
+    /brain:sync setup git@github.com:you/brain-data.git
+    ```
+
+    This creates a hidden Git repository at `~/.brain/.sync/repo/` and configures the remote URL.
+  </Step>
+
+  <Step title="Initial push">
+    Push your entire brain to the remote:
+
+    ```
+    /brain:sync push
+    ```
+  </Step>
+
+  <Step title="Set up the other machine">
+    On your second machine, install Brain Memory and configure the same remote:
+
+    ```
+    /brain:sync setup git@github.com:you/brain-data.git
+    /brain:sync pull
+    ```
+
+    Your brain is now available on both machines.
+  </Step>
+</Steps>
+
+### Daily Use
+
+```
+# Before starting work — pull latest changes
+/brain:sync pull
+
+# After finishing work — push your changes
+/brain:sync push
+```
+
+Sync is always manual. There are no background watchers, no auto-sync, and no cloud dependencies.
+
+### Conflict Resolution
+
+Conflicts are rare because two machines rarely edit the same memory simultaneously. If a conflict occurs:
+
+1. The agent detects the conflict during pull
+2. Shows both versions of the conflicting memory
+3. Asks you to choose which version to keep or how to merge them
+4. Commits the resolution
+
+## Export / Import
+
+For one-off transfers without a Git remote — useful for air-gapped machines, USB transfers, or sharing with someone.
+
+### Export
+
+```
+/brain:sync export
+```
+
+Packs the entire `~/.brain/` directory into a single compressed file. Default location: `~/brain-export-<timestamp>.tar.gz`.
+
+### Import
+
+```
+/brain:sync import ~/brain-export-20260215.tar.gz
+```
+
+Imports a previously exported brain. Two modes are available:
+
+| Mode | Command | Behavior |
+|---|---|---|
+| **Merge** (default) | `/brain:sync import <path>` | Only imports files newer than existing ones |
+| **Overwrite** | `/brain:sync import <path> --overwrite` | Replaces all local files |
+
+Merge mode is safe for combining brains from two machines — it preserves whichever version of each file is more recent.
+
+## Encryption
+
+Both sync methods support optional AES-256-GCM encryption with a user-provided passphrase.
+
+### Encrypted Git Sync
+
+```
+/brain:sync setup git@github.com:you/brain-data.git --encrypt
+```
+
+When encryption is enabled:
+- All files are encrypted before being committed to the Git repository
+- The remote repository contains only encrypted blobs — unreadable without the passphrase
+- Pulling on another machine requires the same passphrase
+- Encryption is handled by Node.js built-in `crypto` module — no additional dependencies
+
+### Encrypted Export
+
+```
+/brain:sync export --encrypt
+```
+
+The exported file is encrypted with AES-256-GCM. When importing:
+
+```
+/brain:sync import ~/brain-export-encrypted.tar.gz
+```
+
+The agent prompts for the passphrase.
+
+<Callout type="warning">
+  There is no passphrase recovery mechanism. If you lose your passphrase, encrypted data cannot be decrypted. Store your passphrase in a password manager.
+</Callout>
+
+## Sync State
+
+Sync configuration is stored locally and never pushed to the remote:
+
+```
+~/.brain/.sync/
+├── config.json          # Remote URL, encryption flag
+└── repo/                # Hidden git repo for sync operations
+```
+
+The `.sync/` directory is excluded from exports and Git pushes to prevent sync metadata from propagating.
+
+## Architecture
+
+```
+Machine A                    Git Remote                   Machine B
+┌──────────────┐            ┌──────────────┐            ┌──────────────┐
+│  ~/.brain/   │  push →    │  brain-data  │    ← pull  │  ~/.brain/   │
+│              │            │  (private)   │            │              │
+│  .sync/      │            │  encrypted?  │            │  .sync/      │
+│  (local)     │            └──────────────┘            │  (local)     │
+└──────────────┘                                        └──────────────┘
+```
+
+## Zero Dependencies
+
+Sync uses only:
+- **System `git` binary** — for push/pull operations
+- **Node.js built-in `crypto`** — for AES-256-GCM encryption
+- **Node.js built-in `zlib`** — for compression during export
+
+No additional packages, no OAuth apps, no cloud APIs.
+
+<Callout type="tip">
+  For teams, each person should have their own brain and their own private remote repository. Brain Memory is designed for individual use — team knowledge sharing is better handled through documentation, not shared brains.
+</Callout>
+
+<Callout type="info">
+  If you already use `~/.brain/` as a Git repository directly (e.g., `cd ~/.brain && git init`), the sync system works alongside it without interference. The `.sync/` subdirectory maintains its own isolated Git state.
+</Callout>
