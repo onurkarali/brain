@@ -1,0 +1,76 @@
+{
+  "scenario": "scenario-4-error-learning",
+  "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+  "mode": "cloud",
+  "timestamp": "2026-03-18T06:03:40.364Z",
+  "results": {
+    "claude": {
+      "with_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 11865,
+        "success": false,
+        "consistency": 1
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 11302,
+        "success": false,
+        "consistency": 1
+      }
+    },
+    "gemini": {
+      "with_brain": {
+        "tokens": {
+          "input": 43075,
+          "output": 2238
+        },
+        "time_ms": 69763,
+        "success": true,
+        "consistency": 0.63
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 42598,
+          "output": 2751
+        },
+        "time_ms": 119898,
+        "success": true,
+        "consistency": 1
+      }
+    },
+    "codex": {
+      "with_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 0,
+        "success": false,
+        "consistency": 0,
+        "error": "Codex timed out after 300000ms"
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 0,
+        "success": false,
+        "consistency": 0,
+        "error": "Codex timed out after 300000ms"
+      }
+    }
+  },
+  "summary": {
+    "token_reduction_pct": 0.1,
+    "success_improvement_pct": 0,
+    "consistency_improvement_pct": -12.4,
+    "time_reduction_pct": 37.8
+  }
+}

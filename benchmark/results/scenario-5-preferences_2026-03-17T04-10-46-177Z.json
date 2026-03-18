@@ -1,0 +1,73 @@
+{
+  "scenario": "scenario-5-preferences",
+  "model": "qwen2.5-coder:14b",
+  "timestamp": "2026-03-17T04:10:46.176Z",
+  "results": {
+    "claude": {
+      "with_brain": {
+        "tokens": {
+          "input": 129194,
+          "output": 1294
+        },
+        "time_ms": 26588,
+        "success": true,
+        "consistency": 0.825
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 128268,
+          "output": 933
+        },
+        "time_ms": 21611,
+        "success": false,
+        "consistency": 0.292
+      }
+    },
+    "gemini": {
+      "with_brain": {
+        "tokens": {
+          "input": 15658,
+          "output": 1378
+        },
+        "time_ms": 23029,
+        "success": true,
+        "consistency": 0.8
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 14095,
+          "output": 1801
+        },
+        "time_ms": 29111,
+        "success": true,
+        "consistency": 0.534
+      }
+    },
+    "codex": {
+      "with_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 73908,
+        "success": true,
+        "consistency": 0.934
+      },
+      "without_brain": {
+        "tokens": {
+          "input": 0,
+          "output": 0
+        },
+        "time_ms": 51902,
+        "success": true,
+        "consistency": 0.666
+      }
+    }
+  },
+  "summary": {
+    "token_reduction_pct": -1.7,
+    "success_improvement_pct": 33.3,
+    "consistency_improvement_pct": 35.6,
+    "time_reduction_pct": -20.4
+  }
+}

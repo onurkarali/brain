@@ -1,0 +1,42 @@
+{
+  "name": "Error Pattern Learning",
+  "description": "Tests whether debugging a bug in Session 1 leads to faster resolution of a similar bug in Session 2. With brain memory, the agent should recall the prior debugging insight and apply it directly.",
+  "key_metric": "tokens_to_resolution",
+  "memories": [
+    {
+      "id": "mem_bench_debug_001",
+      "type": "insight",
+      "cognitive_type": "episodic",
+      "title": "Race Condition in Async Map",
+      "body": "Found a race condition when using Promise.all with map over an array that modifies shared state. Each callback was reading stale data because the array was mutated during iteration. Fix: use a sequential for...of loop instead of parallel map when mutations are involved, or take a snapshot of the array first.",
+      "content": "# Race Condition in Async Map\n\nFound a race condition when using `Promise.all(items.map(async item => ...))` where each callback modified a shared counter/array.\n\n## Problem\n```javascript\n// BUG: Race condition — shared `results` array gets corrupted\nlet results = [];\nawait Promise.all(items.map(async (item) => {\n  const processed = await processItem(item);\n  results.push(processed); // Multiple concurrent pushes\n}));\n```\n\n## Fix\n```javascript\n// Option 1: Use map return values (no shared mutation)\nconst results = await Promise.all(items.map(async (item) => {\n  return await processItem(item);\n}));\n\n// Option 2: Sequential when order matters\nconst results = [];\nfor (const item of items) {\n  results.push(await processItem(item));\n}\n```\n\n## Lesson\nNever mutate shared state inside `Promise.all(map(...))`. Either use the return values of the mapped promises, or iterate sequentially if side effects are needed.",
+      "path": "professional/insights/race_condition_001.md",
+      "strength": 0.90,
+      "decay_rate": 0.997,
+      "salience": 0.85,
+      "confidence": 0.95,
+      "tags": ["debugging", "async", "race-condition", "promise", "javascript"],
+      "access_count": 2,
+      "last_accessed": "2026-03-14T10:00:00.000Z",
+      "created": "2026-03-13T15:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-async",
+        "topics": ["debugging", "async"],
+        "task_type": "debugging"
+      }
+    }
+  ],
+  "associations": [],
+  "context": {
+    "project": "benchmark-async",
+    "topics": ["debugging", "async", "race-condition"],
+    "task_type": "debugging"
+  },
+  "training": [],
+  "test": [
+    {
+      "label": "fix-similar-bug",
+      "text": "There's a bug in processor.js — the processAll function sometimes returns fewer results than expected when processing large arrays. The issue is intermittent and only shows up under load. Find the bug, explain what causes it, and fix both processAll and processInBatches."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "name": "Preference Retention",
+  "description": "Tests whether memorized code preferences are applied without re-stating them. With brain memory, the agent should automatically use the preferred patterns (functional style, immutable data, specific naming) without being reminded.",
+  "key_metric": "preference_compliance_score",
+  "memories": [
+    {
+      "id": "mem_bench_pref_001",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "Functional Programming Preferences",
+      "body": "Prefer functional style: pure functions, immutable data, map/filter/reduce over for loops. No classes — use factory functions and closures instead. Use const exclusively (never let or var). Prefer Object.freeze for config objects.",
+      "content": "# Functional Programming Preferences\n\nPrefer functional style in all new code:\n\n## Rules\n- Pure functions: no side effects, same input → same output\n- Immutable data: use spread operator, Object.freeze for configs\n- map/filter/reduce over imperative loops (no for, while, forEach)\n- No classes: use factory functions and closures\n- const exclusively: never use let or var\n- Compose small functions: each does one thing\n- Use optional chaining (?.) and nullish coalescing (??)\n\n## Examples\n```javascript\n// YES: Factory function\nconst createUser = (name, email) => Object.freeze({ name, email });\n\n// NO: Class\nclass User { constructor(name, email) { ... } }\n\n// YES: map/filter\nconst adults = users.filter(u => u.age >= 18).map(u => u.name);\n\n// NO: for loop\nconst adults = []; for (const u of users) { if (u.age >= 18) adults.push(u.name); }\n```",
+      "path": "professional/preferences/functional_001.md",
+      "strength": 0.85,
+      "decay_rate": 0.998,
+      "salience": 0.80,
+      "confidence": 0.95,
+      "tags": ["functional", "code-style", "immutable", "javascript"],
+      "access_count": 10,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-05T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-fp",
+        "topics": ["code-style", "functional-programming"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_pref_002",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "Naming and Documentation Preferences",
+      "body": "Descriptive function names that read as verbs: getUserById, parseConfig, validateEmail. No abbreviations except well-known ones (id, url, api). JSDoc only for exported functions. No inline comments unless the logic is genuinely non-obvious.",
+      "content": "# Naming and Documentation Preferences\n\n## Naming\n- Functions: verb phrases — `getUserById`, `parseConfig`, `validateEmail`\n- Constants: UPPER_SNAKE — `MAX_RETRIES`, `DEFAULT_PORT`\n- Booleans: is/has/can prefix — `isValid`, `hasPermission`, `canEdit`\n- No abbreviations except: id, url, api, db, config, env\n\n## Documentation\n- JSDoc only for exported public functions\n- No inline comments unless logic is non-obvious\n- Prefer self-documenting code over comments\n- README for module-level documentation",
+      "path": "professional/preferences/naming_002.md",
+      "strength": 0.75,
+      "decay_rate": 0.998,
+      "salience": 0.65,
+      "confidence": 0.90,
+      "tags": ["naming", "documentation", "code-style", "jsdoc"],
+      "access_count": 7,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-06T14:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-fp",
+        "topics": ["code-style", "naming"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_pref_003",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "Error Handling Preferences",
+      "body": "Use Result pattern instead of try/catch: functions return { ok: true, data } or { ok: false, error }. Caller handles the result explicitly. Only use try/catch at boundaries (HTTP handlers, file I/O). Never swallow errors silently.",
+      "content": "# Error Handling Preferences\n\nUse Result pattern (inspired by Rust/Go) instead of exceptions:\n\n```javascript\n// Return result objects\nconst parseConfig = (raw) => {\n  if (!raw) return { ok: false, error: 'Config is empty' };\n  return { ok: true, data: JSON.parse(raw) };\n};\n\n// Caller handles explicitly\nconst result = parseConfig(input);\nif (!result.ok) return handleError(result.error);\nconst config = result.data;\n```\n\n## Rules\n- Functions return `{ ok: true, data }` or `{ ok: false, error }`\n- try/catch only at system boundaries\n- Never swallow errors (no empty catch blocks)\n- Log errors with context before propagating",
+      "path": "professional/preferences/error_handling_002.md",
+      "strength": 0.80,
+      "decay_rate": 0.998,
+      "salience": 0.70,
+      "confidence": 0.90,
+      "tags": ["error-handling", "result-pattern", "code-style"],
+      "access_count": 5,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-07T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-fp",
+        "topics": ["error-handling", "patterns"],
+        "task_type": "implementing"
+      }
+    }
+  ],
+  "associations": [
+    { "idA": "mem_bench_pref_001", "idB": "mem_bench_pref_002", "weight": 0.7, "origin": "co_retrieval" },
+    { "idA": "mem_bench_pref_001", "idB": "mem_bench_pref_003", "weight": 0.6, "origin": "co_retrieval" },
+    { "idA": "mem_bench_pref_002", "idB": "mem_bench_pref_003", "weight": 0.5, "origin": "tag_overlap" }
+  ],
+  "context": {
+    "project": "benchmark-fp",
+    "topics": ["code-style", "functional-programming", "patterns"],
+    "task_type": "implementing"
+  },
+  "training": [],
+  "test": [
+    {
+      "label": "create-data-pipeline",
+      "text": "Create a data transformation pipeline module (pipeline.js) that: 1) Reads a list of raw user records, 2) Validates each record, 3) Transforms valid records (normalize names, format emails), 4) Filters out invalid ones, 5) Returns a summary with counts. Just implement it using clean, idiomatic JavaScript following our project's established conventions."
+    }
+  ]
+}

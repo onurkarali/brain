@@ -1,0 +1,96 @@
+# Brain Memory Benchmark — Docker Compose
+#
+# Orchestrates:
+# 1. Ollama (local LLM server with Qwen 2.5 Coder 14B)
+# 2. LiteLLM (proxy for Gemini CLI → Ollama translation)
+# 3. Agent containers (one per agent)
+#
+# Usage:
+#   docker compose up                          # Run full benchmark
+#   docker compose up ollama                   # Start Ollama only
+#   docker compose run bench-claude            # Run only Claude benchmarks
+
+services:
+  ollama:
+    build:
+      context: ../..
+      dockerfile: benchmark/docker/Dockerfile.ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-models:/root/.ollama
+    environment:
+      - OLLAMA_MODEL=qwen2.5-coder:14b
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:11434/api/tags"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  litellm:
+    build:
+      context: ../..
+      dockerfile: benchmark/docker/Dockerfile.litellm
+    ports:
+      - "4000:4000"
+    environment:
+      - OLLAMA_API_BASE=http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+
+  bench-claude:
+    build:
+      context: ../..
+      dockerfile: benchmark/docker/Dockerfile.agent
+      args:
+        AGENT: claude
+    environment:
+      - ANTHROPIC_BASE_URL=http://ollama:11434
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - benchmark-results:/benchmark/results
+
+  bench-gemini:
+    build:
+      context: ../..
+      dockerfile: benchmark/docker/Dockerfile.agent
+      args:
+        AGENT: gemini
+    environment:
+      - GEMINI_API_BASE=http://litellm:4000
+    depends_on:
+      ollama:
+        condition: service_healthy
+      litellm:
+        condition: service_started
+    volumes:
+      - benchmark-results:/benchmark/results
+
+  bench-codex:
+    build:
+      context: ../..
+      dockerfile: benchmark/docker/Dockerfile.agent
+      args:
+        AGENT: codex
+    environment:
+      - OPENAI_BASE_URL=http://ollama:11434/v1
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - benchmark-results:/benchmark/results
+
+volumes:
+  ollama-models:
+  benchmark-results:

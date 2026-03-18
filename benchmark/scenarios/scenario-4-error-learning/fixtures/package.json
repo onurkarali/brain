@@ -1,0 +1,7 @@
+{
+  "name": "benchmark-async",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Async processing fixture for benchmark scenario 4",
+  "main": "processor.js"
+}

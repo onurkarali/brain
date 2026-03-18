@@ -1,0 +1,17 @@
+{
+  "name": "benchmark-ts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TypeScript fixture for benchmark scenario 2",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "zod": "^3.22.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

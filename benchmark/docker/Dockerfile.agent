@@ -1,0 +1,49 @@
+# Parameterized agent container for benchmark runs.
+# Build with: docker build --build-arg AGENT=claude -f Dockerfile.agent -t bench-agent .
+#
+# The container provides complete isolation:
+# - No access to host ~/.brain/ (user's personal memories)
+# - No access to host ~/.claude/CLAUDE.md or other global agent configs
+# - Each run gets a fresh HOME directory
+#
+# Supports: claude, gemini, codex
+
+ARG AGENT=claude
+
+FROM node:20-slim AS base
+
+ARG AGENT
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git \
+    curl \
+    ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install agent CLIs based on build arg
+RUN case "${AGENT}" in \
+      claude) \
+        npm install -g @anthropic-ai/claude-code ;; \
+      gemini) \
+        npm install -g @anthropic-ai/gemini-cli 2>/dev/null || \
+        echo "Gemini CLI: install manually" ;; \
+      codex) \
+        npm install -g @openai/codex 2>/dev/null || \
+        echo "Codex CLI: install manually" ;; \
+    esac
+
+WORKDIR /benchmark
+
+# Copy the brain-memory project (needed for seeder and brain-setup)
+COPY . /brain-memory
+
+# Copy benchmark files
+COPY benchmark/ /benchmark/
+
+ENV NODE_PATH=/brain-memory
+ENV AGENT_NAME=${AGENT}
+
+# Container HOME is already isolated from host — no ~/.brain/ leakage
+# The runner further isolates each run with per-run HOME directories
+
+CMD ["node", "harness/runner.js"]

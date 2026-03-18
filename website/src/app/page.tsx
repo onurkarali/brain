@@ -169,6 +169,128 @@ export default function Home() {
           </p>
         </section>
 
+        {/* Benchmark Results */}
+        <section className="border-t border-gray-800/50 py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-4">
+            <span className="gradient-text">Empirically Proven</span>
+          </h2>
+          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+            Agents with Brain Memory produce more consistent and more successful
+            outputs.{" "}
+            <a
+              href="https://github.com/onurkarali/brain/tree/main/benchmark"
+              className="text-amber-400 hover:text-amber-300 underline underline-offset-2"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              See the benchmark
+            </a>
+          </p>
+
+          {/* Summary Cards */}
+          <div className="grid gap-6 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
+            <div className="glass-card rounded-2xl p-6 text-center">
+              <div className="text-4xl font-bold gradient-text-brain mb-1">
+                +14.7%
+              </div>
+              <div className="text-sm text-gray-400">
+                Average Consistency Improvement
+              </div>
+            </div>
+            <div className="glass-card rounded-2xl p-6 text-center">
+              <div className="text-4xl font-bold gradient-text-brain mb-1">
+                +11.1%
+              </div>
+              <div className="text-sm text-gray-400">
+                Average Success Improvement
+              </div>
+            </div>
+            <div className="glass-card rounded-2xl p-6 text-center">
+              <div className="text-4xl font-bold gradient-text-brain mb-1">
+                3 / 3
+              </div>
+              <div className="text-sm text-gray-400">
+                Agents Improved
+              </div>
+            </div>
+          </div>
+
+          {/* Benchmark Table */}
+          <div className="glass-card rounded-2xl overflow-hidden max-w-4xl mx-auto">
+            <table className="w-full text-left">
+              <thead>
+                <tr className="border-b border-gray-800/50">
+                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider">
+                    Scenario
+                  </th>
+                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider text-center">
+                    Consistency
+                  </th>
+                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider text-center">
+                    Success
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800/30">
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
+                      Multi-Session Continuity
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Decisions carry across sessions
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +28.1%
+                  </td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    —
+                  </td>
+                </tr>
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
+                      Cross-Agent Consistency
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      All agents follow memorized style
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +10.0%
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +33.3%
+                  </td>
+                </tr>
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
+                      Accumulated Knowledge
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      5 sessions of learning improve output
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +6.1%
+                  </td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    —
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p className="text-center text-gray-500 text-sm mt-6 max-w-2xl mx-auto">
+            Tested with Claude Code, Gemini CLI, and Codex CLI using cloud APIs.
+            Each scenario ran 3 times with median values reported.
+            Codex CLI saw the largest gain: +80.7% consistency in the continuity scenario.
+          </p>
+        </section>
+
         {/* Neuroscience Foundations */}
         <section className="border-t border-gray-800/50 py-20 lg:py-28">
           <h2 className="text-center text-3xl font-bold mb-12">

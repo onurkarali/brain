@@ -1,0 +1,40 @@
+{
+  "mode": "cloud",
+  "timeouts": {
+    "prompt_ms": 300000,
+    "session_ms": 900000
+  },
+  "runs_per_scenario": 3,
+  "cloud": {
+    "description": "Uses each agent's default cloud API (Anthropic, Google, OpenAI)",
+    "agents": {
+      "claude": { "model": "sonnet" },
+      "gemini": { "model": "default" },
+      "codex": { "model": "default" }
+    }
+  },
+  "ollama": {
+    "description": "Routes all agents through local Ollama with a single model for controlled comparison",
+    "model": "qwen2.5-coder:14b",
+    "ollama_url": "http://localhost:11434",
+    "litellm_url": "http://localhost:4000",
+    "agents": {
+      "claude": {
+        "env": { "ANTHROPIC_BASE_URL": "http://localhost:11434" }
+      },
+      "gemini": {
+        "env": { "GEMINI_API_BASE": "http://localhost:4000" }
+      },
+      "codex": {
+        "env": { "OPENAI_BASE_URL": "http://localhost:11434/v1" }
+      }
+    }
+  },
+  "scenarios": [
+    "scenario-1-continuity",
+    "scenario-2-consistency",
+    "scenario-3-knowledge",
+    "scenario-4-error-learning",
+    "scenario-5-preferences"
+  ]
+}

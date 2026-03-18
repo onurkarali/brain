@@ -1,0 +1,18 @@
+# Ollama container with pre-pulled Qwen 2.5 Coder model.
+#
+# On first run, pulls the model. On subsequent runs, uses cache.
+# Fits in 16GB VRAM (14B parameter model with Q4 quantization).
+
+FROM ollama/ollama:latest
+
+# Copy the entrypoint that waits for readiness and pulls the model
+COPY benchmark/docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Default model to pull
+ENV OLLAMA_MODEL=qwen2.5-coder:14b
+ENV OLLAMA_HOST=0.0.0.0:11434
+
+EXPOSE 11434
+
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,0 +1,71 @@
+{
+  "name": "Cross-Agent Consistency",
+  "description": "Tests whether all agents follow the same memorized coding style when given the same task. With brain memory, all agents should produce structurally similar output matching the stored style preferences.",
+  "key_metric": "pairwise_consistency_matrix",
+  "memories": [
+    {
+      "id": "mem_bench_style_ts_001",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "TypeScript Style Guide",
+      "body": "All code must use TypeScript strict mode. Interfaces over types for object shapes. Enum for fixed sets. Zod for runtime validation. Barrel exports from index.ts files.",
+      "content": "# TypeScript Style Guide\n\nAll code must use TypeScript strict mode. Interfaces over types for object shapes. Enum for fixed sets. Zod for runtime validation. Barrel exports from index.ts files.\n\n## Rules\n- Use `interface` for object shapes, not `type` aliases\n- Use `enum` for fixed value sets\n- Use Zod schemas for runtime validation of external input\n- Every directory has an `index.ts` barrel export\n- Prefer `readonly` properties where mutation isn't needed\n- Use `unknown` over `any`\n- Use `satisfies` operator for type narrowing\n- Error types extend a base `AppError` class",
+      "path": "professional/preferences/ts_style_001.md",
+      "strength": 0.85,
+      "decay_rate": 0.998,
+      "salience": 0.75,
+      "confidence": 0.95,
+      "tags": ["typescript", "code-style", "zod", "interfaces"],
+      "access_count": 8,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-10T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-ts",
+        "topics": ["typescript", "code-style"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_naming_001",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "Naming Conventions",
+      "body": "PascalCase for interfaces and classes. camelCase for functions and variables. UPPER_SNAKE for constants. Files use kebab-case. Prefix interfaces with I only for React prop types (IProps).",
+      "content": "# Naming Conventions\n\nPascalCase for interfaces and classes. camelCase for functions and variables. UPPER_SNAKE for constants. Files use kebab-case.\n\n## Examples\n- Interface: `UserProfile`, `ApiResponse`\n- Function: `getUserById`, `validateInput`\n- Constant: `MAX_RETRIES`, `DEFAULT_TIMEOUT`\n- File: `user-profile.ts`, `api-response.ts`",
+      "path": "professional/preferences/naming_001.md",
+      "strength": 0.75,
+      "decay_rate": 0.998,
+      "salience": 0.6,
+      "confidence": 0.90,
+      "tags": ["naming", "code-style", "typescript"],
+      "access_count": 6,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-11T14:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-ts",
+        "topics": ["code-style", "naming"],
+        "task_type": "implementing"
+      }
+    }
+  ],
+  "associations": [
+    {
+      "idA": "mem_bench_style_ts_001",
+      "idB": "mem_bench_naming_001",
+      "weight": 0.8,
+      "origin": "co_retrieval"
+    }
+  ],
+  "context": {
+    "project": "benchmark-ts",
+    "topics": ["typescript", "code-style"],
+    "task_type": "implementing"
+  },
+  "training": [],
+  "test": [
+    {
+      "label": "create-user-service",
+      "text": "Create a TypeScript user service module at src/user-service.ts following the same patterns as the existing src/product-service.ts. It should have: a User interface, a UserRole enum, a Zod validation schema for user input, and a UserService class with async create, findById, findAll, and delete methods. Export everything from the module."
+    }
+  ]
+}

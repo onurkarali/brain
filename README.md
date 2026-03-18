@@ -489,6 +489,37 @@ Brain configuration lives in `~/.brain/index.json` under the `config` key:
 | `association_config.spreading_activation_depth` | 2 | Maximum hops for spreading activation traversal |
 | `association_config.spreading_activation_decay` | 0.5 | Decay factor per hop during spreading activation |
 
+## Benchmark
+
+Empirical benchmarks show that agents with Brain Memory produce **more consistent** and **more successful** outputs across sessions.
+
+| Scenario | What it tests | Consistency Improvement | Success Improvement |
+|----------|---------------|:---:|:---:|
+| Multi-Session Continuity | Decisions carry from Session 1 → Session 2 | **+28.1%** | 0% |
+| Cross-Agent Consistency | All agents follow memorized style guide | **+10.0%** | **+33.3%** |
+| Accumulated Knowledge | 5 sessions of learning → better Session 6 | **+6.1%** | 0% |
+
+**Per-agent consistency gains (Scenario 1 — Continuity):**
+
+| Agent | With Brain | Without Brain | Improvement |
+|-------|:---:|:---:|:---:|
+| Claude Code | 0.911 | 0.645 | +41.2% |
+| Gemini CLI | 0.856 | 0.645 | +32.7% |
+| Codex CLI | 0.822 | 0.455 | +80.7% |
+
+> Agents with Brain Memory use more tokens (memory context is injected as prompt), but the consistency and reliability gains justify the cost. In one scenario, Gemini CLI without Brain Memory failed entirely — with Brain Memory, it passed every run.
+
+Run the benchmarks yourself:
+
+```bash
+cd benchmark
+cp .env.example .env   # Add your API keys
+npm test               # Unit tests
+node harness/runner.js # Full benchmark (cloud APIs)
+```
+
+Full methodology, per-scenario breakdowns, and raw data: [`benchmark/`](benchmark/) | [Detailed Report](benchmark/results/REPORT.md)
+
 ## Contributing
 
 Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, project structure, and how to submit changes.

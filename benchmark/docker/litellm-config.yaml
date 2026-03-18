@@ -1,0 +1,11 @@
+# LiteLLM proxy configuration
+# Translates Gemini API calls to Ollama's OpenAI-compatible endpoint
+
+model_list:
+  - model_name: qwen2.5-coder:14b
+    litellm_params:
+      model: ollama/qwen2.5-coder:14b
+      api_base: http://ollama:11434
+
+general_settings:
+  master_key: bench-litellm-key

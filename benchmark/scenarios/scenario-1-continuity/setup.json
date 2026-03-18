@@ -1,0 +1,76 @@
+{
+  "name": "Multi-Session Continuity",
+  "description": "Tests whether architectural decisions from Session 1 carry through to Session 2. With brain memory, the agent should recall the async/await + Express + modular architecture decision and apply it consistently.",
+  "key_metric": "architectural_alignment_score",
+  "memories": [
+    {
+      "id": "mem_bench_arch_001",
+      "type": "decision",
+      "cognitive_type": "semantic",
+      "title": "API Architecture Decision",
+      "body": "Decided to use Express.js with async/await pattern for all route handlers. No callbacks. All errors handled via centralized error middleware. Modular route structure with separate files per resource.",
+      "content": "# API Architecture Decision\n\nDecided to use Express.js with async/await pattern for all route handlers. No callbacks. All errors handled via centralized error middleware. Modular route structure with separate files per resource.\n\n## Key Points\n- All route handlers MUST use async/await (no callbacks, no .then())\n- Error handling via centralized middleware (not per-route try/catch)\n- One file per resource: routes/users.js, routes/posts.js, etc.\n- Use express.Router() for modularity\n- Validation with middleware, not inline",
+      "path": "professional/decisions/arch_001.md",
+      "strength": 0.90,
+      "decay_rate": 0.997,
+      "salience": 0.85,
+      "confidence": 0.95,
+      "tags": ["architecture", "api", "express", "async-await", "error-handling"],
+      "access_count": 3,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-14T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-api",
+        "topics": ["architecture", "api-design"],
+        "task_type": "designing"
+      }
+    },
+    {
+      "id": "mem_bench_style_001",
+      "type": "preference",
+      "cognitive_type": "procedural",
+      "title": "Code Style Preferences",
+      "body": "Arrow functions for route handlers. Destructure req.params and req.body at the top of each handler. Use const over let. Named exports over default exports.",
+      "content": "# Code Style Preferences\n\nArrow functions for route handlers. Destructure req.params and req.body at the top of each handler. Use const over let. Named exports over default exports.\n\n## Patterns\n- `const handler = async (req, res, next) => { ... }`\n- `const { id } = req.params;`\n- `const { name, email } = req.body;`\n- `module.exports = { getUsers, createUser };`",
+      "path": "professional/preferences/style_001.md",
+      "strength": 0.70,
+      "decay_rate": 0.998,
+      "salience": 0.6,
+      "confidence": 0.90,
+      "tags": ["code-style", "javascript", "express", "arrow-functions"],
+      "access_count": 5,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-13T14:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-api",
+        "topics": ["code-style", "javascript"],
+        "task_type": "implementing"
+      }
+    }
+  ],
+  "associations": [
+    {
+      "idA": "mem_bench_arch_001",
+      "idB": "mem_bench_style_001",
+      "weight": 0.7,
+      "origin": "co_retrieval"
+    }
+  ],
+  "context": {
+    "project": "benchmark-api",
+    "topics": ["architecture", "api-design", "express"],
+    "task_type": "implementing"
+  },
+  "training": [
+    {
+      "label": "session-1-architecture",
+      "text": "I'm building a REST API with Express.js. I want to use async/await for all handlers, centralized error middleware, and a modular file structure with one file per resource. Create the initial project structure with app.js, a users route file, and the error middleware. Use arrow functions and destructuring."
+    }
+  ],
+  "test": [
+    {
+      "label": "session-2-new-resource",
+      "text": "Add a new 'posts' resource to the API with full CRUD endpoints (list, get by id, create, update, delete). Create it at routes/posts.js and wire it into app.js."
+    }
+  ]
+}

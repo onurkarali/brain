@@ -1,0 +1,16 @@
+{
+  "name": "benchmark-db",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Database API fixture for benchmark scenario 3",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "express": "^4.18.0",
+    "pg": "^8.11.0",
+    "zod": "^3.22.0"
+  }
+}

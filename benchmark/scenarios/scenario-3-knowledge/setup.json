@@ -1,0 +1,135 @@
+{
+  "name": "Accumulated Knowledge",
+  "description": "Tests whether 5 sessions of accumulated learning lead to better output in Session 6. With brain memory, the agent should know about past patterns, libraries, and project conventions without re-learning them.",
+  "key_metric": "token_usage_and_correctness",
+  "memories": [
+    {
+      "id": "mem_bench_learn_001",
+      "type": "learning",
+      "cognitive_type": "semantic",
+      "title": "Database Connection Pattern",
+      "body": "Use connection pooling with pg library. Pool size 10. Always release clients back to pool. Use parameterized queries to prevent SQL injection.",
+      "content": "# Database Connection Pattern\n\nUse connection pooling with pg library. Pool size 10. Always release clients back to pool. Use parameterized queries to prevent SQL injection.\n\n```javascript\nconst { Pool } = require('pg');\nconst pool = new Pool({ max: 10 });\n\nasync function query(text, params) {\n  const client = await pool.connect();\n  try {\n    return await client.query(text, params);\n  } finally {\n    client.release();\n  }\n}\n```",
+      "path": "professional/learning/db_pattern_001.md",
+      "strength": 0.80,
+      "decay_rate": 0.995,
+      "salience": 0.7,
+      "confidence": 0.95,
+      "tags": ["database", "postgres", "connection-pooling", "security"],
+      "access_count": 4,
+      "last_accessed": "2026-03-15T10:00:00.000Z",
+      "created": "2026-03-08T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-db",
+        "topics": ["database", "patterns"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_learn_002",
+      "type": "learning",
+      "cognitive_type": "semantic",
+      "title": "Error Handling Strategy",
+      "body": "Custom error classes extending base AppError. Each has a status code and isOperational flag. Operational errors are expected (404, 422). Programming errors (null ref, type errors) should crash and restart.",
+      "content": "# Error Handling Strategy\n\nCustom error classes extending base AppError. Each has a status code and isOperational flag.\n\n```javascript\nclass AppError extends Error {\n  constructor(message, statusCode, isOperational = true) {\n    super(message);\n    this.statusCode = statusCode;\n    this.isOperational = isOperational;\n  }\n}\n\nclass NotFoundError extends AppError {\n  constructor(resource) {\n    super(`${resource} not found`, 404);\n  }\n}\n\nclass ValidationError extends AppError {\n  constructor(details) {\n    super('Validation failed', 422);\n    this.details = details;\n  }\n}\n```",
+      "path": "professional/learning/error_handling_001.md",
+      "strength": 0.75,
+      "decay_rate": 0.993,
+      "salience": 0.65,
+      "confidence": 0.90,
+      "tags": ["error-handling", "patterns", "api"],
+      "access_count": 3,
+      "last_accessed": "2026-03-14T10:00:00.000Z",
+      "created": "2026-03-09T14:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-db",
+        "topics": ["error-handling", "patterns"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_learn_003",
+      "type": "learning",
+      "cognitive_type": "semantic",
+      "title": "Testing Pattern",
+      "body": "Use node:test with assert/strict. Setup/teardown with before/after hooks. Test database operations against a test schema that's created and dropped per suite. Use factory functions for test data.",
+      "content": "# Testing Pattern\n\nUse node:test with assert/strict. Setup/teardown with before/after hooks. Test database operations against a test schema.\n\n## Convention\n- Test files: `*.test.js` next to source files\n- Factory functions in `test/factories.js`\n- Database tests use `test_` prefixed schema\n- Clean up in `after()` hooks\n- Assert with `assert.deepStrictEqual` for objects",
+      "path": "professional/learning/testing_001.md",
+      "strength": 0.70,
+      "decay_rate": 0.990,
+      "salience": 0.6,
+      "confidence": 0.85,
+      "tags": ["testing", "node-test", "patterns"],
+      "access_count": 2,
+      "last_accessed": "2026-03-13T10:00:00.000Z",
+      "created": "2026-03-10T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-db",
+        "topics": ["testing", "patterns"],
+        "task_type": "testing"
+      }
+    },
+    {
+      "id": "mem_bench_learn_004",
+      "type": "learning",
+      "cognitive_type": "semantic",
+      "title": "Validation Middleware Pattern",
+      "body": "Validate request bodies with a reusable validate() middleware that takes a Joi or Zod schema. Returns 422 with details on failure. Place before route handler in the middleware chain.",
+      "content": "# Validation Middleware Pattern\n\nReusable validate() middleware that takes a schema.\n\n```javascript\nfunction validate(schema) {\n  return (req, res, next) => {\n    const result = schema.safeParse(req.body);\n    if (!result.success) {\n      return next(new ValidationError(result.error.flatten()));\n    }\n    req.validated = result.data;\n    next();\n  };\n}\n```",
+      "path": "professional/learning/validation_001.md",
+      "strength": 0.65,
+      "decay_rate": 0.990,
+      "salience": 0.55,
+      "confidence": 0.90,
+      "tags": ["validation", "middleware", "zod", "api"],
+      "access_count": 2,
+      "last_accessed": "2026-03-12T10:00:00.000Z",
+      "created": "2026-03-11T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-db",
+        "topics": ["validation", "api-design"],
+        "task_type": "implementing"
+      }
+    },
+    {
+      "id": "mem_bench_learn_005",
+      "type": "learning",
+      "cognitive_type": "semantic",
+      "title": "Migration Pattern",
+      "body": "SQL migration files numbered sequentially: 001-create-users.sql, 002-add-posts.sql. Each has UP and DOWN sections. Run via a simple migrate.js script that tracks applied migrations in a _migrations table.",
+      "content": "# Migration Pattern\n\nSequential SQL files with UP/DOWN sections.\n\n## Convention\n- `migrations/001-create-users.sql`\n- Each file has `-- UP` and `-- DOWN` markers\n- Track applied in `_migrations` table\n- Never modify applied migrations, always add new ones",
+      "path": "professional/learning/migrations_001.md",
+      "strength": 0.60,
+      "decay_rate": 0.990,
+      "salience": 0.5,
+      "confidence": 0.85,
+      "tags": ["database", "migrations", "patterns"],
+      "access_count": 1,
+      "last_accessed": "2026-03-12T10:00:00.000Z",
+      "created": "2026-03-12T09:00:00.000Z",
+      "encoding_context": {
+        "project": "benchmark-db",
+        "topics": ["database", "migrations"],
+        "task_type": "implementing"
+      }
+    }
+  ],
+  "associations": [
+    { "idA": "mem_bench_learn_001", "idB": "mem_bench_learn_002", "weight": 0.5, "origin": "tag_overlap" },
+    { "idA": "mem_bench_learn_001", "idB": "mem_bench_learn_005", "weight": 0.7, "origin": "tag_overlap" },
+    { "idA": "mem_bench_learn_002", "idB": "mem_bench_learn_004", "weight": 0.6, "origin": "co_retrieval" },
+    { "idA": "mem_bench_learn_003", "idB": "mem_bench_learn_001", "weight": 0.4, "origin": "tag_overlap" }
+  ],
+  "context": {
+    "project": "benchmark-db",
+    "topics": ["database", "api-design", "patterns"],
+    "task_type": "implementing"
+  },
+  "training": [],
+  "test": [
+    {
+      "label": "session-6-new-feature",
+      "text": "Add a 'comments' feature to this Express API. Create: 1) A database query module at db/comments.js with CRUD operations, 2) Routes at routes/comments.js with input validation, 3) Proper error handling. Use the project's established patterns and conventions."
+    }
+  ]
+}

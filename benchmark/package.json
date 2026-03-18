@@ -1,0 +1,16 @@
+{
+  "name": "brain-memory-benchmark",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Benchmark framework for Brain Memory — measures token savings, success rates, and consistency across AI agents with and without persistent memory.",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "bench": "node harness/runner.js",
+    "bench:scenario": "node harness/runner.js --scenario",
+    "bench:agent": "node harness/runner.js --agent",
+    "bench:docker": "docker compose -f docker/docker-compose.yml up --abort-on-container-exit"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

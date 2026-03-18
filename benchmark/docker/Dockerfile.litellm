@@ -1,0 +1,19 @@
+# LiteLLM proxy container.
+# Routes Gemini API requests to Ollama's OpenAI-compatible endpoint.
+#
+# Gemini CLI expects a Gemini-compatible API, LiteLLM translates
+# between the Gemini format and Ollama's OpenAI-compatible format.
+
+FROM python:3.11-slim
+
+RUN pip install --no-cache-dir litellm[proxy]
+
+# LiteLLM config
+RUN mkdir -p /config
+COPY benchmark/docker/litellm-config.yaml /config/config.yaml 2>/dev/null || true
+
+ENV LITELLM_PORT=4000
+
+EXPOSE 4000
+
+CMD ["litellm", "--config", "/config/config.yaml", "--port", "4000", "--host", "0.0.0.0"]

@@ -1,0 +1,380 @@
+{
+  "timestamp": "2026-03-18T06:08:49.566Z",
+  "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+  "scenarios": [
+    {
+      "scenario": "scenario-1-continuity",
+      "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+      "mode": "cloud",
+      "timestamp": "2026-03-18T05:29:17.699Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 7434,
+            "success": false,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 8991,
+            "success": false,
+            "consistency": 1
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 32346,
+              "output": 3429
+            },
+            "time_ms": 93066,
+            "success": true,
+            "consistency": 0.822
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 26131,
+              "output": 1704
+            },
+            "time_ms": 52161,
+            "success": true,
+            "consistency": 0.645
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 88580,
+            "success": true,
+            "consistency": 0.767
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 56764,
+            "success": true,
+            "consistency": 0.545
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": -28.5,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": 13.3,
+        "time_reduction_pct": -60.4
+      }
+    },
+    {
+      "scenario": "scenario-2-consistency",
+      "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+      "mode": "cloud",
+      "timestamp": "2026-03-18T05:37:36.886Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 7340,
+            "success": false,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 5367,
+            "success": false,
+            "consistency": 1
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 21525,
+              "output": 1050
+            },
+            "time_ms": 58636,
+            "success": true,
+            "consistency": 0.432
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Gemini timed out after 300000ms"
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 59054,
+            "success": true,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 48519,
+            "success": true,
+            "consistency": 1
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 0,
+        "success_improvement_pct": 33.3,
+        "consistency_improvement_pct": 14.4,
+        "time_reduction_pct": -132
+      }
+    },
+    {
+      "scenario": "scenario-3-knowledge",
+      "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+      "mode": "cloud",
+      "timestamp": "2026-03-18T05:49:40.196Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 6795,
+            "success": false,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 5621,
+            "success": false,
+            "consistency": 1
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 48678,
+              "output": 3367
+            },
+            "time_ms": 94130,
+            "success": true,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 24059,
+              "output": 2350
+            },
+            "time_ms": 57683,
+            "success": true,
+            "consistency": 0.891
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Codex timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 236618,
+            "success": true,
+            "consistency": 0.861
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": -97.1,
+        "success_improvement_pct": -33.3,
+        "consistency_improvement_pct": -25,
+        "time_reduction_pct": 66.3
+      }
+    },
+    {
+      "scenario": "scenario-4-error-learning",
+      "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+      "mode": "cloud",
+      "timestamp": "2026-03-18T06:03:40.364Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 11865,
+            "success": false,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 11302,
+            "success": false,
+            "consistency": 1
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 43075,
+              "output": 2238
+            },
+            "time_ms": 69763,
+            "success": true,
+            "consistency": 0.63
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 42598,
+              "output": 2751
+            },
+            "time_ms": 119898,
+            "success": true,
+            "consistency": 1
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Codex timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Codex timed out after 300000ms"
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 0.1,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": -12.4,
+        "time_reduction_pct": 37.8
+      }
+    },
+    {
+      "scenario": "scenario-5-preferences",
+      "model": "cloud (claude-sonnet / gemini-flash / gpt)",
+      "mode": "cloud",
+      "timestamp": "2026-03-18T06:08:49.565Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 7903,
+            "success": false,
+            "consistency": 0.2
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 5175,
+            "success": false,
+            "consistency": 0.2
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 30027,
+              "output": 1235
+            },
+            "time_ms": 39809,
+            "success": true,
+            "consistency": 0.8
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 38921,
+              "output": 1324
+            },
+            "time_ms": 51002,
+            "success": true,
+            "consistency": 0.534
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 128739,
+            "success": true,
+            "consistency": 0.866
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 54345,
+            "success": true,
+            "consistency": 0.734
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 22.3,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": 13.3,
+        "time_reduction_pct": -59.7
+      }
+    }
+  ]
+}

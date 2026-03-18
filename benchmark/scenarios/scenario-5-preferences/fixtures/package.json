@@ -1,0 +1,7 @@
+{
+  "name": "benchmark-fp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Functional programming fixture for benchmark scenario 5",
+  "main": "pipeline.js"
+}

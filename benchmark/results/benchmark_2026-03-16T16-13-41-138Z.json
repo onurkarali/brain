@@ -1,0 +1,381 @@
+{
+  "timestamp": "2026-03-16T16:13:41.138Z",
+  "model": "qwen2.5-coder:14b",
+  "scenarios": [
+    {
+      "scenario": "scenario-1-continuity",
+      "model": "qwen2.5-coder:14b",
+      "timestamp": "2026-03-16T14:59:36.010Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 17252,
+              "output": 1162
+            },
+            "time_ms": 327934,
+            "success": false,
+            "consistency": 0.578
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 31085,
+              "output": 2966
+            },
+            "time_ms": 77743,
+            "success": false,
+            "consistency": 0.467
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 210734,
+            "success": true,
+            "consistency": 0.933
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 208065,
+            "success": false,
+            "consistency": 0.444
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 45.9,
+        "success_improvement_pct": 33.3,
+        "consistency_improvement_pct": 20,
+        "time_reduction_pct": -88.5
+      }
+    },
+    {
+      "scenario": "scenario-2-consistency",
+      "model": "qwen2.5-coder:14b",
+      "timestamp": "2026-03-16T15:19:30.124Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 18327,
+              "output": 843
+            },
+            "time_ms": 25158,
+            "success": true,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 56444,
+              "output": 1983
+            },
+            "time_ms": 199348,
+            "success": true,
+            "consistency": 1
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 68666,
+            "success": true,
+            "consistency": 1
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 300018,
+            "success": true,
+            "consistency": 1
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 67.2,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": 0,
+        "time_reduction_pct": 81.2
+      }
+    },
+    {
+      "scenario": "scenario-3-knowledge",
+      "model": "qwen2.5-coder:14b",
+      "timestamp": "2026-03-16T15:39:17.351Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 22108,
+              "output": 1889
+            },
+            "time_ms": 116512,
+            "success": true,
+            "consistency": 0.636
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 20694,
+              "output": 1528
+            },
+            "time_ms": 26139,
+            "success": true,
+            "consistency": 0.6
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 172698,
+            "success": true,
+            "consistency": 0.927
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 271061,
+            "success": true,
+            "consistency": 0.927
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": -8,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": 1.2,
+        "time_reduction_pct": 2.7
+      }
+    },
+    {
+      "scenario": "scenario-4-error-learning",
+      "model": "qwen2.5-coder:14b",
+      "timestamp": "2026-03-16T15:56:00.832Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 30466,
+              "output": 2985
+            },
+            "time_ms": 65660,
+            "success": true,
+            "consistency": 0.6
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 27877,
+              "output": 1884
+            },
+            "time_ms": 70870,
+            "success": true,
+            "consistency": 0.65
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 139027,
+            "success": true,
+            "consistency": 0.7
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 127170,
+            "success": true,
+            "consistency": 0.7
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": -12.4,
+        "success_improvement_pct": 0,
+        "consistency_improvement_pct": -1.7,
+        "time_reduction_pct": -3.4
+      }
+    },
+    {
+      "scenario": "scenario-5-preferences",
+      "model": "qwen2.5-coder:14b",
+      "timestamp": "2026-03-16T16:13:41.136Z",
+      "results": {
+        "claude": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 0,
+            "success": false,
+            "consistency": 0,
+            "error": "Claude timed out after 300000ms"
+          }
+        },
+        "gemini": {
+          "with_brain": {
+            "tokens": {
+              "input": 17548,
+              "output": 899
+            },
+            "time_ms": 23107,
+            "success": true,
+            "consistency": 0.641
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 300052,
+            "success": false,
+            "consistency": 0.2
+          }
+        },
+        "codex": {
+          "with_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 58606,
+            "success": true,
+            "consistency": 0.809
+          },
+          "without_brain": {
+            "tokens": {
+              "input": 0,
+              "output": 0
+            },
+            "time_ms": 77687,
+            "success": true,
+            "consistency": 0.567
+          }
+        }
+      },
+      "summary": {
+        "token_reduction_pct": 0,
+        "success_improvement_pct": 33.3,
+        "consistency_improvement_pct": 22.7,
+        "time_reduction_pct": 78.4
+      }
+    }
+  ]
+}
