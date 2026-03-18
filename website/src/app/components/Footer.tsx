@@ -12,7 +12,7 @@ export default function Footer() {
               alt="Brain Memory"
               width={32}
               height={32}
-              className="rounded-lg"
+              className="rounded-[6px]"
             />
             <span className="text-gray-500">
               &copy; {new Date().getFullYear()} Omelas. All rights reserved.

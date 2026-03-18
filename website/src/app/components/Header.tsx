@@ -16,7 +16,7 @@ export default function Header() {
             alt="Brain Memory"
             width={40}
             height={40}
-            className="rounded-xl"
+            className="rounded-[8px]"
           />
           <span className="text-xl font-semibold">Brain Memory</span>
         </Link>

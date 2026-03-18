@@ -498,6 +498,8 @@ Empirical benchmarks show that agents with Brain Memory produce **more consisten
 | Multi-Session Continuity | Decisions carry from Session 1 → Session 2 | **+28.1%** | 0% |
 | Cross-Agent Consistency | All agents follow memorized style guide | **+10.0%** | **+33.3%** |
 | Accumulated Knowledge | 5 sessions of learning → better Session 6 | **+6.1%** | 0% |
+| Error Pattern Learning | Past debugging → faster fix | -13.1% | **+33.3%** |
+| Preference Retention | Preferences applied without re-stating | **+16.4%** | 0% |
 
 **Per-agent consistency gains (Scenario 1 — Continuity):**
 
@@ -507,7 +509,7 @@ Empirical benchmarks show that agents with Brain Memory produce **more consisten
 | Gemini CLI | 0.856 | 0.645 | +32.7% |
 | Codex CLI | 0.822 | 0.455 | +80.7% |
 
-> Agents with Brain Memory use more tokens (memory context is injected as prompt), but the consistency and reliability gains justify the cost. In one scenario, Gemini CLI without Brain Memory failed entirely — with Brain Memory, it passed every run.
+> Average across 5 scenarios: **+9.5% consistency**, **+33.3% success improvement**. Agents with Brain Memory use more tokens (memory context is injected as prompt), but the consistency and reliability gains justify the cost. In two scenarios, agents without Brain Memory failed entirely — with Brain Memory, they passed every run.
 
 Run the benchmarks yourself:
 

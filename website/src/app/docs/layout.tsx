@@ -31,7 +31,7 @@ export default function DocsLayout({
                   alt="Brain Memory"
                   width={32}
                   height={32}
-                  className="rounded-lg"
+                  className="rounded-[6px]"
                 />
               </div>
               <span className="text-sm font-semibold text-gray-100">

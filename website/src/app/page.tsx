@@ -69,7 +69,7 @@ export default function Home() {
                   alt="Brain Memory"
                   width={300}
                   height={300}
-                  className="relative z-10"
+                  className="relative z-10 rounded-[54px]"
                   style={{
                     filter: "drop-shadow(0 0 40px rgba(245, 158, 11, 0.3))",
                   }}
@@ -191,7 +191,7 @@ export default function Home() {
           <div className="grid gap-6 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
             <div className="glass-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
-                +14.7%
+                +9.5%
               </div>
               <div className="text-sm text-gray-400">
                 Average Consistency Improvement
@@ -199,7 +199,7 @@ export default function Home() {
             </div>
             <div className="glass-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
-                +11.1%
+                +33.3%
               </div>
               <div className="text-sm text-gray-400">
                 Average Success Improvement
