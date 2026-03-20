@@ -4,3 +4,7 @@ pitch/
 benchmark/results/benchmark_*.json
 benchmark/results/benchmark_*.md
 benchmark/results/scenario-*.json
+.DS_Store
+AGENTS.md
+GEMINI.md
+.brain/
