@@ -191,7 +191,7 @@ export default function Home() {
           <div className="grid gap-6 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
             <div className="glass-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
-                +9.5%
+                +18.3%
               </div>
               <div className="text-sm text-gray-400">
                 Average Consistency Improvement
@@ -202,7 +202,7 @@ export default function Home() {
                 +33.3%
               </div>
               <div className="text-sm text-gray-400">
-                Average Success Improvement
+                Success Improvement
               </div>
             </div>
             <div className="glass-card rounded-2xl p-6 text-center">
@@ -235,6 +235,22 @@ export default function Home() {
                 <tr className="hover:bg-white/[0.02] transition-colors">
                   <td className="px-6 py-4">
                     <div className="text-gray-300 font-medium">
+                      Preference Retention
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Preferences applied without re-stating
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +34.7%
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +33.3%
+                  </td>
+                </tr>
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
                       Multi-Session Continuity
                     </div>
                     <div className="text-sm text-gray-500">
@@ -242,26 +258,10 @@ export default function Home() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
-                    +28.1%
+                    +26.2%
                   </td>
                   <td className="px-6 py-4 text-center text-gray-500">
                     —
-                  </td>
-                </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
-                      Cross-Agent Consistency
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      All agents follow memorized style
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
-                    +10.0%
-                  </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
-                    +33.3%
                   </td>
                 </tr>
                 <tr className="hover:bg-white/[0.02] transition-colors">
@@ -274,7 +274,7 @@ export default function Home() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
-                    +6.1%
+                    +7.3%
                   </td>
                   <td className="px-6 py-4 text-center text-gray-500">
                     —
@@ -287,7 +287,8 @@ export default function Home() {
           <p className="text-center text-gray-500 text-sm mt-6 max-w-2xl mx-auto">
             Tested with Claude Code, Gemini CLI, and Codex CLI using cloud APIs.
             Each scenario ran 3 times with median values reported.
-            Codex CLI saw the largest gain: +80.7% consistency in the continuity scenario.
+            Claude Code without Brain Memory failed the preference scenario entirely
+            — with Brain Memory, it passed every run.
           </p>
         </section>
 

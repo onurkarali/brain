@@ -1,3 +1,6 @@
 node_modules/
 pitch/
 .env
+benchmark/results/benchmark_*.json
+benchmark/results/benchmark_*.md
+benchmark/results/scenario-*.json

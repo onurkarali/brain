@@ -495,21 +495,29 @@ Empirical benchmarks show that agents with Brain Memory produce **more consisten
 
 | Scenario | What it tests | Consistency Improvement | Success Improvement |
 |----------|---------------|:---:|:---:|
-| Multi-Session Continuity | Decisions carry from Session 1 → Session 2 | **+28.1%** | 0% |
-| Cross-Agent Consistency | All agents follow memorized style guide | **+10.0%** | **+33.3%** |
-| Accumulated Knowledge | 5 sessions of learning → better Session 6 | **+6.1%** | 0% |
-| Error Pattern Learning | Past debugging → faster fix | -13.1% | **+33.3%** |
-| Preference Retention | Preferences applied without re-stating | **+16.4%** | 0% |
+| Multi-Session Continuity | Decisions carry from Session 1 → Session 2 | **+26.2%** | 0% |
+| Cross-Agent Consistency | All agents follow memorized style guide | 0% | 0% |
+| Accumulated Knowledge | 5 sessions of learning → better Session 6 | **+7.3%** | 0% |
+| Error Pattern Learning | Past debugging → faster fix | **+4.8%** | 0% |
+| Preference Retention | Preferences applied without re-stating | **+34.7%** | **+33.3%** |
 
 **Per-agent consistency gains (Scenario 1 — Continuity):**
 
 | Agent | With Brain | Without Brain | Improvement |
 |-------|:---:|:---:|:---:|
-| Claude Code | 0.911 | 0.645 | +41.2% |
-| Gemini CLI | 0.856 | 0.645 | +32.7% |
-| Codex CLI | 0.822 | 0.455 | +80.7% |
+| Claude Code | 0.944 | 0.645 | +46.4% |
+| Gemini CLI | 0.822 | 0.555 | +48.1% |
+| Codex CLI | 0.767 | 0.545 | +40.7% |
 
-> Average across 5 scenarios: **+9.5% consistency**, **+33.3% success improvement**. Agents with Brain Memory use more tokens (memory context is injected as prompt), but the consistency and reliability gains justify the cost. In two scenarios, agents without Brain Memory failed entirely — with Brain Memory, they passed every run.
+**Preference retention (Scenario 5) — the strongest result:**
+
+| Agent | With Brain | Without Brain | Notes |
+|-------|:---:|:---:|:---|
+| Claude Code | 0.866 / PASS | 0.359 / **FAIL** | Brain prevented failure |
+| Gemini CLI | 0.800 / PASS | 0.534 / PASS | +49.8% consistency |
+| Codex CLI | 0.934 / PASS | 0.666 / PASS | +40.2% consistency |
+
+> Average across 5 scenarios: **+18.3% consistency**, **+33.3% success improvement**. Agents with Brain Memory use more tokens (memory context is injected as prompt), but the consistency and reliability gains justify the cost. In the preference scenario, Claude Code without Brain Memory failed entirely — with Brain Memory, it passed every run.
 
 Run the benchmarks yourself:
 
