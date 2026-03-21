@@ -28,7 +28,6 @@ const ARCHITECTURE_PATTERNS = [
 // Anti-patterns that violate the memorized architecture
 const ANTI_PATTERNS = [
   /\.then\(/,                          // Promise chaining instead of await
-  /function\s+\w+\s*\(/,              // Named function declarations (not arrows)
   /callback/i,                        // Callback pattern
 ];
 

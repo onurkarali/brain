@@ -38,11 +38,59 @@ function readJSON(filePath) {
 }
 
 // ===========================================================================
+// installForRuntime / uninstallForRuntime — input validation
+// ===========================================================================
+describe('installForRuntime — input validation', () => {
+  it('throws on invalid runtime', () => {
+    assert.throws(
+      () => installForRuntime('invalid-runtime', 'global'),
+      /Unknown runtime: invalid-runtime/
+    );
+  });
+
+  it('throws on invalid scope', () => {
+    assert.throws(
+      () => installForRuntime('claude', 'invalid-scope'),
+      /Invalid scope: invalid-scope/
+    );
+  });
+});
+
+describe('uninstallForRuntime — input validation', () => {
+  it('throws on invalid runtime', () => {
+    assert.throws(
+      () => uninstallForRuntime('fake', 'global'),
+      /Unknown runtime: fake/
+    );
+  });
+
+  it('throws on invalid scope', () => {
+    assert.throws(
+      () => uninstallForRuntime('claude', 'both'),
+      /Invalid scope: both/
+    );
+  });
+});
+
+// ===========================================================================
 // copyDir
 // ===========================================================================
 describe('copyDir', () => {
   beforeEach(() => setup());
   afterEach(() => teardown());
+
+  it('skips symlinks', () => {
+    const src = path.join(tmpDir, 'src');
+    const dest = path.join(tmpDir, 'dest');
+    fs.mkdirSync(src, { recursive: true });
+    fs.writeFileSync(path.join(src, 'real.md'), 'real file');
+    fs.symlinkSync(path.join(src, 'real.md'), path.join(src, 'link.md'));
+
+    copyDir(src, dest);
+
+    assert.ok(fs.existsSync(path.join(dest, 'real.md')));
+    assert.ok(!fs.existsSync(path.join(dest, 'link.md')));
+  });
 
   it('copies all files from source to destination', () => {
     const src = path.join(tmpDir, 'src');

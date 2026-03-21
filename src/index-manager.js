@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const os = require('os');
+const crypto = require('crypto');
 
 const DEFAULT_BRAIN_DIR = path.join(os.homedir(), '.brain');
 const INDEX_FILE = 'index.json';
@@ -15,6 +16,36 @@ const ASSOCIATIONS_FILE = 'associations.json';
 const CONTEXTS_FILE = 'contexts.json';
 const REVIEW_QUEUE_FILE = 'review-queue.json';
 const ARCHIVE_INDEX_FILE = '_archived/index.json';
+const SEARCH_INDEX_FILE = 'search-index.json';
+
+/**
+ * Write data to a file atomically by writing to a temp file first,
+ * then renaming. Prevents corruption if the process crashes mid-write.
+ *
+ * @param {string} filePath - Target file path
+ * @param {string} data - Data to write
+ */
+function atomicWriteSync(filePath, data) {
+  const tmpPath = filePath + '.tmp.' + crypto.randomBytes(4).toString('hex');
+  fs.writeFileSync(tmpPath, data);
+  fs.renameSync(tmpPath, filePath);
+}
+
+/**
+ * Validate that a target path is within the brain directory.
+ * Prevents path traversal attacks (e.g. categoryPath = '../../etc/passwd').
+ *
+ * @param {string} targetPath - The resolved path to validate
+ * @param {string} brainDir - The brain directory root
+ * @throws {Error} if targetPath is outside brainDir
+ */
+function validateBrainPath(targetPath, brainDir) {
+  const resolved = path.resolve(targetPath);
+  const resolvedBrain = path.resolve(brainDir);
+  if (!resolved.startsWith(resolvedBrain + path.sep) && resolved !== resolvedBrain) {
+    throw new Error(`Path traversal detected: ${targetPath} is outside ${brainDir}`);
+  }
+}
 
 /**
  * Resolve the brain directory path.
@@ -48,7 +79,7 @@ function readIndex(projectRoot) {
 function writeIndex(index, projectRoot) {
   const indexPath = path.join(getBrainDir(projectRoot), INDEX_FILE);
   index.last_updated = new Date().toISOString();
-  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2) + '\n');
+  atomicWriteSync(indexPath, JSON.stringify(index, null, 2) + '\n');
 }
 
 /**
@@ -113,9 +144,15 @@ function generateId() {
  * @returns {Object|null} Parsed meta or null
  */
 function readMeta(categoryPath, projectRoot) {
-  const metaPath = path.join(getBrainDir(projectRoot), categoryPath, '_meta.json');
-  if (!fs.existsSync(metaPath)) return null;
-  return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+  const brainDir = getBrainDir(projectRoot);
+  const metaPath = path.join(brainDir, categoryPath, '_meta.json');
+  validateBrainPath(metaPath, brainDir);
+  try {
+    return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
 }
 
 /**
@@ -126,9 +163,11 @@ function readMeta(categoryPath, projectRoot) {
  * @param {string} [projectRoot] - Project root directory
  */
 function writeMeta(categoryPath, meta, projectRoot) {
-  const metaPath = path.join(getBrainDir(projectRoot), categoryPath, '_meta.json');
+  const brainDir = getBrainDir(projectRoot);
+  const metaPath = path.join(brainDir, categoryPath, '_meta.json');
+  validateBrainPath(metaPath, brainDir);
   fs.mkdirSync(path.dirname(metaPath), { recursive: true });
-  fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
+  atomicWriteSync(metaPath, JSON.stringify(meta, null, 2) + '\n');
 }
 
 /**
@@ -169,7 +208,7 @@ function readAssociations(projectRoot) {
  */
 function writeAssociations(associations, projectRoot) {
   const filePath = path.join(getBrainDir(projectRoot), ASSOCIATIONS_FILE);
-  fs.writeFileSync(filePath, JSON.stringify(associations, null, 2) + '\n');
+  atomicWriteSync(filePath, JSON.stringify(associations, null, 2) + '\n');
 }
 
 /**
@@ -275,7 +314,7 @@ function readContexts(projectRoot) {
  */
 function writeContexts(contexts, projectRoot) {
   const filePath = path.join(getBrainDir(projectRoot), CONTEXTS_FILE);
-  fs.writeFileSync(filePath, JSON.stringify(contexts, null, 2) + '\n');
+  atomicWriteSync(filePath, JSON.stringify(contexts, null, 2) + '\n');
 }
 
 // --- Review Queue (Phase 4: Spaced Repetition) ---
@@ -300,7 +339,7 @@ function readReviewQueue(projectRoot) {
  */
 function writeReviewQueue(queue, projectRoot) {
   const filePath = path.join(getBrainDir(projectRoot), REVIEW_QUEUE_FILE);
-  fs.writeFileSync(filePath, JSON.stringify(queue, null, 2) + '\n');
+  atomicWriteSync(filePath, JSON.stringify(queue, null, 2) + '\n');
 }
 
 // --- Archive Index (Phase 4: Archive Search) ---
@@ -326,7 +365,7 @@ function readArchiveIndex(projectRoot) {
 function writeArchiveIndex(archiveIndex, projectRoot) {
   const filePath = path.join(getBrainDir(projectRoot), ARCHIVE_INDEX_FILE);
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
-  fs.writeFileSync(filePath, JSON.stringify(archiveIndex, null, 2) + '\n');
+  atomicWriteSync(filePath, JSON.stringify(archiveIndex, null, 2) + '\n');
 }
 
 /**
@@ -372,6 +411,35 @@ function removeFromReviewQueue(queue, memoryId) {
   return queue;
 }
 
+// --- Search Index (TF-IDF) ---
+
+/**
+ * Read the TF-IDF search index.
+ *
+ * @param {string} [projectRoot] - Project root directory
+ * @returns {Object|null} Parsed search index or null
+ */
+function readSearchIndex(projectRoot) {
+  const filePath = path.join(getBrainDir(projectRoot), SEARCH_INDEX_FILE);
+  try {
+    return JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+}
+
+/**
+ * Write the TF-IDF search index to disk.
+ *
+ * @param {Object} searchIndex - The search index object
+ * @param {string} [projectRoot] - Project root directory
+ */
+function writeSearchIndex(searchIndex, projectRoot) {
+  const filePath = path.join(getBrainDir(projectRoot), SEARCH_INDEX_FILE);
+  atomicWriteSync(filePath, JSON.stringify(searchIndex, null, 2) + '\n');
+}
+
 module.exports = {
   getBrainDir,
   readIndex,
@@ -397,7 +465,13 @@ module.exports = {
   writeReviewQueue,
   readArchiveIndex,
   writeArchiveIndex,
+  // Search Index (TF-IDF)
+  readSearchIndex,
+  writeSearchIndex,
   // Deep erasure utilities
   removeEdgesForMemory,
   removeFromReviewQueue,
+  // Security utilities
+  atomicWriteSync,
+  validateBrainPath,
 };

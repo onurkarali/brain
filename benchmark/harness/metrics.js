@@ -50,6 +50,10 @@ function totalTokens(tokens) {
  * Aggregate results from multiple runs using median.
  * Each run is { tokens, time_ms, success, consistency, ... }.
  *
+ * Token and time medians are computed from successful runs only,
+ * so that failed/timed-out runs (which have zero tokens) don't
+ * corrupt the metrics. Success rate and consistency use all runs.
+ *
  * @param {Object[]} runs - Array of run results
  * @returns {Object} Aggregated result with median values
  */
@@ -57,11 +61,16 @@ function aggregateRuns(runs) {
   if (runs.length === 0) return null;
   if (runs.length === 1) return { ...runs[0] };
 
-  const tokenInputs = runs.map((r) => r.tokens.input).sort((a, b) => a - b);
-  const tokenOutputs = runs.map((r) => r.tokens.output).sort((a, b) => a - b);
-  const times = runs.map((r) => r.time_ms).sort((a, b) => a - b);
+  const successfulRuns = runs.filter((r) => r.success);
+  const successes = successfulRuns.length;
+
+  // Use successful runs for token/time medians; fall back to all runs if none succeeded
+  const metricsRuns = successfulRuns.length > 0 ? successfulRuns : runs;
+
+  const tokenInputs = metricsRuns.map((r) => r.tokens.input).sort((a, b) => a - b);
+  const tokenOutputs = metricsRuns.map((r) => r.tokens.output).sort((a, b) => a - b);
+  const times = metricsRuns.map((r) => r.time_ms).sort((a, b) => a - b);
   const consistencies = runs.map((r) => r.consistency).sort((a, b) => a - b);
-  const successes = runs.filter((r) => r.success).length;
 
   return {
     tokens: {

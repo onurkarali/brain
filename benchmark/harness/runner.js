@@ -150,6 +150,7 @@ async function runScenario(scenarioName, scenarioDir, agents, { config, modeConf
       const runs = [];
 
       for (let run = 0; run < runsPerScenario; run++) {
+        const runStart = Date.now();
         try {
           const result = await executeRun(
             scenarioName, agent, variant, run,
@@ -161,10 +162,11 @@ async function runScenario(scenarioName, scenarioDir, agents, { config, modeConf
             `time=${result.time_ms}ms ` +
             `${result.success ? 'PASS' : 'FAIL'}\n`);
         } catch (err) {
-          console.error(`      ${variant} run ${run + 1} failed: ${err.message}`);
+          const elapsed = Date.now() - runStart;
+          console.error(`      ${variant} run ${run + 1} failed (${elapsed}ms): ${err.message}`);
           runs.push({
             tokens: { input: 0, output: 0 },
-            time_ms: 0,
+            time_ms: elapsed,
             success: false,
             consistency: 0,
             error: err.message,
@@ -317,23 +319,34 @@ function collectNewFiles(dir, baseDir, fixtureFiles, contents) {
 
 /**
  * Build a memory context prefix from seeded memories.
- * This simulates brain-memory's recall — surfacing relevant past context.
+ * This simulates brain-memory's recall — surfacing relevant past context
+ * as conversational recall rather than injected instructions.
  */
 function buildMemoryContext(memories) {
   if (!memories || memories.length === 0) return '';
 
+  const TYPE_VERBS = {
+    decision: 'You decided',
+    preference: 'You prefer',
+    learning: 'You learned',
+    insight: 'You realized',
+    experience: 'You experienced',
+    goal: 'Your goal is',
+    observation: 'You noticed',
+    relationship: 'You noted',
+  };
+
   const lines = [
-    'IMPORTANT CONTEXT FROM PREVIOUS SESSIONS (your persistent memory):',
+    'Based on your past experience with this project, you recall:',
     '',
   ];
 
   for (const mem of memories) {
-    lines.push(`[${mem.type.toUpperCase()}] ${mem.title || mem.id}`);
-    if (mem.body) lines.push(mem.body);
-    lines.push('');
+    const verb = TYPE_VERBS[mem.type] || 'You noted';
+    const summary = mem.body || mem.title || mem.id;
+    lines.push(`- ${verb}: ${summary}`);
   }
 
-  lines.push('Apply the above context to the following task:');
   lines.push('');
 
   return lines.join('\n');

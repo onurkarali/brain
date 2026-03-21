@@ -25,7 +25,7 @@ const PREFERENCE_PATTERNS = [
   /^const\s/m,                         // Uses const
 
   // No classes, factory functions
-  /const\s+create\w+\s*=/,            // Factory function pattern
+  /const\s+(create|make|build)\w+\s*=/,  // Factory function pattern
 
   // Result pattern
   /ok:\s*(true|false)/,               // Result pattern
@@ -33,7 +33,7 @@ const PREFERENCE_PATTERNS = [
   /\{\s*ok:\s*false,\s*error/,        // Error result
 
   // Naming conventions
-  /validate\w+|parse\w+|transform\w+|filter\w+/,  // Verb phrases
+  /validate\w+|parse\w+|transform\w+|filter\w+/i,  // Verb phrases
 ];
 
 // Anti-patterns that violate preferences

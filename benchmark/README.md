@@ -137,6 +137,32 @@ ASCII comparison table printed after each scenario.
 
 Generated in `results/` alongside JSON — ready for README inclusion.
 
+## Methodology & Limitations
+
+### Fair Control Group
+
+The "without brain" control group uses the same fixture project files as the "with brain" variant. Fixtures include realistic reference code (full CRUD routes, connection pooling, functional patterns) so that the control group has a fair baseline — it can infer conventions from existing code rather than starting from a blank stub. This ensures the benchmark measures **memory recall**, not "some context vs. none."
+
+### Memory Injection
+
+Memory context is surfaced as conversational recall (e.g., "You decided...", "You prefer...") rather than injected instructions. Only the concise `body` field is used — full content with code examples is not included. This approximates how brain-memory works in practice: the agent recalls summaries, not verbatim documentation.
+
+### Evaluation
+
+Evaluators use regex pattern matching, not AST parsing. This is intentionally coarse-grained — it measures whether the agent applied the right architectural patterns, not whether it produced syntactically perfect code. Known limitations:
+
+- **False positives**: An agent might match patterns incidentally without truly applying the memorized convention
+- **False negatives**: Valid implementations using different naming or structure may score low
+- **No semantic analysis**: Two functionally equivalent implementations may score differently
+- **Model sensitivity**: Results vary across model versions and temperature settings
+
+### Reproducibility
+
+- Each scenario runs multiple times (default: 3); median values are reported
+- Seeded memories are deterministic — the same memories are injected for every run
+- Workspace isolation ensures no cross-contamination between runs
+- Results should be compared within the same model/run, not across different models or dates
+
 ## File Structure
 
 ```

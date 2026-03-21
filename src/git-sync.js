@@ -323,20 +323,51 @@ function pull(brainDir, passphrase) {
     if (config.remote) configureRemote(brainDir, config.remote);
   }
 
-  // Pull
+  // Try fast-forward pull first
+  let pulled = false;
+  let hasConflicts = false;
+  let conflictFiles = [];
+
   try {
     git(repoDir, ['pull', 'origin', 'main', '--ff-only'], { timeout: 30000 });
+    pulled = true;
   } catch (err) {
-    // Could be first pull (nothing to pull), or merge conflict
-    if (err.message && err.message.includes('Not possible to fast-forward')) {
-      return { pulled: false, message: 'Merge conflict detected. Push your local changes first, or manually resolve in ~/.brain/.sync/repo/' };
-    }
-    // First clone — try to set up tracking
+    // Fast-forward failed — try fetch + merge
     try {
       git(repoDir, ['fetch', 'origin'], { timeout: 15000 });
-      git(repoDir, ['merge', 'origin/main', '--ff-only']);
     } catch {
-      return { pulled: false, message: 'Remote has no commits yet or is unreachable.' };
+      return { pulled: false, hasConflicts: false, message: 'Remote is unreachable.' };
+    }
+
+    try {
+      git(repoDir, ['merge', 'origin/main']);
+      pulled = true;
+    } catch {
+      // Check for unmerged paths
+      try {
+        const status = git(repoDir, ['status', '--porcelain']);
+        conflictFiles = status
+          .split('\n')
+          .filter((line) => line.startsWith('U') || line.startsWith('AA') || line.startsWith('DD'))
+          .map((line) => line.slice(3));
+        hasConflicts = conflictFiles.length > 0;
+      } catch { /* ignore status errors */ }
+
+      // Abort the failed merge to leave repo clean
+      try {
+        git(repoDir, ['merge', '--abort']);
+      } catch { /* ignore if nothing to abort */ }
+
+      if (hasConflicts) {
+        return {
+          pulled: false,
+          hasConflicts: true,
+          conflictFiles,
+          message: `Merge conflict in ${conflictFiles.length} file(s). Push your local changes first or manually resolve.`,
+        };
+      }
+
+      return { pulled: false, hasConflicts: false, message: 'Remote has no commits yet or merge failed.' };
     }
   }
 
@@ -347,7 +378,7 @@ function pull(brainDir, passphrase) {
   config.lastPull = new Date().toISOString();
   writeConfig(configPath, config);
 
-  return { pulled: true, message: `Pulled successfully at ${config.lastPull}` };
+  return { pulled: true, hasConflicts: false, message: `Pulled successfully at ${config.lastPull}` };
 }
 
 /**

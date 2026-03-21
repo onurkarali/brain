@@ -83,12 +83,42 @@ describe('Metrics', () => {
       { tokens: { input: 150, output: 75 }, time_ms: 600, success: false, consistency: 0.85 },
     ];
     const result = aggregateRuns(runs);
+    // Token/time medians from successful runs only (100,200 → 150; 50,100 → 75; 500,700 → 600)
     assert.equal(result.tokens.input, 150);
     assert.equal(result.tokens.output, 75);
     assert.equal(result.time_ms, 600);
     assert.equal(result.success, true); // 2/3 succeeded
-    assert.equal(result.consistency, 0.85);
+    assert.equal(result.consistency, 0.85); // consistency uses all runs
     assert.equal(result.runs, 3);
+  });
+
+  it('aggregateRuns excludes failed runs from token/time medians', () => {
+    const runs = [
+      { tokens: { input: 0, output: 0 }, time_ms: 300000, success: false, consistency: 0 },
+      { tokens: { input: 0, output: 0 }, time_ms: 300000, success: false, consistency: 0 },
+      { tokens: { input: 30000, output: 2000 }, time_ms: 45000, success: true, consistency: 0.9 },
+    ];
+    const result = aggregateRuns(runs);
+    // Only the 1 successful run contributes to token/time medians
+    assert.equal(result.tokens.input, 30000);
+    assert.equal(result.tokens.output, 2000);
+    assert.equal(result.time_ms, 45000);
+    assert.equal(result.success, false); // 1/3 < majority
+    assert.equal(result.success_rate, 0.33);
+    assert.equal(result.consistency, 0); // median of [0, 0, 0.9]
+  });
+
+  it('aggregateRuns falls back to all runs when none succeeded', () => {
+    const runs = [
+      { tokens: { input: 0, output: 0 }, time_ms: 300000, success: false, consistency: 0 },
+      { tokens: { input: 0, output: 0 }, time_ms: 300000, success: false, consistency: 0 },
+      { tokens: { input: 0, output: 0 }, time_ms: 300000, success: false, consistency: 0 },
+    ];
+    const result = aggregateRuns(runs);
+    assert.equal(result.tokens.input, 0);
+    assert.equal(result.time_ms, 300000);
+    assert.equal(result.success, false);
+    assert.equal(result.success_rate, 0);
   });
 
   it('aggregateRuns returns null for empty array', () => {

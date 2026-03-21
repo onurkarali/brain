@@ -17,7 +17,7 @@ const { scorePatterns, evaluateFiles } = require('../../harness/evaluator');
 // Patterns that indicate accumulated knowledge was applied
 const KNOWLEDGE_PATTERNS = [
   // Connection pooling
-  /pool|Pool|createPool|connect/,
+  /new\s+Pool|createPool|pg\.Pool|Pool\s*\(/,
   /release|\.end\(\)/,
   /\$\d|\?\s/,                          // Parameterized queries ($1 or ?)
 

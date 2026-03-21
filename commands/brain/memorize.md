@@ -158,13 +158,28 @@ Use the `reinforceEdge()` function — if an edge already exists (e.g., the rela
 
 Write the updated `associations.json`.
 
-### 8. Update _meta.json
+### 8. Update Search Index
+
+If `~/.brain/search-index.json` exists, update it so the new memory is discoverable by the recall engine. Run:
+
+```bash
+node <brain-memory-install-path>/bin/recall.js --reindex
+```
+
+Or if globally installed:
+```bash
+brain-recall --reindex
+```
+
+This rebuilds the TF-IDF search index from all memories, enabling deterministic semantic search via the recall engine.
+
+### 9. Update _meta.json
 
 Update the `_meta.json` in each directory along the path:
 - Increment `memory_count`
 - Add new subcategories to the `subcategories` array if any were created
 
-### 9. Confirm
+### 10. Confirm
 
 Print what was stored:
 - Memory title and ID

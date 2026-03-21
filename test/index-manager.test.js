@@ -26,6 +26,8 @@ const {
   writeReviewQueue,
   readArchiveIndex,
   writeArchiveIndex,
+  atomicWriteSync,
+  validateBrainPath,
 } = require('../src/index-manager');
 
 // ---------------------------------------------------------------------------
@@ -407,5 +409,92 @@ describe('readArchiveIndex / writeArchiveIndex round-trip', () => {
 
   it('returns null when file does not exist', () => {
     assert.equal(readArchiveIndex(tmpDir), null);
+  });
+});
+
+// ===========================================================================
+// atomicWriteSync
+// ===========================================================================
+describe('atomicWriteSync', () => {
+  beforeEach(() => setup());
+  afterEach(() => teardown());
+
+  it('writes data that can be read back', () => {
+    const filePath = path.join(tmpDir, 'test-atomic.json');
+    atomicWriteSync(filePath, '{"hello":"world"}\n');
+    const content = fs.readFileSync(filePath, 'utf-8');
+    assert.equal(content, '{"hello":"world"}\n');
+  });
+
+  it('overwrites existing file atomically', () => {
+    const filePath = path.join(tmpDir, 'test-atomic.json');
+    fs.writeFileSync(filePath, 'old content');
+    atomicWriteSync(filePath, 'new content');
+    assert.equal(fs.readFileSync(filePath, 'utf-8'), 'new content');
+  });
+
+  it('does not leave .tmp files on success', () => {
+    const filePath = path.join(tmpDir, 'test-atomic.json');
+    atomicWriteSync(filePath, 'data');
+    const files = fs.readdirSync(tmpDir);
+    const tmpFiles = files.filter((f) => f.includes('.tmp.'));
+    assert.equal(tmpFiles.length, 0);
+  });
+});
+
+// ===========================================================================
+// validateBrainPath
+// ===========================================================================
+describe('validateBrainPath', () => {
+  it('accepts paths within brain directory', () => {
+    const brainDir = '/home/user/.brain';
+    assert.doesNotThrow(() => {
+      validateBrainPath('/home/user/.brain/professional/_meta.json', brainDir);
+    });
+  });
+
+  it('rejects paths outside brain directory', () => {
+    const brainDir = '/home/user/.brain';
+    assert.throws(
+      () => validateBrainPath('/home/user/.brain/../.ssh/id_rsa', brainDir),
+      /Path traversal detected/
+    );
+  });
+
+  it('rejects traversal via relative segments', () => {
+    const brainDir = '/home/user/.brain';
+    assert.throws(
+      () => validateBrainPath('/home/user/.brain/../../etc/passwd', brainDir),
+      /Path traversal detected/
+    );
+  });
+
+  it('accepts the brain directory itself', () => {
+    const brainDir = '/home/user/.brain';
+    assert.doesNotThrow(() => {
+      validateBrainPath('/home/user/.brain', brainDir);
+    });
+  });
+});
+
+// ===========================================================================
+// readMeta / writeMeta — path validation
+// ===========================================================================
+describe('readMeta / writeMeta — path validation', () => {
+  beforeEach(() => setup());
+  afterEach(() => teardown());
+
+  it('readMeta rejects path traversal', () => {
+    assert.throws(
+      () => readMeta('../../etc', tmpDir),
+      /Path traversal detected/
+    );
+  });
+
+  it('writeMeta rejects path traversal', () => {
+    assert.throws(
+      () => writeMeta('../../etc', { malicious: true }, tmpDir),
+      /Path traversal detected/
+    );
   });
 });

@@ -230,7 +230,14 @@ function copyFixtures(fixturesDir, workDir) {
  */
 function cleanupWorkspace(baseDir) {
   if (baseDir && baseDir.startsWith(os.tmpdir()) && fs.existsSync(baseDir)) {
-    fs.rmSync(baseDir, { recursive: true, force: true });
+    try {
+      fs.rmSync(baseDir, { recursive: true, force: true });
+    } catch {
+      // Retry once after a short delay — agent subprocesses may still be releasing file handles
+      try {
+        fs.rmSync(baseDir, { recursive: true, force: true });
+      } catch { /* best-effort cleanup */ }
+    }
   }
 }
 

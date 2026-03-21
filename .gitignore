@@ -1,10 +1,28 @@
+# Dependencies
 node_modules/
-pitch/
+
+# Environment & secrets
 .env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Brain runtime data
+.brain/
+
+# Local-only files (not for public repo)
+pitch/
+AGENTS.md
+GEMINI.md
+
+# Benchmark run artifacts (timestamped raw data — kept locally)
+# Use benchmark/results/REPORT.md for the curated public summary
 benchmark/results/benchmark_*.json
 benchmark/results/benchmark_*.md
 benchmark/results/scenario-*.json
-.DS_Store
-AGENTS.md
-GEMINI.md
-.brain/
+
+# Local workspace — scratch files, experiments, drafts
+# Organize as: .local/<topic>/<description>/
+.local/

@@ -68,11 +68,14 @@ Brain skills are available via `/brain-` prefix:
 If `.brain/index.json` exists in the current project:
 
 1. **Read the index** to understand the current brain state (memory count, categories)
-2. **Identify high-value memories** — the top 3-5 memories by effective strength that are relevant to the current project context
-3. **Silently internalize** these memories so you can reference them naturally during the session — do NOT dump memory contents
+2. **Run the recall engine** to deterministically identify relevant memories for the current project:
+   ```bash
+   brain-recall --context --project "<current project>" --top 5
+   ```
+   This uses TF-IDF + the v4 scoring formula to find the most relevant memories — no guessing.
+3. **Silently internalize** the returned memories so you can reference them naturally during the session — do NOT dump memory contents
 4. **Check review queue** — read `.brain/review-queue.json` if it exists for memories due for review
-5. **Capture session context** — note the current project name, inferred topics, and task type for context-dependent recall
-6. **Output a brief status** (1-3 lines):
+5. **Output a brief status** (1-3 lines):
 
 If memories are due for review:
 ```
@@ -115,14 +118,15 @@ If the session contained meaningful content in any of these categories, suggest:
 
 ## When Recalling Memories
 
-When the user asks you to "remember" something, or when context from past sessions would be helpful:
-1. Check `.brain/index.json` for relevant memories
-2. Load `.brain/associations.json` for spreading activation
-3. Score by v4 formula: `0.38*relevance + 0.18*decayed_strength + 0.08*recency + 0.14*spreading_bonus + 0.14*context_match + 0.08*salience`
-4. Return strong individual matches or synthesize from multiple related memories
-5. Apply spaced reinforcement (spacing-aware boost) and improve decay rate
-6. Strengthen Hebbian links between co-retrieved memories
-7. If no active matches, search the archive (`.brain/_archived/`)
+When the user asks you to "remember" something, or when context from past sessions would be helpful, use the **deterministic recall engine** instead of manually computing scores:
+
+1. Run `brain-recall "<query>" --project <project> --task <task_type> --top 10` (or `node <install-path>/bin/recall.js`)
+2. The engine computes TF-IDF relevance, decayed strength, spreading activation, context match, and salience — all deterministically
+3. Read the top-scoring memory files and present results
+4. Run `brain-reinforce <mem_id1> <mem_id2> ...` to apply spaced reinforcement and Hebbian co-retrieval strengthening
+5. If no matches, search the archive (`.brain/_archived/`)
+
+The recall engine ensures **identical scoring across all agents** — Claude, Gemini, and Codex all get the same rankings for the same query.
 
 ## Portable Sync
 

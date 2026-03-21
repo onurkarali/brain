@@ -186,6 +186,92 @@ module.exports = { UserService, CreateUserSchema };
   });
 });
 
+describe('Scenario 3 — Knowledge Evaluator', () => {
+  const evaluate = require('../scenarios/scenario-3-knowledge/evaluate');
+
+  it('scores output with accumulated patterns high', () => {
+    const goodOutput = `
+const { Pool } = require('pg');
+const pool = new Pool({ max: 10 });
+
+const query = async (text, params) => {
+  const client = await pool.connect();
+  try {
+    return await client.query(text, params);
+  } finally {
+    client.release();
+  }
+};
+
+class AppError extends Error {
+  constructor(message, statusCode) {
+    super(message);
+    this.statusCode = statusCode;
+    this.isOperational = true;
+  }
+}
+
+const validate = (schema) => (req, res, next) => {
+  const result = schema.safeParse(req.body);
+  if (!result.success) return next(new AppError('Validation failed', 422));
+  req.validated = result.data;
+  next();
+};
+
+const router = require('express').Router();
+
+router.get('/', async (req, res, next) => {
+  try {
+    const result = await query('SELECT * FROM comments WHERE post_id = $1', [req.params.postId]);
+    res.json(result.rows);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post('/', async (req, res, next) => {
+  try {
+    const result = await query(
+      'INSERT INTO comments (post_id, body) VALUES ($1, $2) RETURNING *',
+      [req.params.postId, req.body.body]
+    );
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    next(err);
+  }
+});
+
+module.exports = router;
+    `;
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-s3-'));
+    fs.mkdirSync(path.join(tmpDir, 'db'), { recursive: true });
+    fs.mkdirSync(path.join(tmpDir, 'routes'), { recursive: true });
+    fs.writeFileSync(path.join(tmpDir, 'db', 'comments.js'), goodOutput);
+    fs.writeFileSync(path.join(tmpDir, 'routes', 'comments.js'), goodOutput);
+
+    const result = evaluate.evaluate(tmpDir, [goodOutput], {});
+    assert.ok(result.score >= 0.4, `Expected score >= 0.4, got ${result.score}`);
+    assert.ok(result.success, 'Expected success');
+
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  it('scores bare output low', () => {
+    const bareOutput = `
+app.get('/comments', (req, res) => {
+  res.json([]);
+});
+    `;
+
+    const tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'eval-s3-bad-'));
+    const result = evaluate.evaluate(tmpDir, [bareOutput], {});
+    assert.ok(result.score < 0.5, `Expected score < 0.5, got ${result.score}`);
+
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+});
+
 describe('Scenario 4 — Error Learning Evaluator', () => {
   const evaluate = require('../scenarios/scenario-4-error-learning/evaluate');
 

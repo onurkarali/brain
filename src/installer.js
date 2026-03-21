@@ -37,14 +37,18 @@ const RUNTIMES = {
 const BRAIN_MARKER_START = '<!-- BRAIN-MEMORY-START -->';
 const BRAIN_MARKER_END = '<!-- BRAIN-MEMORY-END -->';
 
-function copyDir(src, dest) {
+function copyDir(src, dest, _depth = 0) {
+  if (_depth > 20) {
+    throw new Error(`copyDir: max depth (20) exceeded at ${src}`);
+  }
   fs.mkdirSync(dest, { recursive: true });
   const entries = fs.readdirSync(src, { withFileTypes: true });
   for (const entry of entries) {
+    if (entry.isSymbolicLink()) continue;
     const srcPath = path.join(src, entry.name);
     const destPath = path.join(dest, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
+      copyDir(srcPath, destPath, _depth + 1);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -182,6 +186,12 @@ function removeCommands(targetDir, config) {
 }
 
 function uninstallForRuntime(runtime, scope) {
+  if (!Object.keys(RUNTIMES).includes(runtime)) {
+    throw new Error(`Unknown runtime: ${runtime}. Valid: ${Object.keys(RUNTIMES).join(', ')}`);
+  }
+  if (scope !== 'global' && scope !== 'local') {
+    throw new Error(`Invalid scope: ${scope}. Must be 'global' or 'local'.`);
+  }
   const config = RUNTIMES[runtime];
   const targetDir = scope === 'global' ? config.globalDir : config.localDir;
   const promptTarget = scope === 'global' ? config.globalDir : '.';
@@ -194,6 +204,12 @@ function uninstallForRuntime(runtime, scope) {
 }
 
 function installForRuntime(runtime, scope) {
+  if (!Object.keys(RUNTIMES).includes(runtime)) {
+    throw new Error(`Unknown runtime: ${runtime}. Valid: ${Object.keys(RUNTIMES).join(', ')}`);
+  }
+  if (scope !== 'global' && scope !== 'local') {
+    throw new Error(`Invalid scope: ${scope}. Must be 'global' or 'local'.`);
+  }
   const config = RUNTIMES[runtime];
   const targetDir = scope === 'global' ? config.globalDir : config.localDir;
   const commandsSrc = path.join(PACKAGE_ROOT, 'commands', 'brain');
@@ -275,6 +291,12 @@ function initializeBrain(overrideBase) {
   fs.writeFileSync(
     path.join(brainDir, '_archived', 'index.json'),
     JSON.stringify({ version: 1, archived_count: 0, memories: {} }, null, 2) + '\n'
+  );
+
+  // Create search-index.json (TF-IDF)
+  fs.writeFileSync(
+    path.join(brainDir, 'search-index.json'),
+    JSON.stringify({ version: 1, doc_count: 0, documents: {}, df: {} }, null, 2) + '\n'
   );
 
   // Load category descriptions from template

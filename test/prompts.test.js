@@ -140,10 +140,10 @@ describe('Prompt source files — session lifecycle sections', () => {
         );
       });
 
-      it('contains recall scoring formula', () => {
+      it('contains recall engine reference', () => {
         assert.ok(
-          content.includes('0.38*relevance'),
-          `${file} missing v4 recall scoring formula`
+          content.includes('brain-recall') || content.includes('recall engine'),
+          `${file} missing recall engine reference`
         );
       });
     });

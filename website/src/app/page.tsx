@@ -215,8 +215,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Benchmark Table */}
-          <div className="glass-card rounded-2xl overflow-hidden max-w-4xl mx-auto">
+          {/* Scenario Summary Table */}
+          <div className="glass-card rounded-2xl overflow-hidden max-w-4xl mx-auto mb-8">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-gray-800/50">
@@ -280,12 +280,47 @@ export default function Home() {
                     —
                   </td>
                 </tr>
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
+                      Error Pattern Learning
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      Past debugging helps fix similar bugs
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                    +4.8%
+                  </td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    —
+                  </td>
+                </tr>
+                <tr className="hover:bg-white/[0.02] transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="text-gray-300 font-medium">
+                      Cross-Agent Consistency
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      All agents follow the same memorized style
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    inconclusive
+                  </td>
+                  <td className="px-6 py-4 text-center text-gray-500">
+                    —
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
 
-          <p className="text-center text-gray-500 text-sm mt-6 max-w-2xl mx-auto">
-            Tested with Claude Code, Gemini CLI, and Codex CLI using cloud APIs.
+          {/* Per-Agent Breakdown */}
+          <BenchmarkAgentDetails />
+
+          <p className="text-center text-gray-500 text-sm mt-8 max-w-2xl mx-auto">
+            Tested with Claude Code (Sonnet), Gemini CLI (Flash), and Codex CLI (GPT) using cloud APIs.
             Each scenario ran 3 times with median values reported.
             Claude Code without Brain Memory failed the preference scenario entirely
             — with Brain Memory, it passed every run.
@@ -698,6 +733,182 @@ function SleepIcon() {
       <path d="M38 20L40 18L42 20" stroke="url(#sleep-grad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M36 26L39 23L42 26" stroke="url(#sleep-grad)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
+  );
+}
+
+/* ─── Benchmark Agent Details ─────────────────────────────────────── */
+
+interface ScenarioResult {
+  name: string;
+  withBrain: number;
+  withoutBrain: number;
+  tokens: { with: string; without: string } | null;
+  time: { with: string; without: string };
+  successNote?: string;
+}
+
+interface AgentResult {
+  subtitle: string;
+  scenarios: ScenarioResult[];
+}
+
+const agentData: Record<string, AgentResult> = {
+  "Claude Code": {
+    subtitle: "Sonnet",
+    scenarios: [
+      { name: "Continuity", withBrain: 0.944, withoutBrain: 0.645, tokens: { with: "223K", without: "211K" }, time: { with: "108s", without: "98s" } },
+      { name: "Consistency", withBrain: 0.400, withoutBrain: 0.400, tokens: { with: "133K", without: "125K" }, time: { with: "103s", without: "89s" } },
+      { name: "Knowledge", withBrain: 1.000, withoutBrain: 0.891, tokens: { with: "511K", without: "312K" }, time: { with: "159s", without: "130s" } },
+      { name: "Error Learning", withBrain: 0.570, withoutBrain: 0.570, tokens: { with: "248K", without: "141K" }, time: { with: "228s", without: "203s" }, successNote: "100% vs 67%" },
+      { name: "Preferences", withBrain: 0.866, withoutBrain: 0.359, tokens: { with: "134K", without: "125K" }, time: { with: "106s", without: "93s" }, successNote: "PASS vs FAIL" },
+    ],
+  },
+  "Gemini CLI": {
+    subtitle: "Flash",
+    scenarios: [
+      { name: "Continuity", withBrain: 0.822, withoutBrain: 0.555, tokens: { with: "34K", without: "16K" }, time: { with: "27s", without: "20s" } },
+      { name: "Consistency", withBrain: 0, withoutBrain: 0, tokens: { with: "—", without: "—" }, time: { with: "—", without: "—" }, successNote: "Timed out" },
+      { name: "Knowledge", withBrain: 0.964, withoutBrain: 0.927, tokens: { with: "47K", without: "23K" }, time: { with: "50s", without: "30s" } },
+      { name: "Error Learning", withBrain: 0.570, withoutBrain: 0.630, tokens: { with: "38K", without: "40K" }, time: { with: "47s", without: "48s" } },
+      { name: "Preferences", withBrain: 0.800, withoutBrain: 0.534, tokens: { with: "42K", without: "23K" }, time: { with: "33s", without: "27s" } },
+    ],
+  },
+  "Codex CLI": {
+    subtitle: "GPT",
+    scenarios: [
+      { name: "Continuity", withBrain: 0.767, withoutBrain: 0.545, tokens: null, time: { with: "101s", without: "69s" } },
+      { name: "Consistency", withBrain: 1.000, withoutBrain: 1.000, tokens: null, time: { with: "89s", without: "48s" } },
+      { name: "Knowledge", withBrain: 0.934, withoutBrain: 0.861, tokens: null, time: { with: "194s", without: "180s" } },
+      { name: "Error Learning", withBrain: 0.773, withoutBrain: 0.570, tokens: null, time: { with: "230s", without: "196s" } },
+      { name: "Preferences", withBrain: 0.934, withoutBrain: 0.666, tokens: null, time: { with: "76s", without: "44s" } },
+    ],
+  },
+};
+
+function BenchmarkAgentDetails() {
+  const [activeAgent, setActiveAgent] = useState("Claude Code");
+  const agents = Object.keys(agentData);
+  const data = agentData[activeAgent];
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <h3 className="text-center text-xl font-semibold text-gray-300 mb-6">
+        Per-Agent Results
+      </h3>
+
+      {/* Agent Tabs */}
+      <div className="flex justify-center gap-2 mb-6">
+        {agents.map((agent) => (
+          <button
+            key={agent}
+            onClick={() => setActiveAgent(agent)}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+              activeAgent === agent
+                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20"
+                : "glass-card text-gray-400 hover:text-gray-200"
+            }`}
+          >
+            {agent}
+            <span className="ml-1.5 text-xs opacity-70">({agentData[agent].subtitle})</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Agent Detail Table */}
+      <div className="glass-card rounded-2xl overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm">
+            <thead>
+              <tr className="border-b border-gray-800/50">
+                <th className="px-4 py-3 text-xs font-semibold text-amber-400 uppercase tracking-wider">
+                  Scenario
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold text-emerald-400 uppercase tracking-wider text-center">
+                  +Brain
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold text-red-400 uppercase tracking-wider text-center">
+                  -Brain
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold text-amber-400 uppercase tracking-wider text-center">
+                  Change
+                </th>
+                {data.scenarios[0].tokens !== null && (
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                    Tokens (+/-)
+                  </th>
+                )}
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                  Time (+/-)
+                </th>
+                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                  Notes
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-800/30">
+              {data.scenarios.map((s) => {
+                const diff = s.withBrain - s.withoutBrain;
+                const pct = s.withoutBrain > 0 ? ((diff / s.withoutBrain) * 100).toFixed(1) : "—";
+                const isPositive = diff > 0;
+                const isNeutral = diff === 0;
+
+                return (
+                  <tr key={s.name} className="hover:bg-white/[0.02] transition-colors">
+                    <td className="px-4 py-3 text-gray-300 font-medium">{s.name}</td>
+                    <td className="px-4 py-3 text-center text-emerald-400 font-mono">
+                      {s.withBrain.toFixed(3)}
+                    </td>
+                    <td className="px-4 py-3 text-center text-gray-400 font-mono">
+                      {s.withoutBrain.toFixed(3)}
+                    </td>
+                    <td
+                      className={`px-4 py-3 text-center font-semibold ${
+                        isPositive
+                          ? "text-emerald-400"
+                          : isNeutral
+                          ? "text-gray-500"
+                          : "text-red-400"
+                      }`}
+                    >
+                      {isNeutral ? "—" : `${isPositive ? "+" : ""}${pct}%`}
+                    </td>
+                    {data.scenarios[0].tokens !== null && (
+                      <td className="px-4 py-3 text-center text-gray-500 font-mono text-xs">
+                        {s.tokens ? `${s.tokens.with} / ${s.tokens.without}` : "n/a"}
+                      </td>
+                    )}
+                    <td className="px-4 py-3 text-center text-gray-500 font-mono text-xs">
+                      {s.time.with} / {s.time.without}
+                    </td>
+                    <td className="px-4 py-3 text-center text-xs">
+                      {s.successNote ? (
+                        <span
+                          className={
+                            s.successNote.includes("FAIL") || s.successNote.includes("Timed")
+                              ? "text-red-400"
+                              : "text-gray-400"
+                          }
+                        >
+                          {s.successNote}
+                        </span>
+                      ) : (
+                        <span className="text-gray-600">—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {activeAgent === "Codex CLI" && (
+        <p className="text-center text-gray-600 text-xs mt-3">
+          Codex CLI does not report token usage in its JSON output.
+        </p>
+      )}
+    </div>
   );
 }
 
