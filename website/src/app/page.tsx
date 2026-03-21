@@ -320,7 +320,7 @@ export default function Home() {
           <BenchmarkAgentDetails />
 
           <p className="text-center text-gray-500 text-sm mt-8 max-w-2xl mx-auto">
-            Tested with Claude Code (Sonnet), Gemini CLI (Flash), and Codex CLI (GPT) using cloud APIs.
+            Tested with Claude Code, Gemini CLI, and Codex CLI using their default cloud models.
             Each scenario ran 3 times with median values reported.
             Claude Code without Brain Memory failed the preference scenario entirely
             — with Brain Memory, it passed every run.
@@ -754,7 +754,7 @@ interface AgentResult {
 
 const agentData: Record<string, AgentResult> = {
   "Claude Code": {
-    subtitle: "Sonnet",
+    subtitle: "claude sonnet",
     scenarios: [
       { name: "Continuity", withBrain: 0.944, withoutBrain: 0.645, tokens: { with: "223K", without: "211K" }, time: { with: "108s", without: "98s" } },
       { name: "Consistency", withBrain: 0.400, withoutBrain: 0.400, tokens: { with: "133K", without: "125K" }, time: { with: "103s", without: "89s" } },
@@ -764,7 +764,7 @@ const agentData: Record<string, AgentResult> = {
     ],
   },
   "Gemini CLI": {
-    subtitle: "Flash",
+    subtitle: "gemini cli default",
     scenarios: [
       { name: "Continuity", withBrain: 0.822, withoutBrain: 0.555, tokens: { with: "34K", without: "16K" }, time: { with: "27s", without: "20s" } },
       { name: "Consistency", withBrain: 0, withoutBrain: 0, tokens: { with: "—", without: "—" }, time: { with: "—", without: "—" }, successNote: "Timed out" },
@@ -774,7 +774,7 @@ const agentData: Record<string, AgentResult> = {
     ],
   },
   "Codex CLI": {
-    subtitle: "GPT",
+    subtitle: "codex cli default",
     scenarios: [
       { name: "Continuity", withBrain: 0.767, withoutBrain: 0.545, tokens: null, time: { with: "101s", without: "69s" } },
       { name: "Consistency", withBrain: 1.000, withoutBrain: 1.000, tokens: null, time: { with: "89s", without: "48s" } },
