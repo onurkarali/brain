@@ -28,6 +28,9 @@ benchmark/results/benchmark_*.json
 benchmark/results/benchmark_*.md
 benchmark/results/scenario-*.json
 
+# Cloudflare Wrangler cache
+.wrangler/
+
 # Local workspace — scratch files, experiments, drafts
 # Organize as: .local/<topic>/<description>/
 .local/
