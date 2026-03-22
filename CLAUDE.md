@@ -116,16 +116,64 @@ If any frequently-used memories (access_count >= 3) have confidence < 0.5:
 
 **The goal is ambient awareness** — know about past decisions, learnings, and preferences without reciting them. When a situation arises where a past memory is relevant, naturally reference it.
 
-## Session End Behavior
+## Ambient Session Tracking
 
-When a session is ending or the user signals they are done, evaluate whether the session contained:
+**Throughout the session, maintain a running mental log of notable events.** This requires no file writes — just internal awareness.
+
+Track these categories as they happen:
 - **Decisions** — Architecture choices, technology selections, trade-off resolutions
 - **Learnings** — New patterns, debugging insights, API discoveries
 - **Insights** — Realizations about the codebase, project, or process
 - **Experiences** — Significant events like incidents, deployments, milestones
 - **Goals** — New objectives discussed or planned
 
-If the session contained meaningful content in any of these categories, suggest:
+**Why this matters:** Without active tracking, you can only evaluate what happened at session end — by which point early-session events may be forgotten or the user may have already left. By tracking as events occur, nothing is lost.
+
+## Periodic Memory Checkpoint
+
+**Every ~10 substantive interactions** (file edits, architecture decisions, debugging breakthroughs, significant discussions — not trivial reads or simple answers), silently evaluate whether your ambient tracking log contains memorizable content.
+
+If notable items have accumulated, append a **brief one-liner** at the end of your next natural response:
+
+```
+🧠 Notable <type(s)> this session — /brain:memorize when ready
+```
+
+**Rules:**
+- **Never interrupt flow** — only append to the end of a response the user is already receiving, never send as a standalone message
+- **At most once per ~10 substantive interactions** — no spamming
+- **Reset the counter** after the user runs `/brain:memorize`
+- **Don't mention if nothing notable** has accumulated
+- **Be specific about types** — say "decisions and learnings" not just "notable content"
+
+## Session End Behavior
+
+When a session is ending (user says bye/thanks/done, conversation wraps up, or you sense the interaction is concluding), perform these steps **in order**:
+
+### Step 1: Save Session Context (ALWAYS — do this first)
+
+**Immediately** append a session summary to `~/.brain/contexts.json`, even for trivial sessions. Context tracking is cheap and provides valuable recall signals for future sessions.
+
+```json
+{
+  "session_id": "<timestamp-based-id>",
+  "started": "<session start ISO timestamp>",
+  "ended": "<session end ISO timestamp>",
+  "project": "<current project name>",
+  "topics": ["<key topics discussed>"],
+  "task_type": "<primary task type>",
+  "memories_created": ["<IDs of memories stored this session>"],
+  "memories_recalled": ["<IDs of memories retrieved this session>"],
+  "notable_unsaved": ["<brief descriptions of notable items NOT yet memorized>"]
+}
+```
+
+Keep only the last 20 session entries. The `notable_unsaved` field preserves what happened even if the user didn't memorize — future sessions can reference it.
+
+### Step 2: Suggest Memorization (if warranted)
+
+If the session contained meaningful content based on your ambient tracking:
+
 ```
 💡 This session contained notable <type(s)>. Would you like to store them as brain memories?
    Run /brain:memorize to capture them before this context is lost.
@@ -135,7 +183,7 @@ If the session contained meaningful content in any of these categories, suggest:
 - Do NOT auto-memorize without user consent
 - Do NOT prompt for trivial sessions (quick fixes, typo corrections, simple questions)
 - Only suggest when there is genuinely valuable context worth preserving
-- Always save session context to `~/.brain/contexts.json` regardless (append a session summary, keep last 20 entries)
+- **Do not wait for explicit session-end signals** — if the conversation appears to be wrapping up, save context proactively
 
 ## When Recalling Memories
 

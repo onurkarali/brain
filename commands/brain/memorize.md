@@ -4,6 +4,16 @@ You are storing a new memory in the Brain Memory system. Memories are filed into
 
 **User input:** $ARGUMENTS
 
+## Efficiency Rules
+
+**CRITICAL — minimize tool call round-trips:**
+- **Plan everything before writing anything.** Steps 1-4 are pure reasoning — no tool calls needed.
+- **Generate all IDs in a single shell call** using: `hexdump -n 3 -e '"%06x\n"' /dev/urandom` (one per memory, chain multiple with `;`).
+- **Skip reads when you already have the file contents in context** (e.g., you just wrote them, or read them earlier this session). Only read `index.json` and `associations.json` if you do NOT already know their current state.
+- **Batch all file writes into a single parallel tool call** — memory files, _meta.json files, index.json, and associations.json should all be written together.
+- **Create directories in a single mkdir -p call** before the write batch.
+- **Target: 3-4 tool call rounds total** — (1) read current state if needed + generate IDs, (2) present proposal to user, (3) write all files, (4) reindex.
+
 ## Steps
 
 ### 1. Determine Memory Content
@@ -67,15 +77,45 @@ Choose the most appropriate path in the `~/.brain/` hierarchy. This is the most 
 
 **If a memory spans categories**, place it in the most relevant one and note the cross-reference in `related` metadata.
 
-### 4. Generate Memory ID
+### 4. Present Proposal for Confirmation
+
+Before writing anything, show the user what you plan to store:
+
+For each proposed memory, display:
+- **Title** and proposed **path**
+- **Type** / **cognitive type** / **strength**
+- **Salience** / **confidence**
+- **Tags**
+- A 1-2 sentence summary
+
+Ask: "Store these memories?" and wait for confirmation. If the user wants changes, adjust before proceeding.
+
+**Skip this step only if** the user explicitly passed detailed $ARGUMENTS that leave no ambiguity about what to store.
+
+### 5. Generate Memory IDs and Prepare Directories
+
+**In a single tool call**, generate all needed random hex IDs and create any new directories:
+
+```bash
+# Generate N IDs (one per memory) and create directories in one call
+hexdump -n 3 -e '"%06x\n"' /dev/urandom; hexdump -n 3 -e '"%06x\n"' /dev/urandom; mkdir -p ~/.brain/path/to/new/dir
+```
 
 Format: `mem_<YYYYMMDD>_<6-char-random-hex>`
 
-Example: `mem_20260213_a3f2c1`
+### 6. Read Current State (only if needed)
 
-### 5. Write Memory File
+**If you already have `index.json` and `associations.json` contents in context from this session, SKIP this step entirely.**
 
-Create the memory file at the determined path with this format:
+Otherwise, read them now in a single parallel call:
+- `~/.brain/index.json`
+- `~/.brain/associations.json`
+
+### 7. Write Everything in One Batch
+
+**Write ALL files in a single parallel tool call:**
+
+**A. Memory files** — one per memory, at the determined paths:
 
 ```markdown
 ---
@@ -116,9 +156,7 @@ encoding_context:
 <How this relates to other knowledge, patterns, or goals — if applicable>
 ```
 
-### 6. Update Index
-
-Read `~/.brain/index.json` and add an entry:
+**B. Updated index.json** — add entries for all new memories:
 
 ```json
 {
@@ -146,21 +184,19 @@ Read `~/.brain/index.json` and add an entry:
 
 Increment `memory_count`. Update `last_updated`.
 
-### 7. Update Associations
+**C. Updated associations.json** — create edges for new memories:
 
-Read `~/.brain/associations.json` and create edges for this memory:
+- **Explicit `related` links:** For each ID in the `related` field, create an edge with weight 0.20 and origin `manual`.
+- **Auto-discovered links:** Scan `index.json` for other memories sharing **2 or more tags** with the new memory. For each match, create an edge with weight 0.10 and origin `tag_overlap`.
+- Use the `reinforceEdge()` function — if an edge already exists, strengthen it via Hebbian reinforcement instead of creating a duplicate.
 
-**A. Explicit `related` links:** For each ID in the `related` field, create an edge with weight 0.20 and origin `manual`.
-
-**B. Auto-discovered links:** Scan `index.json` for other memories sharing **2 or more tags** with this memory. For each match, create an edge with weight 0.10 and origin `tag_overlap`.
-
-Use the `reinforceEdge()` function — if an edge already exists (e.g., the related memory already links back), it will be strengthened via Hebbian reinforcement instead of creating a duplicate.
-
-Write the updated `associations.json`.
+**D. _meta.json files** — for each directory along the path:
+- Increment `memory_count`
+- Add new subcategories to the `subcategories` array if any were created
 
 ### 8. Update Search Index
 
-If `~/.brain/search-index.json` exists, update it so the new memory is discoverable by the recall engine. Run:
+Rebuild the TF-IDF search index so the new memories are discoverable by the recall engine:
 
 ```bash
 node <brain-memory-install-path>/bin/recall.js --reindex
@@ -171,15 +207,7 @@ Or if globally installed:
 brain-recall --reindex
 ```
 
-This rebuilds the TF-IDF search index from all memories, enabling deterministic semantic search via the recall engine.
-
-### 9. Update _meta.json
-
-Update the `_meta.json` in each directory along the path:
-- Increment `memory_count`
-- Add new subcategories to the `subcategories` array if any were created
-
-### 10. Confirm
+### 9. Confirm
 
 Print what was stored:
 - Memory title and ID

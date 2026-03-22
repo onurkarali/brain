@@ -6,9 +6,33 @@ This hook is triggered at the end of a coding session. Its purpose is to prompt 
 
 ## Behavior
 
-### Memory Suggestion
+When a session is ending (user signals they are done, says bye/thanks, or the conversation appears to be wrapping up), perform these steps **in order**:
 
-When a session ends, evaluate whether the session contained any of the following:
+### Step 1: Save Session Context (ALWAYS — do this first)
+
+**Immediately** append a session summary to `.brain/contexts.json`. Do this for ALL sessions, even trivial ones — context tracking is cheap and provides valuable recall signals for future sessions.
+
+```json
+{
+  "session_id": "<timestamp-based-id>",
+  "started": "<session start ISO timestamp>",
+  "ended": "<session end ISO timestamp>",
+  "project": "<current project name>",
+  "topics": ["<key topics discussed>"],
+  "task_type": "<primary task type: debugging|implementing|designing|reviewing|discussing|learning>",
+  "memories_created": ["<IDs of memories stored this session>"],
+  "memories_recalled": ["<IDs of memories retrieved this session>"],
+  "notable_unsaved": ["<brief descriptions of notable items NOT yet memorized>"]
+}
+```
+
+Keep only the last 20 session entries in `contexts.json` to prevent unbounded growth. The `notable_unsaved` field preserves what happened even if the user didn't memorize — future sessions can reference it.
+
+**Do not wait for explicit session-end signals** — if the conversation appears to be wrapping up, save context proactively.
+
+### Step 2: Suggest Memorization (if warranted)
+
+Review the ambient tracking log (maintained throughout the session) for notable:
 
 1. **Decisions** — Architecture choices, technology selections, trade-off resolutions
 2. **Learnings** — New patterns, debugging insights, API discoveries
@@ -23,28 +47,8 @@ If the session contained meaningful content in any of these categories, suggest 
    Run /brain:memorize to capture them before this context is lost.
 ```
 
-### Session Context Capture
-
-If `.brain/contexts.json` exists, append a session summary:
-
-```json
-{
-  "session_id": "<timestamp-based-id>",
-  "started": "<session start ISO timestamp>",
-  "ended": "<session end ISO timestamp>",
-  "project": "<current project name>",
-  "topics": ["<key topics discussed>"],
-  "task_type": "<primary task type: debugging|implementing|designing|reviewing|discussing|learning>",
-  "memories_created": ["<IDs of memories stored this session>"],
-  "memories_recalled": ["<IDs of memories retrieved this session>"]
-}
-```
-
-Keep only the last 20 session entries in `contexts.json` to prevent unbounded growth.
-
 **Rules:**
 - Do NOT auto-memorize without user consent
 - Do NOT prompt for trivial sessions (quick fixes, typo corrections, simple questions)
 - Only suggest when there is genuinely valuable context worth preserving
 - Keep the suggestion brief and non-intrusive
-- Always save session context to `contexts.json` regardless of whether the user memorizes anything

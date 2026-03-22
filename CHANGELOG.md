@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Added
 
+- **Ambient Session Tracking** — agent maintains a running mental log of decisions, learnings, insights, experiences, and goals as they happen throughout the session, so nothing is lost by session end
+- **Periodic Memory Checkpoint** — every ~10 substantive interactions, the agent appends a one-liner nudge (`🧠 Notable <types> — /brain:memorize when ready`) to its next response, never interrupting flow
+- `notable_unsaved` field in session context — preserves what happened even when the user doesn't memorize, so future sessions can reference it
 - `update` subcommand — auto-detects existing installations and refreshes commands + prompt sections (`npx brain-memory@beta update`)
 - `uninstall` subcommand — removes commands and prompt sections, preserves `.brain/` by default (`npx brain-memory@beta uninstall`)
 - `detectInstallations()`, `removePromptSection()`, `removeCommands()`, `uninstallForRuntime()` in `src/installer.js`
@@ -22,6 +25,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ### Changed
 
+- **Session End Behavior** — context save to `contexts.json` is now the first action (was an afterthought), saves unconditionally even for trivial sessions, and proactively detects session endings without waiting for explicit signals
+- **`/brain:memorize` command** — restructured prompt for efficiency: batches all file writes into a single parallel call, skips reads when state is already in context, presents proposed memories for user confirmation before writing, targets 3-4 tool call rounds total (was 6+)
 - `/brain:sync` now uses Git remotes instead of OAuth cloud providers — no more registering OAuth apps
 - Replaced cloud sync dashboard in `/brain:status` with git sync status (remote URL, ahead/behind counts)
 - Extracted installer logic from `bin/install.js` into `src/installer.js` for testability — `bin/install.js` is now a thin CLI wrapper

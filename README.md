@@ -140,9 +140,27 @@ When a session begins and `~/.brain/` exists, the agent automatically:
 
 The agent silently internalizes relevant memories and references them naturally during the session — no information dump.
 
+### Ambient Session Tracking
+
+Throughout the session, the agent maintains a running mental log of notable events — decisions made, things learned, insights realized, significant experiences. This is purely internal awareness with no file writes. It ensures that early-session events aren't forgotten by the time the session ends.
+
+### Periodic Memory Checkpoint
+
+Every ~10 substantive interactions (file edits, architecture decisions, debugging breakthroughs), the agent evaluates whether memorizable content has accumulated. If so, it appends a brief reminder to its next response:
+
+```
+🧠 Notable decisions and learnings this session — /brain:memorize when ready
+```
+
+This never interrupts your flow — it's a one-liner appended to an existing response, at most once per ~10 interactions. The counter resets after you run `/brain:memorize`.
+
 ### Session End
 
-When a session ends, the agent evaluates whether significant decisions, learnings, insights, or experiences occurred. If so, it suggests:
+When a session ends, the agent performs two steps in order:
+
+1. **Saves session context** to `~/.brain/contexts.json` — always, even for trivial sessions. This includes a `notable_unsaved` field listing items you didn't memorize, so future sessions can reference what happened.
+
+2. **Suggests memorization** if the session contained meaningful decisions, learnings, or insights:
 
 ```
 💡 This session contained notable decisions and learnings.
@@ -150,7 +168,7 @@ When a session ends, the agent evaluates whether significant decisions, learning
    Run /brain:memorize to capture them before this context is lost.
 ```
 
-The agent never auto-memorizes without user consent. Session context is always saved to `~/.brain/contexts.json` for context-dependent recall.
+The agent never auto-memorizes without user consent. Context is saved proactively — the agent doesn't wait for an explicit goodbye signal.
 
 ## How It Works
 

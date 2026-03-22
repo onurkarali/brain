@@ -48,3 +48,7 @@ If any frequently-used memories (access_count >= 3) have confidence < 0.5, brief
 **The goal is ambient awareness** — you should know about important past decisions, learnings, and preferences without explicitly reciting them. If a situation arises where a past memory is relevant, naturally reference it.
 
 Keep the status output to 1-3 lines. The user can run `/brain:status` for details.
+
+### Begin Ambient Session Tracking
+
+After outputting the status, begin maintaining a running mental log of notable events (decisions, learnings, insights, experiences, goals) as they happen throughout the session. This is purely internal — no file writes needed. The ambient log feeds the Periodic Memory Checkpoint and Session End context save.

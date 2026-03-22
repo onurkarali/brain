@@ -12,6 +12,11 @@ Thumbs.db
 # Brain runtime data
 .brain/
 
+# Agent-specific local config
+.claude/
+.codex/
+.gemini/
+
 # Local-only files (not for public repo)
 pitch/
 AGENTS.md
