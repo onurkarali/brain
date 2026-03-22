@@ -18,30 +18,28 @@ export default function DocsLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-gray-950">
+    <div className="min-h-screen bg-[#FAF9F7]">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-gray-800 bg-gray-950/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-40 border-b border-[#E8E3DC] bg-[#FAF9F7]/80 backdrop-blur-xl">
         <div className="mx-auto flex h-14 max-w-[90rem] items-center justify-between px-4 sm:px-6">
           {/* Left: Logo + Nav */}
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-amber-500 to-orange-600">
-                <Image
-                  src="/icon.png"
-                  alt="Brain Memory"
-                  width={32}
-                  height={32}
-                  className="rounded-[6px]"
-                />
-              </div>
-              <span className="text-sm font-semibold text-gray-100">
+              <Image
+                src="/icon.png"
+                alt="Brain Memory"
+                width={28}
+                height={28}
+                className="rounded-[6px]"
+              />
+              <span className="text-sm font-semibold text-[#191716]">
                 Brain Memory
               </span>
             </Link>
-            <span className="hidden text-gray-600 sm:inline">/</span>
+            <span className="hidden text-[#D0C9C0] sm:inline">/</span>
             <Link
               href="/docs"
-              className="hidden text-sm text-gray-400 hover:text-gray-200 transition-colors sm:inline"
+              className="hidden text-sm text-[#6B6662] hover:text-[#191716] transition-colors sm:inline"
             >
               Docs
             </Link>
@@ -52,7 +50,7 @@ export default function DocsLayout({
             <SearchDialog />
             <Link
               href="/"
-              className="hidden text-sm text-gray-400 hover:text-gray-200 transition-colors sm:inline"
+              className="hidden text-sm text-[#6B6662] hover:text-[#191716] transition-colors sm:inline"
             >
               Home
             </Link>
@@ -60,7 +58,7 @@ export default function DocsLayout({
               href="https://github.com/onurkarali/brain"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-gray-200 transition-colors"
+              className="text-[#6B6662] hover:text-[#191716] transition-colors"
               aria-label="GitHub"
             >
               <svg
@@ -78,7 +76,7 @@ export default function DocsLayout({
       {/* Body */}
       <div className="mx-auto flex max-w-[90rem] px-4 sm:px-6">
         {/* Desktop Sidebar */}
-        <aside className="hidden lg:block w-64 shrink-0 border-r border-gray-800/50">
+        <aside className="hidden lg:block w-64 shrink-0 border-r border-[#E8E3DC]/50">
           <div className="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-8 pr-6">
             <DocsNav />
           </div>
@@ -87,7 +85,7 @@ export default function DocsLayout({
         {/* Main Content */}
         <main className="min-w-0 flex-1 px-4 py-8 lg:px-12">
           <DocsMobileNav />
-          <article className="prose prose-invert max-w-3xl prose-headings:scroll-mt-20">
+          <article className="prose max-w-3xl prose-headings:scroll-mt-20">
             {children}
           </article>
         </main>

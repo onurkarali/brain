@@ -10,7 +10,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // Headings
     h1: ({ children, ...props }) => (
       <h1
-        className="mb-4 text-3xl font-bold tracking-tight text-gray-50"
+        className="mb-4 text-3xl font-bold tracking-tight text-[#191716]"
         {...props}
       >
         {children}
@@ -19,7 +19,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h2: ({ children, id, ...props }) => (
       <h2
         id={id}
-        className="mb-3 mt-10 text-2xl font-semibold text-gray-100 border-b border-gray-800 pb-2"
+        className="mb-3 mt-10 text-2xl font-semibold text-[#191716] border-b border-[#E8E3DC] pb-2"
         {...props}
       >
         {children}
@@ -28,21 +28,21 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     h3: ({ children, id, ...props }) => (
       <h3
         id={id}
-        className="mb-2 mt-8 text-xl font-semibold text-gray-200"
+        className="mb-2 mt-8 text-xl font-semibold text-[#191716]"
         {...props}
       >
         {children}
       </h3>
     ),
     h4: ({ children, ...props }) => (
-      <h4 className="mb-2 mt-6 text-lg font-semibold text-gray-200" {...props}>
+      <h4 className="mb-2 mt-6 text-lg font-semibold text-[#191716]" {...props}>
         {children}
       </h4>
     ),
 
     // Paragraphs
     p: ({ children, ...props }) => (
-      <p className="mb-4 leading-7 text-gray-300" {...props}>
+      <p className="mb-4 leading-7 text-[#4A4744]" {...props}>
         {children}
       </p>
     ),
@@ -56,7 +56,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
             href={href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
+            className="text-[#B5845A] hover:text-[#9E7048] underline underline-offset-2 transition-colors"
             {...props}
           >
             {children}
@@ -66,7 +66,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       return (
         <Link
           href={href ?? "#"}
-          className="text-amber-400 hover:text-amber-300 underline underline-offset-2 transition-colors"
+          className="text-[#B5845A] hover:text-[#9E7048] underline underline-offset-2 transition-colors"
           {...props}
         >
           {children}
@@ -76,13 +76,13 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
 
     // Lists
     ul: ({ children, ...props }) => (
-      <ul className="mb-4 list-disc pl-6 space-y-1 text-gray-300" {...props}>
+      <ul className="mb-4 list-disc pl-6 space-y-1 text-[#4A4744]" {...props}>
         {children}
       </ul>
     ),
     ol: ({ children, ...props }) => (
       <ol
-        className="mb-4 list-decimal pl-6 space-y-1 text-gray-300"
+        className="mb-4 list-decimal pl-6 space-y-1 text-[#4A4744]"
         {...props}
       >
         {children}
@@ -102,7 +102,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       if (isInline) {
         return (
           <code
-            className="rounded-md bg-gray-800 px-1.5 py-0.5 text-sm text-amber-300 font-mono"
+            className="rounded-md bg-[#F0ECE7] px-1.5 py-0.5 text-sm text-[#9E7048] font-mono"
             {...props}
           >
             {children}
@@ -113,7 +113,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     },
     pre: ({ children, ...props }) => (
       <pre
-        className="mb-4 overflow-x-auto rounded-lg border border-gray-800 bg-gray-900 p-4 text-sm"
+        className="mb-4 overflow-x-auto rounded-lg border border-gray-700 bg-[#1C1917] p-4 text-sm text-gray-200"
         {...props}
       >
         {children}
@@ -123,7 +123,7 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
     // Blockquote
     blockquote: ({ children, ...props }) => (
       <blockquote
-        className="my-4 border-l-2 border-amber-500 pl-4 text-gray-400 italic"
+        className="my-4 border-l-2 border-[#B5845A] pl-4 text-[#6B6662] italic"
         {...props}
       >
         {children}
@@ -142,38 +142,38 @@ export function useMDXComponents(components: MDXComponents): MDXComponents {
       </div>
     ),
     thead: ({ children, ...props }) => (
-      <thead className="border-b border-gray-700 text-gray-300" {...props}>
+      <thead className="border-b border-[#E8E3DC] text-[#191716]" {...props}>
         {children}
       </thead>
     ),
     tbody: ({ children, ...props }) => (
-      <tbody className="divide-y divide-gray-800" {...props}>
+      <tbody className="divide-y divide-[#F0ECE7]" {...props}>
         {children}
       </tbody>
     ),
     tr: ({ children, ...props }) => <tr {...props}>{children}</tr>,
     th: ({ children, ...props }) => (
-      <th className="px-3 py-2 font-semibold text-gray-200" {...props}>
+      <th className="px-3 py-2 font-semibold text-[#191716]" {...props}>
         {children}
       </th>
     ),
     td: ({ children, ...props }) => (
-      <td className="px-3 py-2 text-gray-400" {...props}>
+      <td className="px-3 py-2 text-[#6B6662]" {...props}>
         {children}
       </td>
     ),
 
     // Horizontal rule
-    hr: (props) => <hr className="my-8 border-gray-800" {...props} />,
+    hr: (props) => <hr className="my-8 border-[#E8E3DC]" {...props} />,
 
     // Strong / Em
     strong: ({ children, ...props }) => (
-      <strong className="font-semibold text-gray-100" {...props}>
+      <strong className="font-semibold text-[#191716]" {...props}>
         {children}
       </strong>
     ),
     em: ({ children, ...props }) => (
-      <em className="text-gray-300" {...props}>
+      <em className="text-[#4A4744]" {...props}>
         {children}
       </em>
     ),

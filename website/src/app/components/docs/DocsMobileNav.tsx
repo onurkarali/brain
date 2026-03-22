@@ -10,7 +10,7 @@ export default function DocsMobileNav() {
     <div className="lg:hidden mb-6">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between rounded-lg border border-gray-800 bg-gray-900/50 px-4 py-2.5 text-sm text-gray-300 hover:border-gray-700 transition-colors"
+        className="flex w-full items-center justify-between rounded-lg border border-[#E8E3DC] bg-white px-4 py-2.5 text-sm text-[#6B6662] hover:border-[#D0C9C0] transition-colors"
       >
         <span>Navigation</span>
         <svg
@@ -28,7 +28,7 @@ export default function DocsMobileNav() {
         </svg>
       </button>
       {isOpen && (
-        <div className="mt-2 rounded-lg border border-gray-800 bg-gray-900/80 p-4 backdrop-blur-sm">
+        <div className="mt-2 rounded-lg border border-[#E8E3DC] bg-white p-4">
           <div onClick={() => setIsOpen(false)}>
             <DocsNav />
           </div>

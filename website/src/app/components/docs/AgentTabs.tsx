@@ -30,15 +30,15 @@ export default function AgentTabs({ children }: { children: ReactNode }) {
   return (
     <div className="my-6">
       {/* Tab bar */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#E8E3DC]">
         {agents.map((agent) => (
           <button
             key={agent.id}
             onClick={() => setAgent(agent.id)}
             className={`px-4 py-2 text-sm font-medium transition-colors border-b-2 -mb-px ${
               currentAgent === agent.id
-                ? "border-amber-500 text-amber-400"
-                : "border-transparent text-gray-400 hover:text-gray-200 hover:border-gray-600"
+                ? "border-[#B5845A] text-[#B5845A]"
+                : "border-transparent text-[#6B6662] hover:text-[#191716] hover:border-[#D0C9C0]"
             }`}
           >
             {agent.label}

@@ -26,15 +26,15 @@ export default function CodeBlock({ title, children }: CodeBlockProps) {
     <div className="group relative my-4" data-code-block-active="">
       {/* Header */}
       {title && (
-        <div className="flex items-center justify-between rounded-t-lg border border-b-0 border-gray-700 bg-gray-800/50 px-4 py-2">
-          <span className="text-xs font-medium text-gray-400">{title}</span>
+        <div className="flex items-center justify-between rounded-t-lg border border-b-0 border-[#E8E3DC] bg-[#F0ECE7] px-4 py-2">
+          <span className="text-xs font-medium text-[#6B6662]">{title}</span>
         </div>
       )}
 
       {/* Copy button */}
       <button
         onClick={handleCopy}
-        className={`absolute right-3 top-3 rounded-md border border-gray-700 bg-gray-800 px-2 py-1 text-xs text-gray-400 opacity-0 transition-all hover:bg-gray-700 hover:text-gray-200 group-hover:opacity-100 ${
+        className={`absolute right-3 top-3 rounded-md border border-gray-600 bg-gray-700 px-2 py-1 text-xs text-gray-300 opacity-0 transition-all hover:bg-gray-600 hover:text-gray-100 group-hover:opacity-100 ${
           title ? "top-12" : ""
         }`}
       >

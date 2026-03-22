@@ -8,31 +8,31 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="relative z-10 border-b border-gray-800/50 backdrop-blur-xl">
+    <header className="relative z-10 border-b border-[#E8E3DC]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2">
           <Image
             src="/icon.png"
             alt="Brain Memory"
-            width={40}
-            height={40}
+            width={36}
+            height={36}
             className="rounded-[8px]"
           />
-          <span className="text-xl font-semibold">Brain Memory</span>
+          <span className="text-lg font-semibold text-[#191716]">Brain Memory</span>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
-          <Link href="/docs" className="text-gray-400 hover:text-white transition-colors">
+          <Link href="/docs" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
             Docs
           </Link>
-          <a href="https://github.com/onurkarali/brain" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+          <a href="https://github.com/onurkarali/brain" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
             GitHub
           </a>
-          <a href="https://www.npmjs.com/package/brain-memory" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+          <a href="https://www.npmjs.com/package/brain-memory" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
             npm
           </a>
-          <a href="https://omelas.tech" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+          <a href="https://omelas.tech" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
             Omelas
           </a>
         </div>
@@ -43,19 +43,19 @@ export default function Header() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all ${isMenuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-gray-400 transition-all ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
       </nav>
 
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-gray-800/50 bg-gray-900/95 backdrop-blur-xl">
+        <div className="md:hidden border-t border-[#E8E3DC] bg-white">
           <div className="flex flex-col px-6 py-4 gap-4">
             <Link
               href="/docs"
-              className="text-gray-400 hover:text-white transition-colors py-2"
+              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
               onClick={() => setIsMenuOpen(false)}
             >
               Docs
@@ -64,7 +64,7 @@ export default function Header() {
               href="https://github.com/onurkarali/brain"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors py-2"
+              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
               onClick={() => setIsMenuOpen(false)}
             >
               GitHub
@@ -73,7 +73,7 @@ export default function Header() {
               href="https://www.npmjs.com/package/brain-memory"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors py-2"
+              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
               onClick={() => setIsMenuOpen(false)}
             >
               npm
@@ -82,7 +82,7 @@ export default function Header() {
               href="https://omelas.tech"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-400 hover:text-white transition-colors py-2"
+              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
               onClick={() => setIsMenuOpen(false)}
             >
               Omelas

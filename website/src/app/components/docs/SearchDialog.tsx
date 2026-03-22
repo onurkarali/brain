@@ -107,7 +107,7 @@ export default function SearchDialog() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-gray-700 bg-gray-800/50 px-3 py-1.5 text-sm text-gray-400 transition-colors hover:border-gray-600 hover:text-gray-300"
+        className="flex items-center gap-2 rounded-lg border border-[#E8E3DC] bg-white px-3 py-1.5 text-sm text-[#918C87] transition-colors hover:border-[#D0C9C0] hover:text-[#6B6662]"
       >
         <svg
           className="h-4 w-4"
@@ -123,7 +123,7 @@ export default function SearchDialog() {
           />
         </svg>
         <span className="hidden sm:inline">Search docs...</span>
-        <kbd className="hidden rounded border border-gray-600 bg-gray-700/50 px-1.5 py-0.5 text-xs text-gray-400 sm:inline">
+        <kbd className="hidden rounded border border-[#E8E3DC] bg-[#F0ECE7] px-1.5 py-0.5 text-xs text-[#918C87] sm:inline">
           ⌘K
         </kbd>
       </button>
@@ -134,16 +134,16 @@ export default function SearchDialog() {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm"
         onClick={() => setIsOpen(false)}
       />
 
       {/* Dialog */}
-      <div className="relative w-full max-w-lg rounded-xl border border-gray-700 bg-gray-900 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-xl border border-[#E8E3DC] bg-white shadow-2xl">
         {/* Search Input */}
-        <div className="flex items-center border-b border-gray-700 px-4">
+        <div className="flex items-center border-b border-[#E8E3DC] px-4">
           <svg
-            className="h-5 w-5 text-gray-400"
+            className="h-5 w-5 text-[#918C87]"
             fill="none"
             viewBox="0 0 24 24"
             strokeWidth={2}
@@ -162,9 +162,9 @@ export default function SearchDialog() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent px-3 py-4 text-sm text-gray-100 placeholder-gray-500 outline-none"
+            className="w-full bg-transparent px-3 py-4 text-sm text-[#191716] placeholder-[#918C87] outline-none"
           />
-          <kbd className="rounded border border-gray-600 bg-gray-700/50 px-1.5 py-0.5 text-xs text-gray-400">
+          <kbd className="rounded border border-[#E8E3DC] bg-[#F0ECE7] px-1.5 py-0.5 text-xs text-[#918C87]">
             esc
           </kbd>
         </div>
@@ -179,12 +179,12 @@ export default function SearchDialog() {
                   onMouseEnter={() => setSelectedIndex(index)}
                   className={`flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors ${
                     index === selectedIndex
-                      ? "bg-amber-500/10 text-gray-100"
-                      : "text-gray-400 hover:bg-gray-800/50"
+                      ? "bg-[#B5845A]/10 text-[#191716]"
+                      : "text-[#6B6662] hover:bg-[#F0ECE7]"
                   }`}
                 >
                   <span className="text-sm font-medium">{result.title}</span>
-                  <span className="mt-0.5 text-xs text-gray-500">
+                  <span className="mt-0.5 text-xs text-[#918C87]">
                     {result.category}
                   </span>
                 </button>
@@ -195,14 +195,14 @@ export default function SearchDialog() {
 
         {/* No Results */}
         {query.trim() && results.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">
+          <div className="px-4 py-8 text-center text-sm text-[#918C87]">
             No results found for &quot;{query}&quot;
           </div>
         )}
 
         {/* Empty State */}
         {!query.trim() && (
-          <div className="px-4 py-8 text-center text-sm text-gray-500">
+          <div className="px-4 py-8 text-center text-sm text-[#918C87]">
             Type to search the documentation
           </div>
         )}

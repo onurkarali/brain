@@ -8,14 +8,7 @@ import Footer from "./components/Footer";
 
 export default function Home() {
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Floating Orbs Background */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="floating-orb orb-1" />
-        <div className="floating-orb orb-2" />
-        <div className="floating-orb orb-3" />
-      </div>
-
+    <div className="min-h-screen relative">
       <Header />
 
       <main className="relative z-10 mx-auto max-w-6xl px-6">
@@ -23,12 +16,12 @@ export default function Home() {
         <section className="py-20 lg:py-28">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-center lg:text-left">
-              <h1 className="text-5xl font-bold tracking-tight sm:text-6xl fade-in">
+              <h1 className="text-5xl font-bold tracking-tight sm:text-6xl text-[#191716] fade-in">
                 Memory for
                 <br />
                 <span className="gradient-text-brain">AI Agents</span>
               </h1>
-              <p className="mt-6 text-lg text-gray-400 max-w-xl fade-in fade-in-delay-1">
+              <p className="mt-6 text-lg text-[#6B6662] max-w-xl fade-in fade-in-delay-1">
                 A hierarchical, file-system-based memory system inspired by human
                 neuroscience. Your AI agents remember decisions, learn from
                 experience, and build expertise over time.
@@ -36,7 +29,7 @@ export default function Home() {
               <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start fade-in fade-in-delay-2">
                 <Link
                   href="/docs"
-                  className="btn-primary inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-500 to-orange-600 px-6 py-3 font-semibold text-white hover:shadow-lg hover:shadow-amber-500/30 transition-all hover:-translate-y-0.5"
+                  className="btn-primary inline-flex items-center gap-2 rounded-full bg-[#B5845A] px-6 py-3 font-semibold text-white transition-all"
                 >
                   Get Started
                 </Link>
@@ -67,11 +60,11 @@ export default function Home() {
                 <Image
                   src="/icon.png"
                   alt="Brain Memory"
-                  width={300}
-                  height={300}
-                  className="relative z-10 rounded-[54px]"
+                  width={280}
+                  height={280}
+                  className="relative z-10 rounded-[50px]"
                   style={{
-                    filter: "drop-shadow(0 0 40px rgba(245, 158, 11, 0.3))",
+                    filter: "drop-shadow(0 20px 50px rgba(181, 132, 90, 0.15))",
                   }}
                 />
               </div>
@@ -80,11 +73,11 @@ export default function Home() {
         </section>
 
         {/* Features Grid */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-4">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-4 text-[#191716]">
             <span className="gradient-text">Features</span>
           </h2>
-          <p className="text-center text-gray-400 mb-16 max-w-2xl mx-auto">
+          <p className="text-center text-[#6B6662] mb-16 max-w-2xl mx-auto">
             Neuroscience-inspired memory for your AI coding agents
           </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -132,8 +125,8 @@ export default function Home() {
         </section>
 
         {/* How It Works */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
             <span className="gradient-text">How It Works</span>
           </h2>
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-10">
@@ -148,16 +141,16 @@ export default function Home() {
               "Archive",
             ].map((step, i) => (
               <div key={step} className="flex items-center gap-3 md:gap-4">
-                <div className="lifecycle-step glass-card rounded-full px-4 py-2 text-sm font-medium text-gray-300 whitespace-nowrap">
+                <div className="rounded-full border border-[#E8E3DC] bg-white px-4 py-2 text-sm font-medium text-[#6B6662] whitespace-nowrap">
                   {step}
                 </div>
                 {i < 7 && (
-                  <div className="hidden md:block w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[8px] border-l-amber-500/40" />
+                  <div className="hidden md:block w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[8px] border-l-[#C4956A]/40" />
                 )}
               </div>
             ))}
           </div>
-          <p className="text-center text-gray-400 max-w-3xl mx-auto">
+          <p className="text-center text-[#6B6662] max-w-3xl mx-auto leading-relaxed">
             Memories are created during conversations, stored as Markdown files
             with YAML frontmatter, and naturally decay over time following
             Ebbinghaus&apos;s forgetting curve. When recalled, they strengthen
@@ -170,16 +163,16 @@ export default function Home() {
         </section>
 
         {/* Benchmark Results */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-4">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-4 text-[#191716]">
             <span className="gradient-text">Empirically Proven</span>
           </h2>
-          <p className="text-center text-gray-400 mb-12 max-w-2xl mx-auto">
+          <p className="text-center text-[#6B6662] mb-12 max-w-2xl mx-auto">
             Agents with Brain Memory produce more consistent and more successful
             outputs.{" "}
             <a
               href="https://github.com/onurkarali/brain/tree/main/benchmark"
-              className="text-amber-400 hover:text-amber-300 underline underline-offset-2"
+              className="text-[#B5845A] hover:text-[#9E7048] underline underline-offset-2"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -189,126 +182,126 @@ export default function Home() {
 
           {/* Summary Cards */}
           <div className="grid gap-6 sm:grid-cols-3 mb-10 max-w-4xl mx-auto">
-            <div className="glass-card rounded-2xl p-6 text-center">
+            <div className="clean-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
                 +18.3%
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-[#918C87]">
                 Average Consistency Improvement
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-6 text-center">
+            <div className="clean-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
                 +33.3%
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-[#918C87]">
                 Success Improvement
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-6 text-center">
+            <div className="clean-card rounded-2xl p-6 text-center">
               <div className="text-4xl font-bold gradient-text-brain mb-1">
                 3 / 3
               </div>
-              <div className="text-sm text-gray-400">
+              <div className="text-sm text-[#918C87]">
                 Agents Improved
               </div>
             </div>
           </div>
 
           {/* Scenario Summary Table */}
-          <div className="glass-card rounded-2xl overflow-hidden max-w-4xl mx-auto mb-8">
+          <div className="clean-card rounded-2xl overflow-hidden max-w-4xl mx-auto mb-8">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-800/50">
-                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider">
+                <tr className="border-b border-[#E8E3DC]">
+                  <th className="px-6 py-4 text-sm font-semibold text-[#B5845A] uppercase tracking-wider">
                     Scenario
                   </th>
-                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider text-center">
+                  <th className="px-6 py-4 text-sm font-semibold text-[#B5845A] uppercase tracking-wider text-center">
                     Consistency
                   </th>
-                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider text-center">
+                  <th className="px-6 py-4 text-sm font-semibold text-[#B5845A] uppercase tracking-wider text-center">
                     Success
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/30">
-                <tr className="hover:bg-white/[0.02] transition-colors">
+              <tbody className="divide-y divide-[#F0ECE7]">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
+                    <div className="text-[#191716] font-medium">
                       Preference Retention
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[#918C87]">
                       Preferences applied without re-stating
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                  <td className="px-6 py-4 text-center text-emerald-600 font-semibold">
                     +34.7%
                   </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                  <td className="px-6 py-4 text-center text-emerald-600 font-semibold">
                     +33.3%
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
+                    <div className="text-[#191716] font-medium">
                       Multi-Session Continuity
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[#918C87]">
                       Decisions carry across sessions
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                  <td className="px-6 py-4 text-center text-emerald-600 font-semibold">
                     +26.2%
                   </td>
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-6 py-4 text-center text-[#918C87]">
                     —
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
+                    <div className="text-[#191716] font-medium">
                       Accumulated Knowledge
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[#918C87]">
                       5 sessions of learning improve output
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                  <td className="px-6 py-4 text-center text-emerald-600 font-semibold">
                     +7.3%
                   </td>
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-6 py-4 text-center text-[#918C87]">
                     —
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
+                    <div className="text-[#191716] font-medium">
                       Error Pattern Learning
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[#918C87]">
                       Past debugging helps fix similar bugs
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-emerald-400 font-semibold">
+                  <td className="px-6 py-4 text-center text-emerald-600 font-semibold">
                     +4.8%
                   </td>
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-6 py-4 text-center text-[#918C87]">
                     —
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
                   <td className="px-6 py-4">
-                    <div className="text-gray-300 font-medium">
+                    <div className="text-[#191716] font-medium">
                       Cross-Agent Consistency
                     </div>
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-[#918C87]">
                       All agents follow the same memorized style
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-6 py-4 text-center text-[#918C87]">
                     inconclusive
                   </td>
-                  <td className="px-6 py-4 text-center text-gray-500">
+                  <td className="px-6 py-4 text-center text-[#918C87]">
                     —
                   </td>
                 </tr>
@@ -319,7 +312,7 @@ export default function Home() {
           {/* Per-Agent Breakdown */}
           <BenchmarkAgentDetails />
 
-          <p className="text-center text-gray-500 text-sm mt-8 max-w-2xl mx-auto">
+          <p className="text-center text-[#918C87] text-sm mt-8 max-w-2xl mx-auto">
             Tested with Claude Code, Gemini CLI, and Codex CLI using their default cloud models.
             Each scenario ran 3 times with median values reported.
             Claude Code without Brain Memory failed the preference scenario entirely
@@ -328,69 +321,69 @@ export default function Home() {
         </section>
 
         {/* Neuroscience Foundations */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
             <span className="gradient-text">Grounded in Neuroscience</span>
           </h2>
-          <div className="glass-card rounded-2xl overflow-hidden max-w-4xl mx-auto">
+          <div className="clean-card rounded-2xl overflow-hidden max-w-4xl mx-auto">
             <table className="w-full text-left">
               <thead>
-                <tr className="border-b border-gray-800/50">
-                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider">
+                <tr className="border-b border-[#E8E3DC]">
+                  <th className="px-6 py-4 text-sm font-semibold text-[#B5845A] uppercase tracking-wider">
                     Brain Mechanism
                   </th>
-                  <th className="px-6 py-4 text-sm font-semibold text-amber-400 uppercase tracking-wider">
+                  <th className="px-6 py-4 text-sm font-semibold text-[#B5845A] uppercase tracking-wider">
                     Implementation
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-800/30">
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+              <tbody className="divide-y divide-[#F0ECE7]">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Spreading activation
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Recalling memory A automatically surfaces linked memories B
                     and C
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Hebbian learning
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Memories recalled together strengthen mutual links
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Context-dependent recall
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Memories encoded in similar context score higher
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Spacing effect
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Longer recall intervals produce larger strength boosts
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Ebbinghaus decay
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Exponential forgetting with per-memory decay rates
                   </td>
                 </tr>
-                <tr className="hover:bg-white/[0.02] transition-colors">
-                  <td className="px-6 py-4 text-gray-300 font-medium">
+                <tr className="hover:bg-[#FAF9F7] transition-colors">
+                  <td className="px-6 py-4 text-[#191716] font-medium">
                     Synaptic homeostasis
                   </td>
-                  <td className="px-6 py-4 text-gray-400">
+                  <td className="px-6 py-4 text-[#6B6662]">
                     Global strength downscaling during sleep prevents inflation
                   </td>
                 </tr>
@@ -400,40 +393,40 @@ export default function Home() {
         </section>
 
         {/* Compatibility Section */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
+          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
             <span className="gradient-text">One Brain, Every Agent</span>
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            <div className="glass-card rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-semibold text-white mb-1">
+            <div className="clean-card rounded-2xl p-6 text-center">
+              <h3 className="text-xl font-semibold text-[#191716] mb-1">
                 Claude Code
               </h3>
-              <p className="text-sm text-gray-500 mb-4">Anthropic</p>
-              <div className="rounded-lg bg-gray-900/80 border border-gray-800 px-4 py-3">
-                <code className="text-sm text-amber-400 font-mono">
+              <p className="text-sm text-[#918C87] mb-4">Anthropic</p>
+              <div className="rounded-lg bg-[#1C1917] px-4 py-3">
+                <code className="text-sm text-[#C4956A] font-mono">
                   npx brain-memory --claude --global
                 </code>
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-semibold text-white mb-1">
+            <div className="clean-card rounded-2xl p-6 text-center">
+              <h3 className="text-xl font-semibold text-[#191716] mb-1">
                 Gemini CLI
               </h3>
-              <p className="text-sm text-gray-500 mb-4">Google</p>
-              <div className="rounded-lg bg-gray-900/80 border border-gray-800 px-4 py-3">
-                <code className="text-sm text-amber-400 font-mono">
+              <p className="text-sm text-[#918C87] mb-4">Google</p>
+              <div className="rounded-lg bg-[#1C1917] px-4 py-3">
+                <code className="text-sm text-[#C4956A] font-mono">
                   npx brain-memory --gemini --global
                 </code>
               </div>
             </div>
-            <div className="glass-card rounded-2xl p-6 text-center">
-              <h3 className="text-xl font-semibold text-white mb-1">
+            <div className="clean-card rounded-2xl p-6 text-center">
+              <h3 className="text-xl font-semibold text-[#191716] mb-1">
                 OpenAI Codex CLI
               </h3>
-              <p className="text-sm text-gray-500 mb-4">OpenAI</p>
-              <div className="rounded-lg bg-gray-900/80 border border-gray-800 px-4 py-3">
-                <code className="text-sm text-amber-400 font-mono">
+              <p className="text-sm text-[#918C87] mb-4">OpenAI</p>
+              <div className="rounded-lg bg-[#1C1917] px-4 py-3">
+                <code className="text-sm text-[#C4956A] font-mono">
                   npx brain-memory --codex --global
                 </code>
               </div>
@@ -442,17 +435,17 @@ export default function Home() {
         </section>
 
         {/* Quick Start */}
-        <section className="border-t border-gray-800/50 py-20 lg:py-28">
+        <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6">
+            <h2 className="text-3xl font-bold mb-6 text-[#191716]">
               <span className="gradient-text">Quick Start</span>
             </h2>
-            <div className="glass-card rounded-2xl p-8 mb-6">
-              <code className="text-xl sm:text-2xl font-mono text-amber-400">
+            <div className="clean-card rounded-2xl p-8 mb-6">
+              <code className="text-xl sm:text-2xl font-mono text-[#B5845A]">
                 npx brain-memory@beta
               </code>
             </div>
-            <p className="text-gray-400">
+            <p className="text-[#6B6662]">
               The interactive installer asks which runtime(s) to configure and
               whether to install globally or for the current project.
             </p>
@@ -479,11 +472,11 @@ function CopyButton() {
   return (
     <button
       onClick={handleCopy}
-      className="inline-flex items-center gap-2 rounded-full bg-gray-800/80 backdrop-blur px-6 py-3 font-semibold text-white border border-gray-700 hover:bg-gray-700/80 transition-all hover:-translate-y-0.5"
+      className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-[#191716] border border-[#E8E3DC] hover:border-[#D0C9C0] transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
-      <code className="text-sm font-mono text-amber-400">npx brain-memory</code>
+      <code className="text-sm font-mono text-[#B5845A]">npx brain-memory</code>
       <svg
-        className="h-4 w-4 text-gray-400"
+        className="h-4 w-4 text-[#918C87]"
         viewBox="0 0 24 24"
         fill="none"
         stroke="currentColor"
@@ -514,10 +507,10 @@ function FeatureCard({
   description: string;
 }) {
   return (
-    <div className="feature-card glass-card rounded-2xl p-6 group">
+    <div className="feature-card rounded-2xl p-6 group">
       <div className="feature-icon mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold text-white mb-2">{title}</h3>
-      <p className="text-gray-400">{description}</p>
+      <h3 className="text-lg font-semibold text-[#191716] mb-2">{title}</h3>
+      <p className="text-[#6B6662] text-sm leading-relaxed">{description}</p>
     </div>
   );
 }
@@ -529,8 +522,8 @@ function HierarchicalIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="hierarchical-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#d97706" />
+          <stop offset="0%" stopColor="#B5845A" />
+          <stop offset="100%" stopColor="#9E7048" />
         </linearGradient>
       </defs>
       <path
@@ -558,8 +551,8 @@ function DecayIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="decay-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#ea580c" />
-          <stop offset="100%" stopColor="#c2410c" />
+          <stop offset="0%" stopColor="#A07858" />
+          <stop offset="100%" stopColor="#887060" />
         </linearGradient>
       </defs>
       <path
@@ -590,8 +583,8 @@ function AssociativeIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="associative-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#10b981" />
-          <stop offset="100%" stopColor="#059669" />
+          <stop offset="0%" stopColor="#7A9A7A" />
+          <stop offset="100%" stopColor="#5C7C5C" />
         </linearGradient>
       </defs>
       <line x1="16" y1="14" x2="32" y2="14" stroke="url(#associative-grad)" strokeWidth="2" opacity="0.6" />
@@ -615,8 +608,8 @@ function SpacedIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="spaced-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#14b8a6" />
-          <stop offset="100%" stopColor="#0d9488" />
+          <stop offset="0%" stopColor="#7A8AA0" />
+          <stop offset="100%" stopColor="#5C6C82" />
         </linearGradient>
       </defs>
       <circle cx="24" cy="24" r="18" stroke="url(#spaced-grad)" strokeWidth="3" fill="none" />
@@ -650,8 +643,8 @@ function CognitiveIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="cognitive-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#2563eb" />
+          <stop offset="0%" stopColor="#A08078" />
+          <stop offset="100%" stopColor="#887068" />
         </linearGradient>
       </defs>
       <path
@@ -694,8 +687,8 @@ function CrossAgentIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="crossagent-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#06b6d4" />
-          <stop offset="100%" stopColor="#0891b2" />
+          <stop offset="0%" stopColor="#788898" />
+          <stop offset="100%" stopColor="#5A6A7A" />
         </linearGradient>
       </defs>
       <rect x="4" y="6" width="16" height="12" rx="2" stroke="url(#crossagent-grad)" strokeWidth="2.5" fill="none" />
@@ -715,8 +708,8 @@ function SleepIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sleep-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#f59e0b" />
-          <stop offset="100%" stopColor="#10b981" />
+          <stop offset="0%" stopColor="#B5845A" />
+          <stop offset="100%" stopColor="#7A9A7A" />
         </linearGradient>
       </defs>
       <path
@@ -792,7 +785,7 @@ function BenchmarkAgentDetails() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h3 className="text-center text-xl font-semibold text-gray-300 mb-6">
+      <h3 className="text-center text-xl font-semibold text-[#191716] mb-6">
         Per-Agent Results
       </h3>
 
@@ -804,8 +797,8 @@ function BenchmarkAgentDetails() {
             onClick={() => setActiveAgent(agent)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
               activeAgent === agent
-                ? "bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/20"
-                : "glass-card text-gray-400 hover:text-gray-200"
+                ? "bg-[#B5845A] text-white shadow-sm"
+                : "bg-white border border-[#E8E3DC] text-[#6B6662] hover:text-[#191716] hover:border-[#D0C9C0]"
             }`}
           >
             {agent}
@@ -815,37 +808,37 @@ function BenchmarkAgentDetails() {
       </div>
 
       {/* Agent Detail Table */}
-      <div className="glass-card rounded-2xl overflow-hidden">
+      <div className="clean-card rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-gray-800/50">
-                <th className="px-4 py-3 text-xs font-semibold text-amber-400 uppercase tracking-wider">
+              <tr className="border-b border-[#E8E3DC]">
+                <th className="px-4 py-3 text-xs font-semibold text-[#B5845A] uppercase tracking-wider">
                   Scenario
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-emerald-400 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-xs font-semibold text-emerald-600 uppercase tracking-wider text-center">
                   +Brain
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-red-400 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-xs font-semibold text-red-500 uppercase tracking-wider text-center">
                   -Brain
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-amber-400 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-xs font-semibold text-[#B5845A] uppercase tracking-wider text-center">
                   Change
                 </th>
                 {data.scenarios[0].tokens !== null && (
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                  <th className="px-4 py-3 text-xs font-semibold text-[#918C87] uppercase tracking-wider text-center">
                     Tokens (+/-)
                   </th>
                 )}
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-xs font-semibold text-[#918C87] uppercase tracking-wider text-center">
                   Time (+/-)
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-xs font-semibold text-[#918C87] uppercase tracking-wider text-center">
                   Notes
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-800/30">
+            <tbody className="divide-y divide-[#F0ECE7]">
               {data.scenarios.map((s) => {
                 const diff = s.withBrain - s.withoutBrain;
                 const pct = s.withoutBrain > 0 ? ((diff / s.withoutBrain) * 100).toFixed(1) : "—";
@@ -853,31 +846,31 @@ function BenchmarkAgentDetails() {
                 const isNeutral = diff === 0;
 
                 return (
-                  <tr key={s.name} className="hover:bg-white/[0.02] transition-colors">
-                    <td className="px-4 py-3 text-gray-300 font-medium">{s.name}</td>
-                    <td className="px-4 py-3 text-center text-emerald-400 font-mono">
+                  <tr key={s.name} className="hover:bg-[#FAF9F7] transition-colors">
+                    <td className="px-4 py-3 text-[#191716] font-medium">{s.name}</td>
+                    <td className="px-4 py-3 text-center text-emerald-600 font-mono">
                       {s.withBrain.toFixed(3)}
                     </td>
-                    <td className="px-4 py-3 text-center text-gray-400 font-mono">
+                    <td className="px-4 py-3 text-center text-[#6B6662] font-mono">
                       {s.withoutBrain.toFixed(3)}
                     </td>
                     <td
                       className={`px-4 py-3 text-center font-semibold ${
                         isPositive
-                          ? "text-emerald-400"
+                          ? "text-emerald-600"
                           : isNeutral
-                          ? "text-gray-500"
-                          : "text-red-400"
+                          ? "text-[#918C87]"
+                          : "text-red-500"
                       }`}
                     >
                       {isNeutral ? "—" : `${isPositive ? "+" : ""}${pct}%`}
                     </td>
                     {data.scenarios[0].tokens !== null && (
-                      <td className="px-4 py-3 text-center text-gray-500 font-mono text-xs">
+                      <td className="px-4 py-3 text-center text-[#918C87] font-mono text-xs">
                         {s.tokens ? `${s.tokens.with} / ${s.tokens.without}` : "n/a"}
                       </td>
                     )}
-                    <td className="px-4 py-3 text-center text-gray-500 font-mono text-xs">
+                    <td className="px-4 py-3 text-center text-[#918C87] font-mono text-xs">
                       {s.time.with} / {s.time.without}
                     </td>
                     <td className="px-4 py-3 text-center text-xs">
@@ -885,14 +878,14 @@ function BenchmarkAgentDetails() {
                         <span
                           className={
                             s.successNote.includes("FAIL") || s.successNote.includes("Timed")
-                              ? "text-red-400"
-                              : "text-gray-400"
+                              ? "text-red-500"
+                              : "text-[#6B6662]"
                           }
                         >
                           {s.successNote}
                         </span>
                       ) : (
-                        <span className="text-gray-600">—</span>
+                        <span className="text-[#D0C9C0]">—</span>
                       )}
                     </td>
                   </tr>
@@ -904,7 +897,7 @@ function BenchmarkAgentDetails() {
       </div>
 
       {activeAgent === "Codex CLI" && (
-        <p className="text-center text-gray-600 text-xs mt-3">
+        <p className="text-center text-[#918C87] text-xs mt-3">
           Codex CLI does not report token usage in its JSON output.
         </p>
       )}
@@ -917,8 +910,8 @@ function SyncIcon() {
     <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="sync-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#3b82f6" />
-          <stop offset="100%" stopColor="#06b6d4" />
+          <stop offset="0%" stopColor="#7A8AA0" />
+          <stop offset="100%" stopColor="#5C6C82" />
         </linearGradient>
       </defs>
       <path

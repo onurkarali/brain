@@ -68,7 +68,7 @@ export default function TableOfContents() {
   return (
     <nav className="hidden xl:block w-56 shrink-0">
       <div className="sticky top-24">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#918C87]">
           On this page
         </h4>
         <ul className="space-y-1.5">
@@ -80,8 +80,8 @@ export default function TableOfContents() {
                   heading.level === 3 ? "pl-3" : ""
                 } ${
                   activeId === heading.id
-                    ? "text-amber-400 font-medium"
-                    : "text-gray-500 hover:text-gray-300"
+                    ? "text-[#B5845A] font-medium"
+                    : "text-[#918C87] hover:text-[#191716]"
                 }`}
               >
                 {heading.text}

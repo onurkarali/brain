@@ -19,7 +19,7 @@ export default function DocsNav() {
     <nav className="space-y-6">
       {categories.map((category) => (
         <div key={category.name}>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
+          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#918C87]">
             {category.name}
           </h3>
           <ul className="space-y-1">
@@ -29,8 +29,8 @@ export default function DocsNav() {
                   href={page.href}
                   className={`block rounded-md px-3 py-1.5 text-sm transition-colors ${
                     isActive(page.href)
-                      ? "bg-amber-500/10 text-amber-400 font-medium"
-                      : "text-gray-400 hover:bg-gray-800/50 hover:text-gray-200"
+                      ? "bg-[#B5845A]/10 text-[#B5845A] font-medium"
+                      : "text-[#6B6662] hover:bg-[#F0ECE7] hover:text-[#191716]"
                   }`}
                 >
                   {page.title}

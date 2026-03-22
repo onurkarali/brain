@@ -8,24 +8,24 @@ interface CalloutProps {
 
 const styles = {
   info: {
-    container: "border-blue-500/30 bg-blue-500/5",
-    icon: "text-blue-400",
-    title: "text-blue-400",
+    container: "border-blue-400/30 bg-blue-50",
+    icon: "text-blue-500",
+    title: "text-blue-600",
   },
   warning: {
-    container: "border-yellow-500/30 bg-yellow-500/5",
-    icon: "text-yellow-400",
-    title: "text-yellow-400",
+    container: "border-yellow-400/30 bg-yellow-50",
+    icon: "text-yellow-500",
+    title: "text-yellow-600",
   },
   tip: {
-    container: "border-emerald-500/30 bg-emerald-500/5",
-    icon: "text-emerald-400",
-    title: "text-emerald-400",
+    container: "border-emerald-400/30 bg-emerald-50",
+    icon: "text-emerald-500",
+    title: "text-emerald-600",
   },
   danger: {
-    container: "border-red-500/30 bg-red-500/5",
-    icon: "text-red-400",
-    title: "text-red-400",
+    container: "border-red-400/30 bg-red-50",
+    icon: "text-red-500",
+    title: "text-red-600",
   },
 };
 
@@ -77,7 +77,7 @@ export default function Callout({
           {displayTitle}
         </span>
       </div>
-      <div className="text-sm text-gray-300 [&>p]:mb-0">{children}</div>
+      <div className="text-sm text-[#4A4744] [&>p]:mb-0">{children}</div>
     </div>
   );
 }
