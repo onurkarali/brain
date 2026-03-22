@@ -6,10 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.1.0-beta.11] - 2026-03-22
+
 ### Added
 
 - **Ambient Session Tracking** — agent maintains a running mental log of decisions, learnings, insights, experiences, and goals as they happen throughout the session, so nothing is lost by session end
-- **Periodic Memory Checkpoint** — every ~10 substantive interactions, the agent appends a one-liner nudge (`🧠 Notable <types> — /brain:memorize when ready`) to its next response, never interrupting flow
+- **Periodic Memory Checkpoint** — every ~10 substantive interactions, the agent appends a one-liner nudge to its next response, never interrupting flow
 - `notable_unsaved` field in session context — preserves what happened even when the user doesn't memorize, so future sessions can reference it
 - `update` subcommand — auto-detects existing installations and refreshes commands + prompt sections (`npx brain-memory@beta update`)
 - `uninstall` subcommand — removes commands and prompt sections, preserves `.brain/` by default (`npx brain-memory@beta uninstall`)
@@ -22,6 +24,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - `src/git-sync.js` — Git sync engine using `child_process.execFileSync`
 - `src/export-import.js` — single-file export/import with encryption and merge mode
 - 74 new tests: installer unit tests (`test/install.test.js`) and prompt content validation + integration tests (`test/prompts.test.js`)
+- Deterministic recall engine with TF-IDF scoring (`bin/recall.js`, `bin/reinforce.js`)
+- Benchmark suite with automated multi-agent evaluation
+- Website with full documentation site at brainmemory.work
 
 ### Changed
 
@@ -33,6 +38,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Hook files (`hooks/session-start.md`, `hooks/session-end.md`) now have reference notes clarifying that behavior is delivered through prompt injection, not native hook events
 - Removed dead `settingsFile` config from runtime definitions — it was never used
 - Removed `hooks/` from npm package since they are internal reference docs, not user-facing files
+- Website redesigned with clean light theme and updated icon
 
 ### Removed
 
@@ -44,6 +50,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - Git sync repo isolation — the `git()` helper in `src/git-sync.js` only used `cwd` to scope commands; if `.brain/.sync/repo/.git` didn't exist yet (first push or failed init), git would walk up the directory tree and commit brain files to the parent project repo. Now uses `GIT_DIR` + `GIT_WORK_TREE` env vars to fully isolate the sync repo.
 - Session lifecycle was dead code — session-start/end hook instructions were defined in `hooks/` but never installed or referenced anywhere. The prompt injected into CLAUDE.md/GEMINI.md/AGENTS.md only had a weak one-liner about memorization. Now all three prompt files contain full "Session Start Behavior" and "Session End Behavior" sections with automatic brain context loading, review queue alerts, and end-of-session memorization suggestions.
 - `release:beta` npm script now automatically updates the `latest` dist-tag after publishing
+- Accurate model names in benchmark results
 
 ## [0.1.0-beta.4] - 2026-03-03
 
