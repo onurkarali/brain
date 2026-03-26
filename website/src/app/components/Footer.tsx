@@ -15,7 +15,7 @@ export default function Footer() {
               className="rounded-[6px]"
             />
             <span className="text-[#918C87] text-sm">
-              &copy; {new Date().getFullYear()} Omelas. All rights reserved.
+              &copy; {new Date().getFullYear()} Omelas
             </span>
           </div>
           <div className="flex flex-wrap justify-center gap-4 sm:gap-6">

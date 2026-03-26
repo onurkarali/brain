@@ -22,9 +22,9 @@ export default function Home() {
                 <span className="gradient-text-brain">AI Agents</span>
               </h1>
               <p className="mt-6 text-lg text-[#6B6662] max-w-xl fade-in fade-in-delay-1">
-                A hierarchical, file-system-based memory system inspired by human
-                neuroscience. Your AI agents remember decisions, learn from
-                experience, and build expertise over time.
+                Hierarchical, file-system-based memory inspired by human
+                neuroscience. Agents remember decisions, learn from experience,
+                and build expertise across sessions.
               </p>
               <div className="mt-10 flex flex-wrap gap-4 justify-center lg:justify-start fade-in fade-in-delay-2">
                 <Link
@@ -74,60 +74,57 @@ export default function Home() {
 
         {/* Features Grid */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-4 text-[#191716]">
-            <span className="gradient-text">Features</span>
+          <h2 className="text-center text-2xl font-semibold mb-12 text-[#191716]">
+            Features
           </h2>
-          <p className="text-center text-[#6B6662] mb-16 max-w-2xl mx-auto">
-            Neuroscience-inspired memory for your AI coding agents
-          </p>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <FeatureCard
               icon={<HierarchicalIcon />}
               title="Hierarchical Memory"
-              description="The directory tree IS the semantic structure. Browse your AI's brain in any file explorer."
+              description="The directory tree is the semantic structure. Browsable in any file explorer."
             />
             <FeatureCard
               icon={<DecayIcon />}
               title="Strength & Decay"
-              description="Memories naturally fade over time. Recalled memories get stronger. Just like your brain."
+              description="Memories fade over time. Recalled memories strengthen. Ebbinghaus forgetting curve."
             />
             <FeatureCard
               icon={<AssociativeIcon />}
               title="Associative Network"
-              description="Memories link to each other with weighted connections. Recalling one activates related ones."
+              description="Weighted connections between memories. Recalling one activates related ones."
             />
             <FeatureCard
               icon={<SpacedIcon />}
               title="Spaced Reinforcement"
-              description="Longer intervals between recalls produce larger boosts. Cramming yields diminishing returns."
+              description="Longer recall intervals produce larger boosts. Diminishing returns on cramming."
             />
             <FeatureCard
               icon={<CognitiveIcon />}
               title="Cognitive Types"
-              description="Episodic, semantic, and procedural memories each decay differently, mirroring human cognition."
+              description="Episodic, semantic, and procedural memories each decay differently."
             />
             <FeatureCard
               icon={<CrossAgentIcon />}
               title="Cross-Agent"
-              description="Works with Claude Code, Gemini CLI, and OpenAI Codex CLI. One brain, all agents."
+              description="Claude Code, Gemini CLI, and Codex CLI. One brain, all agents."
             />
             <FeatureCard
               icon={<SleepIcon />}
               title="Sleep & Consolidation"
-              description="A 9-phase maintenance cycle inspired by how brains reorganize during sleep."
+              description="9-phase maintenance cycle: replay, consolidation, pruning, reorganization."
             />
             <FeatureCard
               icon={<SyncIcon />}
               title="Portable Sync"
-              description="Sync memories across devices via Git remote or encrypted export/import."
+              description="Git remote or encrypted export/import across devices."
             />
           </div>
         </section>
 
         {/* How It Works */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
-            <span className="gradient-text">How It Works</span>
+          <h2 className="text-center text-2xl font-semibold mb-12 text-[#191716]">
+            How it works
           </h2>
           <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-10">
             {[
@@ -150,33 +147,27 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p className="text-center text-[#6B6662] max-w-3xl mx-auto leading-relaxed">
-            Memories are created during conversations, stored as Markdown files
-            with YAML frontmatter, and naturally decay over time following
-            Ebbinghaus&apos;s forgetting curve. When recalled, they strengthen
-            through spaced reinforcement. Periodic review sessions surface
-            fading memories, and the sleep cycle consolidates, reorganizes, and
-            prunes the entire memory graph -- just like the human brain during
-            REM sleep. Weak or irrelevant memories are archived, keeping the
-            active brain lean and relevant.
+          <p className="text-center text-[#6B6662] max-w-3xl mx-auto leading-relaxed text-sm">
+            Memories are Markdown files with YAML frontmatter. They decay following
+            Ebbinghaus&apos;s forgetting curve, strengthen through spaced recall, and
+            consolidate during sleep cycles. Weak memories are archived automatically.
           </p>
         </section>
 
         {/* Benchmark Results */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-4 text-[#191716]">
-            <span className="gradient-text">Empirically Proven</span>
+          <h2 className="text-center text-2xl font-semibold mb-4 text-[#191716]">
+            Benchmark results
           </h2>
-          <p className="text-center text-[#6B6662] mb-12 max-w-2xl mx-auto">
-            Agents with Brain Memory produce more consistent and more successful
-            outputs.{" "}
+          <p className="text-center text-[#6B6662] mb-12 max-w-2xl mx-auto text-sm">
+            Tested across Claude Code, Gemini CLI, and Codex CLI.{" "}
             <a
               href="https://github.com/onurkarali/brain/tree/main/benchmark"
               className="text-[#B5845A] hover:text-[#9E7048] underline underline-offset-2"
               target="_blank"
               rel="noopener noreferrer"
             >
-              See the benchmark
+              Full methodology
             </a>
           </p>
 
@@ -313,17 +304,15 @@ export default function Home() {
           <BenchmarkAgentDetails />
 
           <p className="text-center text-[#918C87] text-sm mt-8 max-w-2xl mx-auto">
-            Tested with Claude Code, Gemini CLI, and Codex CLI using their default cloud models.
             Each scenario ran 3 times with median values reported.
-            Claude Code without Brain Memory failed the preference scenario entirely
-            — with Brain Memory, it passed every run.
+            Default cloud models used for all agents.
           </p>
         </section>
 
         {/* Neuroscience Foundations */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
-            <span className="gradient-text">Grounded in Neuroscience</span>
+          <h2 className="text-center text-2xl font-semibold mb-12 text-[#191716]">
+            Neuroscience foundations
           </h2>
           <div className="clean-card rounded-2xl overflow-hidden max-w-4xl mx-auto">
             <table className="w-full text-left">
@@ -394,8 +383,8 @@ export default function Home() {
 
         {/* Compatibility Section */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
-          <h2 className="text-center text-3xl font-bold mb-12 text-[#191716]">
-            <span className="gradient-text">One Brain, Every Agent</span>
+          <h2 className="text-center text-2xl font-semibold mb-12 text-[#191716]">
+            Compatibility
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div className="clean-card rounded-2xl p-6 text-center">
@@ -437,17 +426,17 @@ export default function Home() {
         {/* Quick Start */}
         <section className="border-t border-[#E8E3DC] py-20 lg:py-28">
           <div className="text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold mb-6 text-[#191716]">
-              <span className="gradient-text">Quick Start</span>
+            <h2 className="text-2xl font-semibold mb-6 text-[#191716]">
+              Quick start
             </h2>
             <div className="clean-card rounded-2xl p-8 mb-6">
               <code className="text-xl sm:text-2xl font-mono text-[#B5845A]">
                 npx brain-memory@beta
               </code>
             </div>
-            <p className="text-[#6B6662]">
-              The interactive installer asks which runtime(s) to configure and
-              whether to install globally or for the current project.
+            <p className="text-[#6B6662] text-sm">
+              Interactive installer. Configures the selected runtime(s) globally
+              or per-project.
             </p>
           </div>
         </section>
