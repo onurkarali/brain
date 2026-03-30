@@ -35,6 +35,9 @@ export default function Header() {
           <a href="https://omelas.tech" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
             Omelas
           </a>
+          <a href="https://app.brainmemory.work/login" className="inline-flex items-center gap-2 rounded-full bg-[#B5845A] px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-[#9E7048] hover:shadow-md">
+            Login
+          </a>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -86,6 +89,13 @@ export default function Header() {
               onClick={() => setIsMenuOpen(false)}
             >
               Omelas
+            </a>
+            <a
+              href="https://app.brainmemory.work/login"
+              className="inline-flex items-center justify-center rounded-full bg-[#B5845A] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#9E7048]"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Login
             </a>
           </div>
         </div>
