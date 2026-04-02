@@ -11,6 +11,15 @@ You are managing synchronization for the Brain Memory system. This enables manua
 ## Subcommands
 
 Parse the user's input to determine the subcommand:
+
+**Cloud Sync (Brain Cloud API):**
+- `cloud login [--api-url URL]` → Authenticate via device code flow
+- `cloud push` → Upload ~/.brain/ to Brain Cloud
+- `cloud pull` → Download from Brain Cloud to ~/.brain/
+- `cloud status` → Show cloud connection info
+- `cloud logout` → Clear stored credentials
+
+**Git Sync (any Git remote):**
 - `setup <url>` → Configure a Git remote for sync
 - `push` → Commit and push local changes to remote
 - `pull` → Fetch and merge remote changes to local
@@ -20,6 +29,138 @@ Parse the user's input to determine the subcommand:
 - `disconnect` → Remove sync configuration
 
 If no subcommand is given, show available subcommands.
+
+---
+
+## `/brain:sync cloud login [--api-url URL]`
+
+### Steps
+
+1. **Check if already logged in:**
+   - Read `~/.brain/.cloud/config.json` via `readConfig()` from `src/cloud-sync.js`.
+   - If already connected, show current user and ask if they want to re-authenticate.
+
+2. **Start device code flow:**
+   - Run `brain-cloud login` (or call `login()` from `src/cloud-sync.js`).
+   - This calls `POST /auth/device/request` and returns a user code + verification URL.
+
+3. **Display instructions to user:**
+   ```
+   🔐 Brain Cloud Login
+   
+   Open this URL in your browser:
+     <verify_url>
+   
+   Your code: <user_code>
+   
+   Waiting for approval...
+   ```
+
+4. **Wait for approval:**
+   - The CLI polls `POST /auth/device/poll` every 5 seconds.
+   - Once approved, tokens are saved to `~/.brain/.cloud/config.json`.
+
+5. **Show result:**
+   ```
+   ✓ Logged in as <email>
+     Brain ID: <brain_id>
+     API: <api_url>
+   ```
+
+---
+
+## `/brain:sync cloud push`
+
+### Steps
+
+1. **Check logged in.** If not, suggest `cloud login`.
+
+2. **Preview:**
+   - Count local files in `~/.brain/` (excluding `.sync`, `.cloud`, `_archived`).
+   - Show estimated size.
+   ```
+   📤 Cloud Push Preview:
+     Local files: <count>
+     Destination: <api_url>
+   ```
+
+3. **Ask for confirmation.**
+
+4. **Execute push:**
+   - Run `brain-cloud push` (or call `push()` from `src/cloud-sync.js`).
+   - This packs `~/.brain/` into a tar.gz and uploads via `PUT /api/brains/{id}/sync`.
+   - Show result:
+   ```
+   ✓ Push complete!
+     Size:     <size>
+     Files:    <count>
+     Checksum: <checksum>
+   ```
+
+---
+
+## `/brain:sync cloud pull`
+
+### Steps
+
+1. **Check logged in.**
+
+2. **Warn about overwrite:**
+   ```
+   📥 Cloud Pull Preview:
+     Source: <api_url>
+     ⚠️  This will overwrite local files with the cloud version.
+   ```
+
+3. **Ask for confirmation.**
+
+4. **Execute pull:**
+   - Run `brain-cloud pull` (or call `pull()` from `src/cloud-sync.js`).
+   - Downloads tar.gz from `GET /api/brains/{id}/sync` and extracts to `~/.brain/`.
+   - Show result:
+   ```
+   ✓ Pull complete!
+     Size:     <size>
+   ```
+
+5. **Rebuild index:**
+   - After pull, run the index manager to rebuild `~/.brain/index.json`.
+
+---
+
+## `/brain:sync cloud status`
+
+### Steps
+
+1. **Read cloud config** using `readConfig()` from `src/cloud-sync.js`.
+
+2. **Fetch live status** (if connected) by calling `status()` from `src/cloud-sync.js`.
+
+3. **Display dashboard:**
+   ```
+   ☁️  Brain Cloud Status
+   ─────────────────────────
+   API:          <api_url or "not connected">
+   User:         <email>
+   Brain ID:     <brain_id>
+   Cloud Size:   <size>
+   Cloud Files:  <count>
+   Last Push:    <timestamp or "never">
+   Last Pull:    <timestamp or "never">
+   Last Synced:  <timestamp or "never">
+   Connected:    <timestamp>
+   ```
+
+---
+
+## `/brain:sync cloud logout`
+
+### Steps
+
+1. **Show current connection** (API URL, email).
+2. **Ask for confirmation:** "This will clear your stored credentials. Cloud data will NOT be deleted."
+3. **Remove `~/.brain/.cloud/` directory.**
+4. **Confirm:** "✓ Logged out. Cloud data is untouched."
 
 ---
 
@@ -214,9 +355,13 @@ If no subcommand is given, show available subcommands.
 
 ## Key Implementation Notes
 
+- **Cloud sync engine**: `src/cloud-sync.js` — API client for Brain Cloud
+- **Cloud CLI**: `bin/cloud-sync.js` — installed as `brain-cloud` command
+- **Cloud config**: stored in `~/.brain/.cloud/config.json` (tokens, brain ID, API URL)
+- **Cloud protocol**: tar.gz archives uploaded/downloaded via REST API
 - Git sync engine: `src/git-sync.js`
 - Export/import: `src/export-import.js`
 - Crypto utilities: `src/crypto.js`
-- Sync config stored in `~/.brain/.sync/config.json` (local only)
+- Git sync config stored in `~/.brain/.sync/config.json` (local only)
 - Hidden git repo at `~/.brain/.sync/repo/` — never interferes with the project's own git
-- All git operations use `execFileSync` — no npm dependencies
+- All operations use Node.js built-ins only — no npm runtime dependencies

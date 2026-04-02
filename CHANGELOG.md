@@ -6,6 +6,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.1.0-beta.12] - 2026-04-02
+
+### Added
+
+- **Brain Cloud sync** — push/pull `~/.brain/` to Brain Cloud (`api.brainmemory.work`) via new cloud subcommands
+- `brain-cloud` CLI (`bin/cloud-sync.js`) — device code auth, push, pull, status, logout
+- `src/cloud-sync.js` — zero-dependency cloud sync engine using Node.js built-in `https` module
+- Device code OAuth flow for CLI authentication (`/brain:sync cloud login`)
+- Tar.gz archive-based sync protocol for efficient uploads/downloads
+- Token management with automatic refresh
+- Cloud subcommands in `/brain:sync`: `cloud login`, `cloud push`, `cloud pull`, `cloud status`, `cloud logout`
+
 ## [0.1.0-beta.11] - 2026-03-22
 
 ### Added

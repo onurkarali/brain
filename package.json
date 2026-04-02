@@ -26,7 +26,8 @@
   "bin": {
     "brain-memory": "bin/install.js",
     "brain-recall": "bin/recall.js",
-    "brain-reinforce": "bin/reinforce.js"
+    "brain-reinforce": "bin/reinforce.js",
+    "brain-cloud": "bin/cloud-sync.js"
   },
   "files": [
     "assets/",

@@ -10,7 +10,7 @@ export const metadata = {
 
 # /brain:sync
 
-Sync your brain across devices using Git remote push/pull or file-based export/import. Supports optional AES-256-GCM encryption.
+Sync your brain across devices using Brain Cloud, Git remote push/pull, or file-based export/import.
 
 ## Usage
 
@@ -18,7 +18,14 @@ Sync your brain across devices using Git remote push/pull or file-based export/i
 /brain:sync [subcommand]
 ```
 
-**Subcommands:**
+**Cloud Sync (Brain Cloud):**
+- `cloud login` — Authenticate via device code flow
+- `cloud push` — Upload `~/.brain/` to Brain Cloud
+- `cloud pull` — Download from Brain Cloud
+- `cloud status` — Show connection info
+- `cloud logout` — Clear stored credentials
+
+**Git Sync:**
 - `setup <url>` — Configure a Git remote for syncing
 - `push` — Push local changes to the remote
 - `pull` — Pull remote changes to local
@@ -27,9 +34,62 @@ Sync your brain across devices using Git remote push/pull or file-based export/i
 - `import <path>` — Import a brain from a portable file
 - `disconnect` — Remove sync configuration
 
+## Brain Cloud Sync
+
+The easiest way to sync — no Git setup required. Push your brain to [Brain Cloud](https://app.brainmemory.work) and pull it on any device.
+
+### Setup
+
+<Steps>
+  <Step title="Create an account">
+    Sign up at [app.brainmemory.work](https://app.brainmemory.work/register).
+  </Step>
+
+  <Step title="Log in from your terminal">
+    ```
+    /brain:sync cloud login
+    ```
+
+    This starts a device code flow — open the displayed URL in your browser and approve the login.
+  </Step>
+
+  <Step title="Push your brain">
+    ```
+    /brain:sync cloud push
+    ```
+
+    Your entire `~/.brain/` directory is packed into a tar.gz archive and uploaded.
+  </Step>
+
+  <Step title="Pull on another machine">
+    On your other machine, after installing Brain Memory:
+
+    ```
+    /brain:sync cloud login
+    /brain:sync cloud pull
+    ```
+  </Step>
+</Steps>
+
+### CLI
+
+Brain Cloud also installs a `brain-cloud` CLI for use outside of agent sessions:
+
+```bash
+brain-cloud login          # Authenticate
+brain-cloud push           # Upload ~/.brain/
+brain-cloud pull           # Download to ~/.brain/
+brain-cloud status         # Show connection info
+brain-cloud logout         # Clear credentials
+```
+
+### Cloud State
+
+Cloud credentials are stored locally at `~/.brain/.cloud/config.json` and never pushed to any remote.
+
 ## Git Remote Sync
 
-The recommended way to sync your brain across machines. Uses your existing Git/SSH authentication — no additional credentials needed.
+For users who prefer to self-host or want version history. Uses your existing Git/SSH authentication — no additional credentials needed.
 
 ### Setup
 
@@ -162,16 +222,17 @@ This directory is local-only and is never pushed to the remote.
 
 | Feature | Description |
 |---|---|
+| **Brain Cloud** | One-command sync via `cloud push` / `cloud pull` — no Git required |
 | **Manual sync** | No background watchers, no auto-sync. You control when data moves. |
-| **Optional encryption** | AES-256-GCM with user-provided passphrase |
+| **Optional encryption** | AES-256-GCM with user-provided passphrase (Git sync and export) |
 | **Merge mode** | Import only newer files, preserving local changes |
-| **Zero dependencies** | Uses Node.js built-in `crypto` and the system `git` binary |
-| **Any Git host** | Works with GitHub, GitLab, Codeberg, or self-hosted servers |
+| **Zero dependencies** | Uses Node.js built-in `https` and `crypto`, and the system `git` and `tar` binaries |
+| **Any Git host** | Git sync works with GitHub, GitLab, Codeberg, or self-hosted servers |
 
 <Callout type="tip">
-  For most users, Git remote sync is the best approach — it gives you version history, conflict resolution, and works with your existing SSH keys. Use export/import for air-gapped or one-off transfers.
+  For most users, Brain Cloud is the easiest option — sign up, log in, push. Use Git sync if you want version history and full self-hosting. Use export/import for air-gapped or one-off transfers.
 </Callout>
 
 <Callout type="info">
-  Sync is always manual by design. Your brain data never leaves your machine unless you explicitly push or export. There are no background processes, no webhooks, and no cloud dependencies.
+  Sync is always manual by design. Your brain data never leaves your machine unless you explicitly push or export.
 </Callout>

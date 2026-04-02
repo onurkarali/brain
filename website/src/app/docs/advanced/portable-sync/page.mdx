@@ -10,7 +10,19 @@ export const metadata = {
 
 # Portable Sync
 
-Brain Memory provides two ways to sync memories across devices. Both are manual, privacy-respecting, and require no cloud services beyond what you already use.
+Brain Memory provides three ways to sync memories across devices. All are manual and privacy-respecting.
+
+## Brain Cloud
+
+The simplest option — push your brain to [Brain Cloud](https://app.brainmemory.work) and pull it on any device. No Git setup required.
+
+```
+/brain:sync cloud login    # One-time device code auth
+/brain:sync cloud push     # Upload
+/brain:sync cloud pull     # Download
+```
+
+Free tier includes 20MB of storage. See the [sync command docs](/docs/commands/sync) for full details.
 
 ## Git Remote Sync
 
@@ -184,7 +196,7 @@ Sync uses only:
 - **Node.js built-in `crypto`** — for AES-256-GCM encryption
 - **Node.js built-in `zlib`** — for compression during export
 
-No additional packages, no OAuth apps, no cloud APIs.
+No additional packages or OAuth apps needed for Git sync and export/import. Cloud sync uses the Brain Cloud API.
 
 <Callout type="tip">
   For teams, each person should have their own brain and their own private remote repository. Brain Memory is designed for individual use — team knowledge sharing is better handled through documentation, not shared brains.
