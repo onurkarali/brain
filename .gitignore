@@ -34,3 +34,4 @@ benchmark/results/scenario-*.json
 # Local workspace — scratch files, experiments, drafts
 # Organize as: .local/<topic>/<description>/
 .local/
+benchmark/brain.code-workspace
