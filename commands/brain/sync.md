@@ -4,9 +4,10 @@ You are managing synchronization for the Brain Memory system. This enables manua
 
 **CRITICAL RULES:**
 - NEVER auto-sync — always require explicit user action
-- NEVER silently overwrite files — always show a preview first
+- NEVER silently overwrite files on pull/import — show a preview first
 - NEVER display passphrases or secrets in output
-- ALWAYS show what will change before executing push/pull/import
+- Push operations execute immediately (no confirmation) — the user said "push"
+- Pull/import operations warn before overwriting local data
 
 ## Subcommands
 
@@ -71,24 +72,21 @@ If no subcommand is given, show available subcommands.
 
 ## `/brain:sync cloud push`
 
+### Prerequisites
+
+Check that `brain-cloud` CLI is available. If not:
+```
+brain-cloud is not installed. Install it with:
+  npm install -g brain-memory
+```
+Then return — do not attempt the push.
+
 ### Steps
 
 1. **Check logged in.** If not, suggest `cloud login`.
 
-2. **Preview:**
-   - Count local files in `~/.brain/` (excluding `.sync`, `.cloud`, `_archived`).
-   - Show estimated size.
-   ```
-   📤 Cloud Push Preview:
-     Local files: <count>
-     Destination: <api_url>
-   ```
-
-3. **Ask for confirmation.**
-
-4. **Execute push:**
-   - Run `brain-cloud push` (or call `push()` from `src/cloud-sync.js`).
-   - This packs `~/.brain/` into a tar.gz and uploads via `PUT /api/brains/{id}/sync`.
+2. **Execute push immediately** — no confirmation needed:
+   - Run `brain-cloud push`.
    - Show result:
    ```
    ✓ Push complete!
@@ -208,19 +206,9 @@ If no subcommand is given, show available subcommands.
 
 1. **Check sync is configured.** If not, suggest `/brain:sync setup`.
 
-2. **Preview changes:**
-   - Call `getStatus()` from `src/git-sync.js`.
-   - Display summary:
-   ```
-   📤 Push Preview:
-     Remote:  <remote-url>
-     Status:  <ahead> commits ahead, <behind> behind
-   ```
-   - If behind > 0, warn: "Remote has newer changes. Consider pulling first."
+2. **Check status** via `getStatus()`. If behind > 0, warn: "Remote has newer changes. Consider pulling first." and stop.
 
-3. **Ask for confirmation** before proceeding.
-
-4. **Execute push:**
+3. **Execute push immediately** — no confirmation needed:
    - If encryption is enabled, ask for passphrase.
    - Call `push()` from `src/git-sync.js`.
    - Show result:

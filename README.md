@@ -110,7 +110,7 @@ Then append the contents of the corresponding prompt file to your agent's instru
 | Command | Description |
 |---------|-------------|
 | `/brain:init` | Initialize `~/.brain/` directory structure with default categories |
-| `/brain:memorize [topic]` | Store memories from current session context |
+| `/brain:memorize [topic] [--sync]` | Store memories from current session context (add `--sync` to auto-push) |
 | `/brain:remember [query]` | Recall relevant memories with spreading activation and context matching |
 | `/brain:review [scope]` | Spaced repetition review session for due memories |
 | `/brain:explore [category]` | Browse the brain hierarchy with visual tree view |

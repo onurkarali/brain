@@ -62,10 +62,10 @@ describe('Prompt source files — session lifecycle sections', () => {
         );
       });
 
-      it('contains IMPORTANT directive for automatic execution', () => {
+      it('contains session start directive', () => {
         assert.ok(
-          content.includes('IMPORTANT: Perform these steps automatically'),
-          `${file} missing automatic execution directive`
+          content.includes('Perform these steps at session start'),
+          `${file} missing session start directive`
         );
       });
 
@@ -76,16 +76,16 @@ describe('Prompt source files — session lifecycle sections', () => {
         );
       });
 
-      it('contains review queue check instruction', () => {
+      it('contains review queue mention', () => {
         assert.ok(
-          content.includes('review-queue.json'),
-          `${file} missing review queue check`
+          content.includes('due for review'),
+          `${file} missing review queue mention`
         );
       });
 
       it('contains low-confidence alert instruction', () => {
         assert.ok(
-          content.includes('low confidence'),
+          content.includes('low-confidence'),
           `${file} missing low-confidence alert`
         );
       });

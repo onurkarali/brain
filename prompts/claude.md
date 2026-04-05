@@ -62,37 +62,28 @@ Memories store their encoding context (project, topics, task type). During recal
 
 ## Session Start Behavior
 
-**IMPORTANT: Perform these steps automatically at the beginning of every session.**
+**Perform these steps at session start — but keep it lightweight.**
 
 If `~/.brain/index.json` exists:
 
-1. **Read the index** to understand the current brain state (memory count, categories)
-2. **Run the recall engine** to deterministically identify relevant memories for the current project:
+1. **Read the index** to get memory count and categories
+2. **Run the recall engine only if the current project has relevant memories:**
    ```bash
    brain-recall --context --project "<current project>" --top 5
    ```
-   This uses TF-IDF + the v4 scoring formula to find the most relevant memories — no guessing.
-3. **Silently internalize** the returned memories so you can reference them naturally during the session — do NOT dump memory contents
-4. **Check review queue** — read `~/.brain/review-queue.json` if it exists for memories due for review
-5. **Output a brief status** (1-3 lines):
+   If the project is unrelated to any stored memories (e.g., a new project with no matching context), skip the recall and just show the count. Don't waste cycles searching when nothing will match.
+3. **Silently internalize** results — do NOT dump memory contents
+4. **Output a single status line:**
 
-If memories are due for review:
 ```
-🧠 Brain active — <N> memories loaded (<M> in current project context)
-📋 <X> memories due for review — run /brain:review
+🧠 Brain active — <N> memories (<M> in project context)
 ```
 
-Otherwise:
-```
-🧠 Brain active — <N> memories loaded (<M> in current project context)
-```
+Only add extra lines if actionable:
+- `📋 <X> due for review` — if review queue has items
+- `⚠️ <N> low-confidence memories used frequently` — if access_count ≥ 3 and confidence < 0.5
 
-If any frequently-used memories (access_count >= 3) have confidence < 0.5:
-```
-⚠️ <N> frequently-used memories have low confidence — consider verifying
-```
-
-**The goal is ambient awareness** — know about past decisions, learnings, and preferences without reciting them. When a situation arises where a past memory is relevant, naturally reference it.
+**The goal is ambient awareness** — know about past decisions, learnings, and preferences without reciting them. Reference them naturally when relevant.
 
 ## Ambient Session Tracking
 

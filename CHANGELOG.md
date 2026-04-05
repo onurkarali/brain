@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 
 ## [Unreleased]
 
+## [0.1.0-beta.13] - 2026-04-05
+
+### Added
+
+- **`brain-memorize` CLI** — single-command memory storage that handles all plumbing (ID generation, strength/decay computation, directory creation, file writing, index updates, association edges, search index) in one call
+- `--sync` flag for `/brain:memorize` — auto-pushes to cloud/git after storing, eliminating the separate `/brain:sync push` step
+- `--confirm` flag for `/brain:memorize` — opt-in confirmation (was previously the default)
+- Install check for `brain-cloud` CLI in `/brain:sync cloud push` — shows install instructions if missing
+
+### Changed
+
+- **`/brain:memorize` is now non-interactive by default** — stores immediately and shows results after, instead of asking "Store these memories?" before writing. The user said "memorize" — they want it stored.
+- **`/brain:sync push` and `cloud push` are now non-interactive** — execute immediately without confirmation, matching `git push` behavior. Pull/import still confirm before overwriting.
+- **Memorize prompt reduced ~60%** — AI classifies memories and pipes JSON to `brain-memorize` CLI instead of manually writing files. One bash call instead of 6-8 tool calls.
+- **Session start behavior made lightweight** — recall engine skips if project has no matching memories, output condensed to single status line, removed heavy mandatory phrasing
+
 ## [0.1.0-beta.12] - 2026-04-02
 
 ### Added
