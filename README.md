@@ -51,35 +51,42 @@ Existing AI memory solutions use flat databases with tag-based retrieval. Brain 
 ## Install
 
 ```bash
-npx brain-memory@beta
+npm install -g brain-memory@beta
+brain-memory
 ```
 
-The interactive installer asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
+The first command installs the package globally — this gives you both the interactive setup wizard and the CLI tools (`brain-memorize`, `brain-recall`, `brain-reinforce`) that agents rely on for deterministic scoring.
+
+The second command runs the setup wizard, which asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
 
 ### Non-interactive
 
 ```bash
-npx brain-memory --claude --global        # Claude Code, global
-npx brain-memory --gemini --local         # Gemini CLI, local project
-npx brain-memory --codex --global         # OpenAI Codex CLI, global
-npx brain-memory --all --global           # All runtimes, global
+brain-memory --claude --global        # Claude Code, global
+brain-memory --gemini --local         # Gemini CLI, local project
+brain-memory --codex --global         # OpenAI Codex CLI, global
+brain-memory --all --global           # All runtimes, global
 ```
 
 ### Update
 
 ```bash
-npx brain-memory@beta update
+npm install -g brain-memory@beta
+brain-memory update
 ```
 
-Auto-detects installed runtimes and refreshes commands + prompt sections. Target specific runtimes with `--claude`, `--gemini`, `--openai`, or `--all`.
+The first command updates the package and CLI tools. The second command refreshes the slash command prompts for your installed runtimes. Target specific runtimes with `--claude`, `--gemini`, `--openai`, or `--all`.
+
+> **Why not `npx`?** `npx` runs the setup wizard in a temporary directory that is discarded after execution. The CLI tools (`brain-memorize`, `brain-recall`, `brain-reinforce`) won't be available in your PATH, which means agents will fall back to less reliable manual file operations. Always use `npm install -g` to ensure everything works correctly.
 
 ### Uninstall
 
 ```bash
-npx brain-memory@beta uninstall
+brain-memory uninstall
+npm uninstall -g brain-memory
 ```
 
-Removes commands and prompt sections. Your `~/.brain/` directory (memories) is preserved by default. Add `--delete-data` to remove it too. Use `--yes` to skip confirmation prompts.
+The first command removes slash commands and prompt sections from your agent configs. The second removes the package and CLI tools. Your `~/.brain/` directory (memories) is preserved by default. Add `--delete-data` to the uninstall command to remove it too. Use `--yes` to skip confirmation prompts.
 
 ### Manual Install
 

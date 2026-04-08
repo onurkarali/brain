@@ -10,18 +10,25 @@ export const metadata = {
 
 # Installation
 
-Brain Memory can be installed with a single command. The interactive installer configures everything for your preferred AI agent(s).
+Brain Memory is installed in two steps: a global npm install (for CLI tools) and a setup wizard (for slash commands and prompts).
 
-## Quick Install
+## Install
 
 ```bash
-npx brain-memory@beta
+npm install -g brain-memory@beta
+brain-memory
 ```
 
-The interactive installer asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
+The first command installs the package globally — this gives you both the interactive setup wizard and the CLI tools (`brain-memorize`, `brain-recall`, `brain-reinforce`) that agents rely on for deterministic scoring.
+
+The second command runs the setup wizard, which asks which runtime(s) to configure (Claude Code, Gemini CLI, OpenAI Codex CLI, or all) and whether to install globally or for the current project.
 
 <Callout type="tip">
   Global installation is recommended for most users. It makes your brain available across all projects with any supported agent.
+</Callout>
+
+<Callout type="warning">
+  **Do not use `npx brain-memory`** for installation. `npx` runs the setup wizard in a temporary directory that is discarded after execution. The CLI tools (`brain-memorize`, `brain-recall`, `brain-reinforce`) won't be available in your PATH, and agents will fall back to less reliable manual file operations. Always use `npm install -g`.
 </Callout>
 
 ## Non-Interactive Install
@@ -29,17 +36,19 @@ The interactive installer asks which runtime(s) to configure (Claude Code, Gemin
 Pass flags to skip the interactive prompts:
 
 ```bash
+npm install -g brain-memory@beta
+
 # Claude Code, global
-npx brain-memory@beta --claude --global
+brain-memory --claude --global
 
 # Gemini CLI, local project
-npx brain-memory@beta --gemini --local
+brain-memory --gemini --local
 
 # OpenAI Codex CLI, global
-npx brain-memory@beta --codex --global
+brain-memory --codex --global
 
 # All runtimes, global
-npx brain-memory@beta --all --global
+brain-memory --all --global
 ```
 
 ## What Gets Installed
@@ -94,16 +103,17 @@ cat prompts/openai.md >> ~/.codex/AGENTS.md
 To update Brain Memory to the latest version:
 
 ```bash
-npx brain-memory@beta update
+npm install -g brain-memory@beta
+brain-memory update
 ```
 
-This auto-detects installed runtimes and refreshes commands and prompt sections. You can target specific runtimes:
+The first command updates the package and CLI tools. The second command refreshes the slash command prompts for your installed runtimes. You can target specific runtimes:
 
 ```bash
-npx brain-memory@beta update --claude
-npx brain-memory@beta update --gemini
-npx brain-memory@beta update --codex
-npx brain-memory@beta update --all
+brain-memory update --claude
+brain-memory update --gemini
+brain-memory update --codex
+brain-memory update --all
 ```
 
 <Callout type="info">
@@ -113,21 +123,22 @@ npx brain-memory@beta update --all
 ## Uninstall
 
 ```bash
-npx brain-memory@beta uninstall
+brain-memory uninstall
+npm uninstall -g brain-memory
 ```
 
-This removes commands and prompt sections from your agent's configuration. Your `~/.brain/` directory (all your memories) is preserved by default.
+The first command removes slash commands and prompt sections from your agent's configuration. The second removes the package and CLI tools. Your `~/.brain/` directory (all your memories) is preserved by default.
 
 To also delete your memories:
 
 ```bash
-npx brain-memory@beta uninstall --delete-data
+brain-memory uninstall --delete-data
 ```
 
 To skip confirmation prompts:
 
 ```bash
-npx brain-memory@beta uninstall --yes
+brain-memory uninstall --yes
 ```
 
 <Callout type="warning">

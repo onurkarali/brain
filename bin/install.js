@@ -187,7 +187,7 @@ async function runUpdate(flags) {
 
   if (detections.length === 0) {
     console.log('  No existing brain-memory installations found.\n');
-    console.log('  To install, run: npx brain-memory@beta');
+    console.log('  To install, run: npm install -g brain-memory@beta && brain-memory');
     if (filterRuntimes.length > 0) {
       console.log(`  (Searched for: ${filterRuntimes.join(', ')})`);
     }

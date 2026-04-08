@@ -41,8 +41,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/), and this
 - **Ambient Session Tracking** — agent maintains a running mental log of decisions, learnings, insights, experiences, and goals as they happen throughout the session, so nothing is lost by session end
 - **Periodic Memory Checkpoint** — every ~10 substantive interactions, the agent appends a one-liner nudge to its next response, never interrupting flow
 - `notable_unsaved` field in session context — preserves what happened even when the user doesn't memorize, so future sessions can reference it
-- `update` subcommand — auto-detects existing installations and refreshes commands + prompt sections (`npx brain-memory@beta update`)
-- `uninstall` subcommand — removes commands and prompt sections, preserves `.brain/` by default (`npx brain-memory@beta uninstall`)
+- `update` subcommand — auto-detects existing installations and refreshes commands + prompt sections (`brain-memory update`)
+- `uninstall` subcommand — removes commands and prompt sections, preserves `.brain/` by default (`brain-memory uninstall`)
 - `detectInstallations()`, `removePromptSection()`, `removeCommands()`, `uninstallForRuntime()` in `src/installer.js`
 - Subcommand routing in `bin/install.js` with `parseArgs()`, `runUpdate()`, `runUninstall()`
 - 20 new tests covering detection, removal, and round-trip install/uninstall

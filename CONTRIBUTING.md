@@ -25,7 +25,7 @@ Tests use Node.js built-in test runner (`node --test`) with no external test fra
 ```
 brain/
 ├── bin/
-│   └── install.js              # Interactive installer (npx brain-memory)
+│   └── install.js              # Interactive setup wizard (brain-memory)
 ├── commands/
 │   └── brain/                  # Slash command definitions
 │       ├── init.md

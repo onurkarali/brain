@@ -394,7 +394,7 @@ export default function Home() {
               <p className="text-sm text-[#918C87] mb-4">Anthropic</p>
               <div className="rounded-lg bg-[#1C1917] px-4 py-3">
                 <code className="text-sm text-[#C4956A] font-mono">
-                  npx brain-memory --claude --global
+                  brain-memory --claude --global
                 </code>
               </div>
             </div>
@@ -405,7 +405,7 @@ export default function Home() {
               <p className="text-sm text-[#918C87] mb-4">Google</p>
               <div className="rounded-lg bg-[#1C1917] px-4 py-3">
                 <code className="text-sm text-[#C4956A] font-mono">
-                  npx brain-memory --gemini --global
+                  brain-memory --gemini --global
                 </code>
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function Home() {
               <p className="text-sm text-[#918C87] mb-4">OpenAI</p>
               <div className="rounded-lg bg-[#1C1917] px-4 py-3">
                 <code className="text-sm text-[#C4956A] font-mono">
-                  npx brain-memory --codex --global
+                  brain-memory --codex --global
                 </code>
               </div>
             </div>
@@ -431,12 +431,12 @@ export default function Home() {
             </h2>
             <div className="clean-card rounded-2xl p-8 mb-6">
               <code className="text-xl sm:text-2xl font-mono text-[#B5845A]">
-                npx brain-memory@beta
+                npm install -g brain-memory@beta
               </code>
             </div>
             <p className="text-[#6B6662] text-sm">
-              Interactive installer. Configures the selected runtime(s) globally
-              or per-project.
+              Install globally, then run <code className="text-[#B5845A]">brain-memory</code> to
+              configure your runtime(s).
             </p>
           </div>
         </section>
@@ -453,7 +453,7 @@ function CopyButton() {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText("npx brain-memory");
+    navigator.clipboard.writeText("npm install -g brain-memory@beta");
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -463,7 +463,7 @@ function CopyButton() {
       onClick={handleCopy}
       className="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 font-semibold text-[#191716] border border-[#E8E3DC] hover:border-[#D0C9C0] transition-all hover:-translate-y-0.5 hover:shadow-sm"
     >
-      <code className="text-sm font-mono text-[#B5845A]">npx brain-memory</code>
+      <code className="text-sm font-mono text-[#B5845A]">npm i -g brain-memory</code>
       <svg
         className="h-4 w-4 text-[#918C87]"
         viewBox="0 0 24 24"
