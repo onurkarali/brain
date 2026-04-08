@@ -46,7 +46,15 @@ function main() {
   }
 
   const brainDir = getBrainDir();
-  const index = readIndex();
+  let index;
+  try {
+    index = readIndex();
+  } catch (err) {
+    console.error(JSON.stringify({
+      error: `Corrupt index.json in ~/.brain/ — ${err.message}. Fix the JSON manually or restore from sync/backup.`,
+    }));
+    process.exit(1);
+  }
 
   if (!index) {
     console.error(JSON.stringify({ error: 'Brain not initialized.' }));

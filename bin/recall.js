@@ -58,14 +58,27 @@ function main() {
     process.exit(1);
   }
 
-  const index = readIndex();
+  let index;
+  try {
+    index = readIndex();
+  } catch (err) {
+    console.error(JSON.stringify({
+      error: `Corrupt index.json in ~/.brain/ — ${err.message}. Fix the JSON manually or restore from sync/backup.`,
+    }));
+    process.exit(1);
+  }
   if (!index || !index.memories || Object.keys(index.memories).length === 0) {
     console.log(JSON.stringify([]));
     return;
   }
 
   // Ensure search index exists
-  let searchIndex = readSearchIndex(brainDir);
+  let searchIndex;
+  try {
+    searchIndex = readSearchIndex(brainDir);
+  } catch (_) {
+    searchIndex = null;
+  }
   if (!searchIndex) {
     searchIndex = rebuildIndex(brainDir, index);
     writeSearchIndex(brainDir, searchIndex);
@@ -86,7 +99,12 @@ function main() {
   }));
 
   // Load associations for spreading activation
-  const associations = readAssociations();
+  let associations;
+  try {
+    associations = readAssociations();
+  } catch (_) {
+    associations = null;
+  }
 
   // Build recall context
   const recallContext = {};
@@ -127,7 +145,15 @@ function main() {
  * Rebuild the search index from all memories.
  */
 function handleReindex(brainDir) {
-  const index = readIndex();
+  let index;
+  try {
+    index = readIndex();
+  } catch (err) {
+    console.error(JSON.stringify({
+      error: `Corrupt index.json in ~/.brain/ — ${err.message}. Fix the JSON manually or restore from sync/backup.`,
+    }));
+    process.exit(1);
+  }
   if (!index) {
     console.error(JSON.stringify({ error: 'No index.json found.' }));
     process.exit(1);

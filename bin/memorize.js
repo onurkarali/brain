@@ -247,9 +247,33 @@ async function main() {
   }
 
   // Read current state
-  const index = readIndex();
-  let associations = readAssociations() || { version: 1, edges: {} };
-  let searchIndex = readSearchIndex(brainDir) || createSearchIndex();
+  let index;
+  try {
+    index = readIndex();
+  } catch (err) {
+    console.error(JSON.stringify({
+      error: `Corrupt index.json in ~/.brain/ — ${err.message}. Fix the JSON manually or restore from sync/backup.`,
+    }));
+    process.exit(1);
+  }
+
+  let associations;
+  try {
+    associations = readAssociations() || { version: 1, edges: {} };
+  } catch (err) {
+    console.error(JSON.stringify({
+      error: `Corrupt associations.json in ~/.brain/ — ${err.message}`,
+    }));
+    process.exit(1);
+  }
+
+  let searchIndex;
+  try {
+    searchIndex = readSearchIndex(brainDir) || createSearchIndex();
+  } catch (err) {
+    // Search index is non-critical — rebuild from scratch
+    searchIndex = createSearchIndex();
+  }
 
   const now = new Date().toISOString();
   const results = [];
