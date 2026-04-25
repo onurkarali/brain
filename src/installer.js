@@ -32,6 +32,15 @@ const RUNTIMES = {
     promptSource: 'openai.md',
     commandStyle: 'skills',
   },
+  opencode: {
+    name: 'OpenCode',
+    globalDir: path.join(os.homedir(), '.config', 'opencode'),
+    localDir: '.opencode',
+    commandsSubdir: 'commands',
+    promptFile: 'AGENTS.md',
+    promptSource: 'opencode.md',
+    commandStyle: 'flat',
+  },
 };
 
 const BRAIN_MARKER_START = '<!-- BRAIN-MEMORY-START -->';

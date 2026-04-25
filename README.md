@@ -12,7 +12,7 @@
 
 A hierarchical, file-system-based memory plugin for AI coding agents. Inspired by human neuroscience — memories are organized into deep nested life-domain categories, connected via associative networks, strengthened through spaced recall, and naturally decay over time.
 
-Works with **Claude Code**, **Gemini CLI**, and **OpenAI Codex CLI**.
+Works with **Claude Code**, **Gemini CLI**, **OpenAI Codex CLI**, and **OpenCode**.
 
 ```
 ~/.brain/
@@ -62,10 +62,11 @@ The second command runs the setup wizard, which asks which runtime(s) to configu
 ### Non-interactive
 
 ```bash
-brain-memory --claude --global        # Claude Code, global
-brain-memory --gemini --local         # Gemini CLI, local project
-brain-memory --codex --global         # OpenAI Codex CLI, global
-brain-memory --all --global           # All runtimes, global
+brain-memory --claude --global   # Claude Code, global
+brain-memory --gemini --local    # Gemini CLI, local project
+brain-memory --codex --global    # OpenAI Codex CLI, global
+brain-memory --opencode --global # OpenCode, global
+brain-memory --all --global      # All runtimes, global
 ```
 
 ### Update

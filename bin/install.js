@@ -51,7 +51,8 @@ function resolveRuntimesFromFlags(flags) {
   if (flags.has('claude')) runtimes.push('claude');
   if (flags.has('gemini')) runtimes.push('gemini');
   if (flags.has('openai') || flags.has('codex')) runtimes.push('openai');
-  if (flags.has('all')) return ['claude', 'gemini', 'openai'];
+  if (flags.has('opencode')) runtimes.push('opencode');
+  if (flags.has('all')) return ['claude', 'gemini', 'openai', 'opencode'];
   return runtimes;
 }
 
@@ -73,14 +74,15 @@ async function runInstall(flags) {
   try {
     // Interactive runtime selection
     if (runtimes.length === 0) {
-      console.log('  Which runtimes would you like to install for?\n');
-      console.log('    1) Claude Code');
-      console.log('    2) Gemini CLI');
-      console.log('    3) OpenAI Codex CLI');
-      console.log('    4) All');
+      console.log(' Which runtimes would you like to install for?\n');
+      console.log(' 1) Claude Code');
+      console.log(' 2) Gemini CLI');
+      console.log(' 3) OpenAI Codex CLI');
+      console.log(' 4) OpenCode');
+      console.log(' 5) All');
       console.log('');
 
-      const choice = await ask(rl, '  Select (1/2/3/4): ');
+      const choice = await ask(rl, ' Select (1/2/3/4/5): ');
       switch (choice.trim()) {
         case '1':
           runtimes = ['claude'];
@@ -92,22 +94,25 @@ async function runInstall(flags) {
           runtimes = ['openai'];
           break;
         case '4':
-          runtimes = ['claude', 'gemini', 'openai'];
+          runtimes = ['opencode'];
+          break;
+      case '5':
+          runtimes = ['claude', 'gemini', 'openai', 'opencode'];
           break;
         default:
-          console.log('  Invalid choice. Defaulting to Claude Code.');
+          console.log(' Invalid choice. Defaulting to Claude Code.');
           runtimes = ['claude'];
       }
     }
 
     // Interactive scope selection
     if (!scope) {
-      console.log('\n  Installation scope:\n');
-      console.log('    1) Global  — Available in all projects (~/.claude/, ~/.gemini/, ~/.codex/)');
-      console.log('    2) Local   — This project only (./.claude/, ./.gemini/, ./.codex/)');
+      console.log('\n Installation scope:\n');
+      console.log(' 1) Global — Available in all projects (~/.claude/, ~/.gemini/, ~/.codex/, ~/.config/opencode/)');
+      console.log(' 2) Local — This project only (./.claude/, ./.gemini/, ./.codex/, ./.opencode/)');
       console.log('');
 
-      const choice = await ask(rl, '  Select (1/2): ');
+      const choice = await ask(rl, ' Select (1/2): ');
       scope = choice.trim() === '2' ? 'local' : 'global';
     }
 
