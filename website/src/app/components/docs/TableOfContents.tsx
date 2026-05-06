@@ -67,21 +67,19 @@ export default function TableOfContents() {
 
   return (
     <nav className="hidden xl:block w-56 shrink-0">
-      <div className="sticky top-24">
-        <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#918C87]">
-          On this page
+      <div className="sticky top-20 py-10">
+        <h4 className="mb-3 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
+          on this page
         </h4>
-        <ul className="space-y-1.5">
+        <ul className="space-y-1">
           {headings.map((heading) => (
             <li key={heading.id}>
               <a
                 href={`#${heading.id}`}
-                className={`block text-sm transition-colors ${
-                  heading.level === 3 ? "pl-3" : ""
-                } ${
+                className={`block text-sm transition-colors ${heading.level === 3 ? "pl-3" : ""} ${
                   activeId === heading.id
-                    ? "text-[#B5845A] font-medium"
-                    : "text-[#918C87] hover:text-[#191716]"
+                    ? "text-[var(--text-primary)] font-medium"
+                    : "text-[var(--text-tertiary)] hover:text-[var(--text-primary)]"
                 }`}
               >
                 {heading.text}

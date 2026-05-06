@@ -8,95 +8,82 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="relative z-10 border-b border-[#E8E3DC]">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2">
+    <header className="sticky top-0 z-50 bg-[var(--bg)]/85 backdrop-blur-xl border-b border-[var(--border)]">
+      <nav className="max-w-3xl mx-auto flex items-center justify-between px-5 sm:px-6 h-14">
+        <Link href="/" className="flex items-center gap-2.5">
           <Image
-            src="/icon.png"
+            src="/icon.svg"
             alt="Brain Memory"
-            width={36}
-            height={36}
-            className="rounded-[8px]"
+            width={24}
+            height={24}
+            className="rounded-[6px]"
           />
-          <span className="text-lg font-semibold text-[#191716]">Brain Memory</span>
+          <span className="font-mono text-sm font-semibold tracking-tight text-[var(--text-primary)]">
+            brain memory
+          </span>
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center gap-6">
-          <Link href="/docs" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
-            Docs
+        <div className="hidden md:flex items-center gap-5">
+          <Link
+            href="/docs"
+            className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            docs
           </Link>
-          <a href="https://github.com/onurkarali/brain" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
-            GitHub
+          <a
+            href="https://github.com/onurkarali/brain"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            github
           </a>
-          <a href="https://www.npmjs.com/package/brain-memory" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
+          <a
+            href="https://www.npmjs.com/package/brain-memory"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
             npm
           </a>
-          <a href="https://omelas.tech" target="_blank" rel="noopener noreferrer" className="text-[#6B6662] hover:text-[#191716] transition-colors text-sm">
-            Omelas
+          <a
+            href="https://omelas.tech"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
+          >
+            omelas
           </a>
-          <a href="https://app.brainmemory.work/login" className="inline-flex items-center gap-2 rounded-full bg-[#B5845A] px-5 py-2 text-sm font-semibold text-white transition-all hover:bg-[#9E7048] hover:shadow-md">
-            Login
+          <a
+            href="https://app.brainmemory.work/login"
+            className="font-mono text-xs font-medium bg-[var(--text-primary)] text-[var(--bg)] hover:bg-[var(--accent)] transition-colors px-3 py-1.5 rounded-md"
+          >
+            login
           </a>
         </div>
 
         {/* Mobile Hamburger Button */}
         <button
-          className="md:hidden flex flex-col gap-1.5 p-2"
+          className="md:hidden flex flex-col gap-1.5 p-2 -mr-2"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label="Toggle menu"
         >
-          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? 'opacity-0' : ''}`} />
-          <span className={`block w-6 h-0.5 bg-[#918C87] transition-all ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+          <span className={`block w-5 h-px bg-[var(--text-secondary)] transition-all ${isMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+          <span className={`block w-5 h-px bg-[var(--text-secondary)] transition-all ${isMenuOpen ? 'opacity-0' : ''}`} />
+          <span className={`block w-5 h-px bg-[var(--text-secondary)] transition-all ${isMenuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
         </button>
       </nav>
 
       {/* Mobile Navigation Menu */}
       {isMenuOpen && (
-        <div className="md:hidden border-t border-[#E8E3DC] bg-white">
-          <div className="flex flex-col px-6 py-4 gap-4">
-            <Link
-              href="/docs"
-              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Docs
-            </Link>
-            <a
-              href="https://github.com/onurkarali/brain"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              GitHub
-            </a>
-            <a
-              href="https://www.npmjs.com/package/brain-memory"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              npm
-            </a>
-            <a
-              href="https://omelas.tech"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#6B6662] hover:text-[#191716] transition-colors py-2 text-sm"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Omelas
-            </a>
-            <a
-              href="https://app.brainmemory.work/login"
-              className="inline-flex items-center justify-center rounded-full bg-[#B5845A] px-5 py-2.5 text-sm font-semibold text-white transition-all hover:bg-[#9E7048]"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Login
-            </a>
+        <div className="md:hidden border-t border-[var(--border)] bg-[var(--bg)]">
+          <div className="flex flex-col px-5 py-3 gap-1">
+            <Link href="/docs" className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2" onClick={() => setIsMenuOpen(false)}>docs</Link>
+            <a href="https://github.com/onurkarali/brain" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2" onClick={() => setIsMenuOpen(false)}>github</a>
+            <a href="https://www.npmjs.com/package/brain-memory" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2" onClick={() => setIsMenuOpen(false)}>npm</a>
+            <a href="https://omelas.tech" target="_blank" rel="noopener noreferrer" className="font-mono text-xs text-[var(--text-secondary)] hover:text-[var(--text-primary)] py-2" onClick={() => setIsMenuOpen(false)}>omelas</a>
+            <a href="https://app.brainmemory.work/login" className="font-mono text-xs font-medium bg-[var(--text-primary)] text-[var(--bg)] hover:bg-[var(--accent)] transition-colors px-3 py-2 rounded-md text-center mt-2" onClick={() => setIsMenuOpen(false)}>login</a>
           </div>
         </div>
       )}

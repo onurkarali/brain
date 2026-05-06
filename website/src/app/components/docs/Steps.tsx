@@ -8,18 +8,16 @@ interface StepProps {
 
 export function Step({ number, title, children }: StepProps) {
   return (
-    <div className="relative flex gap-4 pb-8 last:pb-0">
-      {/* Connector line */}
-      <div className="flex flex-col items-center">
-        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border bg-[#B5845A]/10 border-[#B5845A]/20 text-[#B5845A] text-sm font-bold">
-          {number}
-        </div>
-        <div className="mt-2 w-px flex-1 bg-[#E8E3DC]" />
+    <div className="relative flex gap-5 pb-7 last:pb-0">
+      <div className="flex flex-col items-center pt-0.5">
+        <span className="font-mono text-xs text-[var(--text-tertiary)] tabular-nums">
+          {String(number).padStart(2, "0")}
+        </span>
+        <div className="mt-3 w-px flex-1 bg-[var(--border)]" />
       </div>
-      {/* Content */}
-      <div className="flex-1 pb-2">
-        <h3 className="text-base font-semibold text-[#191716] mb-2">{title}</h3>
-        <div className="text-sm text-[#6B6662] [&>pre]:my-3">{children}</div>
+      <div className="flex-1">
+        <h3 className="text-base font-semibold text-[var(--text-primary)] mb-1.5">{title}</h3>
+        <div className="text-sm text-[var(--text-secondary)] leading-relaxed [&>pre]:my-3">{children}</div>
       </div>
     </div>
   );

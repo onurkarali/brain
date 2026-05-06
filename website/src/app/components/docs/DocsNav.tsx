@@ -9,28 +9,27 @@ export default function DocsNav() {
   const categories = getNavCategories();
 
   function isActive(href: string) {
-    // Normalize: strip trailing slashes for comparison
     const normalizedPathname = pathname.replace(/\/+$/, "") || "/docs";
     const normalizedHref = href.replace(/\/+$/, "") || "/docs";
     return normalizedPathname === normalizedHref;
   }
 
   return (
-    <nav className="space-y-6">
+    <nav className="space-y-7">
       {categories.map((category) => (
         <div key={category.name}>
-          <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#918C87]">
+          <h3 className="mb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--text-tertiary)]">
             {category.name}
           </h3>
-          <ul className="space-y-1">
+          <ul className="space-y-0.5">
             {category.pages.map((page) => (
               <li key={page.href}>
                 <Link
                   href={page.href}
-                  className={`block rounded-md px-3 py-1.5 text-sm transition-colors ${
+                  className={`block rounded px-2 py-1 text-sm transition-colors ${
                     isActive(page.href)
-                      ? "bg-[#B5845A]/10 text-[#B5845A] font-medium"
-                      : "text-[#6B6662] hover:bg-[#F0ECE7] hover:text-[#191716]"
+                      ? "text-[var(--text-primary)] font-medium bg-[var(--surface-2)]"
+                      : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
                   }`}
                 >
                   {page.title}

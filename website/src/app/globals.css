@@ -1,105 +1,231 @@
 @import "tailwindcss";
 
-/* Custom Properties — warm, clean palette */
+/* ─── Tokens (light) ────────────────────────────────────────────── */
 :root {
-  --accent: #B5845A;
-  --accent-hover: #9E7048;
-  --accent-light: rgba(181, 132, 90, 0.08);
-  --bg: #FAF9F7;
+  --bg: #FAFAF8;
   --surface: #FFFFFF;
+  --surface-2: #F4F1EC;
   --border: #E8E3DC;
+  --border-strong: #D8D2C9;
   --border-subtle: #F0ECE7;
-  --text-primary: #191716;
-  --text-secondary: #6B6662;
-  --text-tertiary: #918C87;
+  --text-primary: #1A1A1A;
+  --text-secondary: #54514E;
+  --text-tertiary: #8A857F;
+  --accent: #5A6B84;
+  --accent-hover: #475A70;
+  --accent-soft: #EBEEF3;
+  --gold: #E7B300;
+  --danger: #B45050;
+
+  --nav-h: 3.5rem;
+  --space-section: clamp(2.5rem, 5vh + 1rem, 5rem);
+  --space-hero-top: clamp(2rem, 4vh + 1rem, 8rem);
+  --space-hero-bottom: clamp(2.5rem, 5vh + 1rem, 5rem);
+  --container-prose: 48rem;
+
+  --fs-h1: clamp(2.25rem, 4.5vw + 1rem, 4rem);
+  --fs-h2: clamp(1.5rem, 2vw + 0.875rem, 2rem);
+  --fs-lead: clamp(1rem, 0.75vw + 0.875rem, 1.125rem);
 }
 
-/* Gradient Text */
-.gradient-text {
-  color: var(--accent);
+/* ─── Tokens (dark, auto via system) ────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0E0E0D;
+    --surface: #161614;
+    --surface-2: #1F1E1C;
+    --border: #2A2826;
+    --border-strong: #3A3835;
+    --border-subtle: #1F1E1C;
+    --text-primary: #F4F1EC;
+    --text-secondary: #B6B0A8;
+    --text-tertiary: #757068;
+    --accent: #98A8C0;
+    --accent-hover: #B5C2D6;
+    --accent-soft: #1B2330;
+    --danger: #D87474;
+  }
 }
 
-.gradient-text-brain {
-  background: linear-gradient(135deg, #B5845A 0%, #8A7060 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+/* ─── Base ──────────────────────────────────────────────────────── */
+html { scroll-behavior: smooth; }
+[id] { scroll-margin-top: calc(var(--nav-h) + 0.75rem); }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: var(--font-inter), "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-feature-settings: "ss01", "cv11", "cv02";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Feature Card */
-.feature-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
+@supports (padding: env(safe-area-inset-top)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
 }
 
-.feature-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
-  border-color: #D8D2CA;
+.font-mono {
+  font-family: var(--font-jbmono), ui-monospace, "JetBrains Mono", "SF Mono", Menlo, monospace;
+  font-feature-settings: "calt", "liga";
 }
 
-/* Feature Card Icons */
-.feature-icon {
-  width: 44px;
-  height: 44px;
-}
+/* ─── Selection ─────────────────────────────────────────────────── */
+::selection { background: var(--accent-soft); color: var(--text-primary); }
 
-.feature-icon svg {
-  width: 100%;
-  height: 100%;
-  transition: transform 0.2s ease;
-}
-
-.feature-card:hover .feature-icon svg {
-  transform: scale(1.05);
-}
-
-/* Fade in animation */
+/* ─── Animations ────────────────────────────────────────────────── */
 .fade-in {
   opacity: 0;
-  animation: fadeInUp 0.8s ease-out forwards;
+  animation: fadeInUp 0.6s ease-out forwards;
 }
-
-.fade-in-delay-1 { animation-delay: 0.15s; }
-.fade-in-delay-2 { animation-delay: 0.3s; }
-.fade-in-delay-3 { animation-delay: 0.45s; }
+.fade-in-delay-1 { animation-delay: 0.08s; }
+.fade-in-delay-2 { animation-delay: 0.16s; }
+.fade-in-delay-3 { animation-delay: 0.24s; }
+.fade-in-delay-4 { animation-delay: 0.32s; }
 
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Clean card */
-.clean-card {
-  background: var(--surface);
+/* ─── Prose tweaks for MDX docs ─────────────────────────────────── */
+.prose-doc h1 {
+  font-size: clamp(1.75rem, 2.5vw + 1rem, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+}
+.prose-doc h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin-top: 2.5rem;
+  margin-bottom: 0.75rem;
+  color: var(--text-primary);
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
+}
+.prose-doc h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--text-primary);
+  scroll-margin-top: calc(var(--nav-h) + 1.5rem);
+}
+.prose-doc p {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  margin-bottom: 1rem;
+}
+.prose-doc ul, .prose-doc ol {
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+.prose-doc li { margin-bottom: 0.25rem; }
+.prose-doc ul > li { list-style: disc; }
+.prose-doc ol > li { list-style: decimal; }
+.prose-doc strong { color: var(--text-primary); font-weight: 600; }
+.prose-doc a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+.prose-doc a:hover { color: var(--accent-hover); }
+.prose-doc code {
+  font-family: var(--font-jbmono), ui-monospace, "JetBrains Mono", monospace;
+  font-size: 0.875em;
+  background: var(--surface-2);
   border: 1px solid var(--border);
-  transition: all 0.2s ease;
+  padding: 0.1rem 0.35rem;
+  border-radius: 4px;
+  color: var(--text-primary);
+}
+.prose-doc pre {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.prose-doc pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-size: inherit;
+}
+.prose-doc blockquote {
+  border-left: 2px solid var(--border-strong);
+  padding-left: 1rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+}
+.prose-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.9375rem;
+}
+.prose-doc th, .prose-doc td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.625rem 0.75rem;
+  text-align: left;
+}
+.prose-doc th {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.prose-doc td { color: var(--text-secondary); }
+.prose-doc hr {
+  border: 0;
+  border-top: 1px solid var(--border);
+  margin: 2rem 0;
 }
 
-.clean-card:hover {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+/* Shiki / rehype-pretty-code dual theme */
+code[data-theme~="light"],
+code[data-theme~="light"] span {
+  color: var(--shiki-light);
+  background-color: transparent !important;
 }
-
-/* Button hover effects */
-.btn-primary {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s ease;
+@media (prefers-color-scheme: dark) {
+  code[data-theme~="dark"],
+  code[data-theme~="dark"] span {
+    color: var(--shiki-dark);
+  }
 }
-
-.btn-primary:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(181, 132, 90, 0.25);
+[data-rehype-pretty-code-figure] pre {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
 }
-
-/* Lifecycle flow */
-.lifecycle-step {
-  position: relative;
+[data-rehype-pretty-code-figure] code {
+  display: grid;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+[data-line-numbers] > [data-line]::before {
+  content: counter(line);
+  counter-increment: line;
+  display: inline-block;
+  width: 1.5rem;
+  margin-right: 1rem;
+  text-align: right;
+  color: var(--text-tertiary);
 }

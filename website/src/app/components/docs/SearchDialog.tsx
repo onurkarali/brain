@@ -107,69 +107,41 @@ export default function SearchDialog() {
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 rounded-lg border border-[#E8E3DC] bg-white px-3 py-1.5 text-sm text-[#918C87] transition-colors hover:border-[#D0C9C0] hover:text-[#6B6662]"
+        className="flex items-center gap-2 rounded-md border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 font-mono text-xs text-[var(--text-tertiary)] transition-colors hover:border-[var(--border-strong)] hover:text-[var(--text-secondary)]"
       >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth={2}
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-          />
+        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
         </svg>
-        <span className="hidden sm:inline">Search docs...</span>
-        <kbd className="hidden rounded border border-[#E8E3DC] bg-[#F0ECE7] px-1.5 py-0.5 text-xs text-[#918C87] sm:inline">
-          ⌘K
-        </kbd>
+        <span className="hidden sm:inline">search docs</span>
+        <kbd className="hidden sm:inline rounded border border-[var(--border)] bg-[var(--surface-2)] px-1 py-0.5 text-[10px] text-[var(--text-tertiary)]">⌘K</kbd>
       </button>
     );
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/40 backdrop-blur-sm"
         onClick={() => setIsOpen(false)}
       />
 
-      {/* Dialog */}
-      <div className="relative w-full max-w-lg rounded-xl border border-[#E8E3DC] bg-white shadow-2xl">
-        {/* Search Input */}
-        <div className="flex items-center border-b border-[#E8E3DC] px-4">
-          <svg
-            className="h-5 w-5 text-[#918C87]"
-            fill="none"
-            viewBox="0 0 24 24"
-            strokeWidth={2}
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
-            />
+      <div className="relative w-full max-w-lg mx-4 rounded-lg border border-[var(--border)] bg-[var(--surface)] shadow-lg">
+        <div className="flex items-center border-b border-[var(--border)] px-4">
+          <svg className="h-4 w-4 text-[var(--text-tertiary)]" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
           </svg>
           <input
             ref={inputRef}
             type="text"
-            placeholder="Search documentation..."
+            placeholder="search documentation..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            className="w-full bg-transparent px-3 py-4 text-sm text-[#191716] placeholder-[#918C87] outline-none"
+            className="w-full bg-transparent px-3 py-3.5 font-mono text-sm text-[var(--text-primary)] placeholder-[var(--text-tertiary)] outline-none"
           />
-          <kbd className="rounded border border-[#E8E3DC] bg-[#F0ECE7] px-1.5 py-0.5 text-xs text-[#918C87]">
-            esc
-          </kbd>
+          <kbd className="rounded border border-[var(--border)] bg-[var(--surface-2)] px-1.5 py-0.5 font-mono text-[10px] text-[var(--text-tertiary)]">esc</kbd>
         </div>
 
-        {/* Results */}
         {results.length > 0 && (
           <ul className="max-h-80 overflow-y-auto p-2">
             {results.map((result, index) => (
@@ -177,14 +149,14 @@ export default function SearchDialog() {
                 <button
                   onClick={() => navigate(result.href)}
                   onMouseEnter={() => setSelectedIndex(index)}
-                  className={`flex w-full flex-col rounded-lg px-3 py-2.5 text-left transition-colors ${
+                  className={`flex w-full flex-col rounded px-3 py-2 text-left transition-colors ${
                     index === selectedIndex
-                      ? "bg-[#B5845A]/10 text-[#191716]"
-                      : "text-[#6B6662] hover:bg-[#F0ECE7]"
+                      ? "bg-[var(--surface-2)] text-[var(--text-primary)]"
+                      : "text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
                   }`}
                 >
                   <span className="text-sm font-medium">{result.title}</span>
-                  <span className="mt-0.5 text-xs text-[#918C87]">
+                  <span className="mt-0.5 font-mono text-[10px] uppercase tracking-wider text-[var(--text-tertiary)]">
                     {result.category}
                   </span>
                 </button>
@@ -193,17 +165,15 @@ export default function SearchDialog() {
           </ul>
         )}
 
-        {/* No Results */}
         {query.trim() && results.length === 0 && (
-          <div className="px-4 py-8 text-center text-sm text-[#918C87]">
-            No results found for &quot;{query}&quot;
+          <div className="px-4 py-8 text-center font-mono text-xs text-[var(--text-tertiary)]">
+            no results for &quot;{query}&quot;
           </div>
         )}
 
-        {/* Empty State */}
         {!query.trim() && (
-          <div className="px-4 py-8 text-center text-sm text-[#918C87]">
-            Type to search the documentation
+          <div className="px-4 py-8 text-center font-mono text-xs text-[var(--text-tertiary)]">
+            type to search the documentation
           </div>
         )}
       </div>
