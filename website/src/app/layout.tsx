@@ -18,7 +18,12 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Omelas" }],
   icons: {
-    icon: "/icon.png",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/icon.png",
   },
   openGraph: {
     title: "Brain Memory — Memory for AI Agents",
@@ -26,7 +31,7 @@ export const metadata: Metadata = {
       "A hierarchical, file-system-based memory system for AI coding agents inspired by human neuroscience.",
     type: "website",
     url: "https://brainmemory.work",
-    images: [{ url: "/icon.png", width: 766, height: 763 }],
+    images: [{ url: "/icon.png", width: 1024, height: 1024 }],
   },
 };
 
